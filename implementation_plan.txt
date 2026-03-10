@@ -1,0 +1,167 @@
+Implement these 74 designs from Figma.
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=86-12465&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-4876&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-4985&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-4668&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-4418&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=59-1181&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-4060&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=56-272&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-3872&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-3332&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=56-852&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=60-8043&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=58-1116&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=48-3049&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=48-2931&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-4331&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-2313&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-4580&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-1709&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-1696&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-3857&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2351&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=48-2853&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-1649&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=20-72&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-1250&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-3258&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=56-270&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=110-375&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=48-3156&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=28-658&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=56-1049&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-2013&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=265-142&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=60-8120&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=27-2745&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=48-2777&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-1954&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=27-2716&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2403&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2268&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=56-1050&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=33-2544&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=95-12497&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-1925&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2610&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=27-2793&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=28-1043&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=95-12498&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-3327&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2306&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-3329&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=48-2657&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-4183&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2669&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-1803&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=34-2612&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=24-1815&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2671&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=55-3813&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-2112&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=28-1130&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=61-8164&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2020&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=28-942&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=27-2797&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=56-927&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-2149&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=11-37&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-1939&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=29-1430&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=23-1575&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=26-1984&m=dev
+@https://www.figma.com/design/1JR3BWshq6EbupYxXFM4U9/Rionaydo-%7C%7C-Car-Auction-Apps?node-id=12-386&m=dev
+
+
+
+
+
+
+
+
+
+/* div */
+
+position: absolute;
+width: 402.12px;
+height: 851.87px;
+left: 0px;
+top: 0px;
+
+background: #0A0A0A;
+border-radius: 24px;
+
+
+/* Container */
+
+position: absolute;
+width: 402.12px;
+height: 851.87px;
+left: 0px;
+top: 0px;
+
+background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(2, 47, 46, 0.2) 50%, rgba(0, 0, 0, 0) 100%);
+border-radius: 0px;
+
+
+/* Container */
+
+position: absolute;
+width: 384px;
+height: 384px;
+left: 9.06px;
+top: 233.94px;
+
+background: rgba(0, 187, 167, 0.1);
+opacity: 0.63;
+filter: blur(64px);
+border-radius: 3.71704e+07px;
+
+
+/* Container */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px 0px 2.38419e-06px;
+gap: 31.99px;
+
+position: absolute;
+width: 128px;
+height: 131.98px;
+left: 137.05px;
+top: 359.94px;
+
+border-radius: 0px;
+
+
+/* SwissCarExchange_logo_transparent_rgbclean 2 */
+
+width: 285px;
+height: 105px;
+
+background: url(SwissCarExchange_logo_transparent_rgbclean.png);
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Container */
+
+width: 128px;
+height: 4px;
+
+background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #0CFFE5 50%, rgba(0, 0, 0, 0) 100%);
+opacity: 0.63;
+border-radius: 0px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;

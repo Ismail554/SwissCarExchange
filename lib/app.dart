@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/app_colors.dart';
-import 'package:wynante/views/splash/splash_screen.dart';
+import 'package:wynante/views/auth/splash_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(375, 812),
+      designSize: const Size(402, 851),
       builder: (context, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,

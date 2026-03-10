@@ -12,7 +12,12 @@ class AppColors {
   static const Color primaryContainer = Color(0xFFFFE8DC);
 
   /* ==================== Background Colors ==================== */
-  static const Color bgColor = Color(0xFFF0F0F0);
+  static const LinearGradient bgColor = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0x00000000), Color(0x33022F2E), Color(0x00000000)],
+    // stops: [0.0, 0.5, 1.0],
+  );
   static const Color bgSecondary = Color(0xFFFFFFFF);
   static const Color bgTertiary = Color(0xFFF8F8F8);
   static const Color surface = Color(0xFFFFFFFF);
