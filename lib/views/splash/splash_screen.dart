@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3000), // 3 second total splash
+      duration: const Duration(seconds: 3), // 3 second total splash
     );
 
     // Listen to animation completion to trigger navigation securely
@@ -58,15 +58,15 @@ class _SplashScreenState extends State<SplashScreen>
 
     // TweenSequence for Divider Width: Wait (0-20%), Expand (20-70%), Hold (70-100%)
     _dividerWidth = TweenSequence<double>([
-      TweenSequenceItem(tween: ConstantTween<double>(0.0), weight: 20.0),
+      TweenSequenceItem(tween: ConstantTween<double>(2.0), weight: 40.0),
       TweenSequenceItem(
         tween: Tween<double>(
-          begin: 0.0,
-          end: 128.0,
+          begin: 2.0,
+          end: 228.0,
         ).chain(CurveTween(curve: Curves.fastOutSlowIn)),
-        weight: 50.0,
+        weight: 1000.0,
       ),
-      TweenSequenceItem(tween: ConstantTween<double>(128.0), weight: 30.0),
+      TweenSequenceItem(tween: ConstantTween<double>(228.0), weight: 20.0),
     ]).animate(_controller);
 
     _controller.forward();
@@ -92,13 +92,13 @@ class _SplashScreenState extends State<SplashScreen>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Logo Image
-                  Image.asset(IconAssets.app_logo, width: 286.w, height: 112.h),
+                  Image.asset(IconAssets.app_logo, width: 300.w),
 
-                  SizedBox(height: 32.h),
+                  SizedBox(height: 22.h),
 
                   // Animated Gradient Divider
                   Opacity(
-                    opacity: 0.63,
+                    opacity: 0.70,
                     child: Container(
                       width: _dividerWidth.value,
                       height: 4,
