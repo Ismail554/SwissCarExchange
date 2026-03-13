@@ -127,12 +127,20 @@ class OnboardignCommonScaff extends StatelessWidget {
                         Container(
                           width: 1.5,
                           // Make sure the line extends fully, intrinsic height covers it.
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              colors: [Color(0xFFD4AF37), Colors.transparent],
-                              stops: [0.0, 1.0],
+                              colors: currentIndex == 0
+                                  ? const [Color(0xFFD4AF37), Colors.transparent]
+                                  : currentIndex == 1
+                                      ? const [Colors.transparent, Color(0xFFD4AF37), Colors.transparent]
+                                      : const [Colors.transparent, Color(0xFFD4AF37)],
+                              stops: currentIndex == 0
+                                  ? const [0.0, 1.0]
+                                  : currentIndex == 1
+                                      ? const [0.0, 0.5, 1.0]
+                                      : const [0.0, 1.0],
                             ),
                           ),
                         ),
