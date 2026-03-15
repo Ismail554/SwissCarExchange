@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/app_colors.dart';
+import 'package:wynante/views/auth/sign_up/presentations/sign_up_view.dart';
 import 'package:wynante/views/auth/sign_up/verify_sign_up/presentations/before_subs_view.dart';
 import 'package:wynante/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';
 import 'package:wynante/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-      child: const BeforeSubsView(),
+      child: const SignUpView(),
     );
   }
 }
