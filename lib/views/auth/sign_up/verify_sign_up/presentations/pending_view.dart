@@ -7,8 +7,8 @@ import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/widget_outlined_btn.dart';
 import 'package:wynante/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
 
-class SelectSubsView extends StatelessWidget {
-  const SelectSubsView({super.key});
+class PendingView extends StatelessWidget {
+  const PendingView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,12 @@ class SelectSubsView extends StatelessWidget {
             Spacer(),
             AppSpacing.h40,
 
-            WidgetOutlinedBtn(title: 'Logout', icon: Icons.logout),
+            WidgetOutlinedBtn(
+              title: 'Logout',
+              icon: Icons.logout,
+              themeColor: Colors.red,
+              onPressed: () {},
+            ),
           ],
         ),
       ),
