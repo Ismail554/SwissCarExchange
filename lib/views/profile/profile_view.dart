@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+class ProfileView extends StatefulWidget {
+  const ProfileView({super.key});
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  State<ProfileView> createState() => _ProfileViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return CommonBackground(
@@ -17,10 +17,10 @@ class _HomeViewState extends State<HomeView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.home_rounded, color: const Color(0xFF00D5BE), size: 64.sp),
+            Icon(Icons.person_rounded, color: const Color(0xFF00D5BE), size: 64.sp),
             SizedBox(height: 16.h),
             Text(
-              'Home Screen',
+              'Your Profile',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24.sp,
@@ -29,7 +29,7 @@ class _HomeViewState extends State<HomeView> {
             ),
             SizedBox(height: 8.h),
             Text(
-              'Welcome to Swiss Car Exchange',
+              'Manage your settings and company info',
               style: TextStyle(
                 color: Colors.white54,
                 fontSize: 16.sp,

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wynante/core/assets_manager.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 import 'package:wynante/core/widgets/custom_text_field.dart';
 import 'package:wynante/views/auth/forgot_password/forgot_pass_view.dart';
 import 'package:wynante/views/home/home_view.dart';
+import 'package:wynante/views/auctions/auctions_view.dart';
+import 'package:wynante/views/bidding/bids_view.dart';
+import 'package:wynante/views/profile/profile_view.dart';
 import 'package:wynante/views/main_navigation/bottom_nav.dart';
 
 class LoginViews extends StatefulWidget {
@@ -22,82 +24,61 @@ class _LoginViewsState extends State<LoginViews> {
   bool _obscurePassword = true;
 
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return CommonBackground(
-      child: Center(
+      child: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
+          padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 24.h),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Logo
-              // Logo Image
-              Image.asset(IconAssets.app_logo, width: 300.w),
-
-              SizedBox(height: 18.h),
-
-              // Email Field
-              const Text(
-                'Email Address',
+              SizedBox(height: 48.h),
+              Image.asset(IconAssets.app_logo, height: 40.h),
+              SizedBox(height: 48.h),
+              Text(
+                'Welcome Back',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 32.sp,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
+              Text(
+                'Sign in to continue',
+                style: TextStyle(color: Colors.white54, fontSize: 16.sp),
+              ),
+              SizedBox(height: 48.h),
               CustomTextField(
                 controller: _emailController,
-                hintText: 'Enter your email',
-                keyboardType: TextInputType.emailAddress,
+                hintText: 'Email',
                 prefixIcon: const Icon(
                   Icons.email_outlined,
                   color: Color(0xFFA0AABF),
+                  size: 20,
                 ),
               ),
-              const SizedBox(height: 24),
-
-              // Password Field
-              const Text(
-                'Password',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 8),
+              SizedBox(height: 16.h),
               CustomTextField(
                 controller: _passwordController,
-                hintText: 'Enter your password',
+                hintText: 'Password',
                 obscureText: _obscurePassword,
                 prefixIcon: const Icon(
                   Icons.lock_outline,
                   color: Color(0xFFA0AABF),
+                  size: 20,
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    _obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     color: const Color(0xFFA0AABF),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // Forgot Password
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -109,57 +90,31 @@ class _LoginViewsState extends State<LoginViews> {
                       ),
                     );
                   },
-                  style: TextButton.styleFrom(
-                    foregroundColor: const Color(0xFFD4AF37),
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(50, 30),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
                   child: const Text(
                     'Forgot Password?',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    style: TextStyle(color: Color(0xFF00D5BE)),
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
-
-              // Login Button
+              SizedBox(height: 24.h),
               CustomButton(
                 text: 'Login',
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          const MainNavigationShell(pages: [HomeView()]),
+                      builder: (context) => const MainNavigationShell(
+                        isPremiumUser: true,
+                        pages: [
+                          HomeView(),
+                          AuctionsView(),
+                          BidsView(),
+                          ProfileView(),
+                        ],
+                      ),
                     ),
                   );
                 },
-              ),
-              const SizedBox(height: 32),
-
-              // Sign Up Link
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Don't have an account? ",
-                    style: TextStyle(color: Color(0xFFA0AABF), fontSize: 14),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // TODO: Implement navigation to Sign Up
-                    },
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        color: Color(0xFF00D5BE),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ],
           ),

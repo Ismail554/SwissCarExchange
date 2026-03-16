@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/widgets/widget_snackbar.dart';
+import 'package:wynante/views/auctions/add_auction_view.dart';
 
 /// The app-wide scaffold with custom bottom navigation.
 ///
@@ -41,8 +42,10 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
 
   void _onPremiumFabTap() {
     if (widget.isPremiumUser) {
-      // TODO: navigate to create-auction flow
-      AppSnackBar.success(context, 'Create a new auction');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AddAuctionView()),
+      );
     } else {
       AppSnackBar.warning(
         context,

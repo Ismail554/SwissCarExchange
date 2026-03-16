@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+class AuctionsView extends StatefulWidget {
+  const AuctionsView({super.key});
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  State<AuctionsView> createState() => _AuctionsViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _AuctionsViewState extends State<AuctionsView> {
   @override
   Widget build(BuildContext context) {
     return CommonBackground(
@@ -17,10 +17,10 @@ class _HomeViewState extends State<HomeView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.home_rounded, color: const Color(0xFF00D5BE), size: 64.sp),
+            Icon(Icons.gavel_rounded, color: const Color(0xFF00D5BE), size: 64.sp),
             SizedBox(height: 16.h),
             Text(
-              'Home Screen',
+              'Auctions Screen',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24.sp,
@@ -29,7 +29,7 @@ class _HomeViewState extends State<HomeView> {
             ),
             SizedBox(height: 8.h),
             Text(
-              'Welcome to Swiss Car Exchange',
+              'Explore ongoing car auctions',
               style: TextStyle(
                 color: Colors.white54,
                 fontSize: 16.sp,
