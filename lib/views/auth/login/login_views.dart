@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/assets_manager.dart';
+import 'package:wynante/core/global_state.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 import 'package:wynante/core/widgets/custom_text_field.dart';
 import 'package:wynante/views/auth/forgot_password/forgot_pass_view.dart';
-import 'package:wynante/views/home/home_view.dart';
+import 'package:wynante/views/home/presentation/home_view.dart';
 import 'package:wynante/views/auctions/auctions_view.dart';
 import 'package:wynante/views/bidding/bids_view.dart';
 import 'package:wynante/views/profile/profile_view.dart';
@@ -100,11 +101,13 @@ class _LoginViewsState extends State<LoginViews> {
               CustomButton(
                 text: 'Login',
                 onPressed: () {
+                  // Store premium status globally
+                  GlobalState.isPremium = true; // Toggle to false to test basic user UI
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const MainNavigationShell(
-                        isPremiumUser: true,
                         pages: [
                           HomeView(),
                           AuctionsView(),

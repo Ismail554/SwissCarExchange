@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wynante/views/home/home_view.dart';
+import 'package:wynante/views/home/presentation/home_view.dart';
 
 import '../onboardign_common_scaff.dart';
 import 'step2_onborading.dart';

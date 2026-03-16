@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wynante/core/global_state.dart';
 import 'package:wynante/core/widgets/widget_snackbar.dart';
 import 'package:wynante/views/auctions/add_auction_view.dart';
 
 /// The app-wide scaffold with custom bottom navigation.
 ///
-/// [isPremiumUser] toggles whether the centre "+" FAB is enabled.
-/// Set it to `true` for premium users; `false` for basic users (they see a
-/// locked prompt instead).
+/// If [isPremiumUser] is provided, it overrides the value in [GlobalState].
 class MainNavigationShell extends StatefulWidget {
   /// The four page bodies corresponding to: Home, Auctions, Bids, Profile.
   final List<Widget> pages;
 
   /// Whether the signed-in user has a Premium subscription.
-  final bool isPremiumUser;
+  final bool? isPremiumUser;
 
   const MainNavigationShell({
     super.key,
     required this.pages,
-    this.isPremiumUser = false,
+    this.isPremiumUser,
   });
 
   @override
@@ -41,7 +40,8 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   }
 
   void _onPremiumFabTap() {
-    if (widget.isPremiumUser) {
+    final isPremium = widget.isPremiumUser ?? GlobalState.isPremium;
+    if (isPremium) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const AddAuctionView()),
@@ -61,6 +61,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   @override
   Widget build(BuildContext context) {
     final activeTab = _pageToTab[_currentIndex] ?? 0;
+    final isPremium = widget.isPremiumUser ?? GlobalState.isPremium;
 
     return SafeArea(
       child: Scaffold(
@@ -68,7 +69,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         body: IndexedStack(index: _currentIndex, children: widget.pages),
         bottomNavigationBar: _BottomNavBar(
           activeIndex: activeTab,
-          isPremiumUser: widget.isPremiumUser,
+          isPremiumUser: isPremium,
           onTabTap: _onTabTap,
           onFabTap: _onPremiumFabTap,
         ),

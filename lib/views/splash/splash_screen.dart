@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/assets_manager.dart';
 import 'package:wynante/views/auth/onboarding/views/step1_onboarding.dart';
-import 'package:wynante/views/home/home_view.dart';
+import 'package:wynante/views/home/presentation/home_view.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wynante/views/auth/login/login_views.dart';
-import 'package:wynante/views/home/home_view.dart';
+import 'package:wynante/views/home/presentation/home_view.dart';
 import '../onboardign_common_scaff.dart';
 
 class Step3Onboarding extends StatelessWidget {

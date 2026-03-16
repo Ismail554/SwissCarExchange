@@ -127,4 +127,14 @@ class AppColors {
   static const Color subtitleText = Color(0xFF848484);
   static const Color defTextColor = Color(0xFFFFFFFF);
   static const Color statFillColor = Color(0x261E90FF);
+
+  /* ==================== SwissCarExchange Specific ==================== */
+  static const Color sceTeal = Color(0xFF00D5BE);
+  static const Color sceDarkBg = Color(0xFF0A0A0A);
+  static const Color sceCardBg = Color(0xFF111827);
+  static const Color sceGold = Color(0xFFF59E0B);
+  static const Color sceTealStatBg = Color(0xFF042F2E);
+  static const Color sceGoldStatBg = Color(0xFF201608);
+  static const Color scePremiumDealerBg = Color(0xFF332008);
+  static const Color sceSectionHeaderGold = Color(0xFFD59F00);
 }
