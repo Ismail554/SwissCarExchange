@@ -174,7 +174,7 @@ class _SignUpViewState extends State<SignUpView> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const SignUpStep2()),
+                          MaterialPageRoute(builder: (_) => SignUpStep2(email: _emailController.text.trim())),
                         );
                       },
                     ),

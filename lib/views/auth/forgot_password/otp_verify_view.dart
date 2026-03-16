@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
 import 'package:wynante/core/assets_manager.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
+import 'package:wynante/core/widgets/widget_snackbar.dart';
 import 'package:wynante/views/auth/forgot_password/successful_view.dart';
 
 class OtpVerifyView extends StatefulWidget {
@@ -18,6 +20,12 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
   final TextEditingController _otpController = TextEditingController();
   bool _isOtpValid = false;
 
+  // --- Resend countdown ---
+  static const int _countdownStart = 60;
+  int _secondsLeft = _countdownStart;
+  bool _canResend = false;
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
@@ -29,11 +37,40 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
         });
       }
     });
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    setState(() {
+      _secondsLeft = _countdownStart;
+      _canResend = false;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) { t.cancel(); return; }
+      setState(() {
+        if (_secondsLeft > 1) {
+          _secondsLeft--;
+        } else {
+          _secondsLeft = 0;
+          _canResend = true;
+          t.cancel();
+        }
+      });
+    });
+  }
+
+  void _resendOtp() {
+    if (!_canResend) return;
+    // TODO: call actual API to resend OTP
+    AppSnackBar.success(context, 'OTP has been sent to your email');
+    _startTimer();
   }
 
   @override
   void dispose() {
     _otpController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -129,10 +166,20 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
 
                     // Subtitle
                     Text(
-                      "We've sent a 6-digit code to\n${widget.email}",
+                      "We've sent a 6-digit code to",
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         color: const Color(0xFFA0AABF),
+                        fontSize: 15.sp,
+                        height: 1.5,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    Text(
+                      widget.email,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: const Color(0xFF02B6A3),
                         fontSize: 15.sp,
                         height: 1.5,
                         fontWeight: FontWeight.w400,
@@ -169,18 +216,28 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                         ),
                         SizedBox(height: 8.h),
                         GestureDetector(
-                          onTap: () {
-                            // TODO: Add resend action
-                          },
-                          child: Text(
-                            'Resend in 60s',
-                            style: TextStyle(
-                              color: const Color(
-                                0xFFA0AABF,
-                              ), // Or secondary accent color
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          onTap: _canResend ? _resendOtp : null,
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: _canResend
+                                ? Text(
+                                    'Resend Code',
+                                    key: const ValueKey('resend'),
+                                    style: TextStyle(
+                                      color: const Color(0xFF00D5BE),
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  )
+                                : Text(
+                                    'Resend in ${_secondsLeft}s',
+                                    key: const ValueKey('countdown'),
+                                    style: TextStyle(
+                                      color: const Color(0xFFA0AABF),
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                           ),
                         ),
                       ],

@@ -6,6 +6,8 @@ import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 import 'package:wynante/core/widgets/custom_text_field.dart';
 import 'package:wynante/views/auth/forgot_password/forgot_pass_view.dart';
+import 'package:wynante/views/home/home_view.dart';
+import 'package:wynante/views/main_navigation/bottom_nav.dart';
 
 class LoginViews extends StatefulWidget {
   const LoginViews({super.key});
@@ -125,7 +127,13 @@ class _LoginViewsState extends State<LoginViews> {
               CustomButton(
                 text: 'Login',
                 onPressed: () {
-                  // TODO: Implement login action
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const MainNavigationShell(pages: [HomeView()]),
+                    ),
+                  );
                 },
               ),
               const SizedBox(height: 32),

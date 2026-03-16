@@ -6,7 +6,8 @@ import 'package:wynante/core/widgets/custom_text_field.dart';
 import 'package:wynante/views/auth/sign_up/presentations/sign_up_step3.dart';
 
 class SignUpStep2 extends StatefulWidget {
-  const SignUpStep2({super.key});
+  final String email;
+  const SignUpStep2({super.key, required this.email});
 
   @override
   State<SignUpStep2> createState() => _SignUpStep2State();
@@ -163,7 +164,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const SignUpStep3()),
+                          MaterialPageRoute(builder: (_) => SignUpStep3(email: widget.email)),
                         );
                       },
                     ),

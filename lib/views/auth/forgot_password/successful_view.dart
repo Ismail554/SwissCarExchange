@@ -5,6 +5,7 @@ import 'package:wynante/core/app_spacing.dart';
 import 'package:wynante/core/assets_manager.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
+import 'package:wynante/views/auth/login/login_views.dart';
 
 class SuccessfulView extends StatelessWidget {
   const SuccessfulView({super.key});
@@ -29,23 +30,26 @@ class SuccessfulView extends StatelessWidget {
                 ),
               ),
               AppSpacing.h12,
-              Text(
-                "Your password has been reset successfully. You can now login with your new password.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFFA0AABF),
-                  fontSize: 15.sp,
-                  height: 1.5,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              // Text(
+              //   "Your password has been reset successfully. You can now login with your new password.",
+              //   textAlign: TextAlign.center,
+              //   style: TextStyle(
+              //     color: const Color(0xFFA0AABF),
+              //     fontSize: 15.sp,
+              //     height: 1.5,
+              //     fontWeight: FontWeight.w400,
+              //   ),
+              // ),
               AppSpacing.h24,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: CustomButton(
                   text: 'Continue',
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginViews()),
+                    );
                   },
                 ),
               ),

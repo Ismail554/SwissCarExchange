@@ -5,9 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
+import 'package:wynante/views/auth/forgot_password/otp_verify_view.dart';
 
 class SignUpStep3 extends StatefulWidget {
-  const SignUpStep3({super.key});
+  final String email;
+  const SignUpStep3({super.key, required this.email});
 
   @override
   State<SignUpStep3> createState() => _SignUpStep3State();
@@ -63,8 +65,12 @@ class _SignUpStep3State extends State<SignUpStep3> {
               SnackBar(
                 backgroundColor: Colors.redAccent.withOpacity(0.9),
                 behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                content: const Text('File exceeds 5 MB limit. Please choose a smaller file.'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                content: const Text(
+                  'File exceeds 5 MB limit. Please choose a smaller file.',
+                ),
               ),
             );
           }
@@ -87,7 +93,9 @@ class _SignUpStep3State extends State<SignUpStep3> {
           SnackBar(
             backgroundColor: Colors.redAccent.withOpacity(0.9),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             content: const Text('File not found. Please pick it again.'),
           ),
         );
@@ -120,7 +128,11 @@ class _SignUpStep3State extends State<SignUpStep3> {
                     color: Colors.white.withOpacity(0.07),
                     border: Border.all(color: Colors.white.withOpacity(0.1)),
                   ),
-                  child: Icon(Icons.arrow_back, color: Colors.white, size: 18.sp),
+                  child: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 18.sp,
+                  ),
                 ),
               ),
             ),
@@ -141,18 +153,27 @@ class _SignUpStep3State extends State<SignUpStep3> {
                             children: [
                               TextSpan(
                                 text: 'Step  ',
-                                style: TextStyle(color: teal, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  color: teal,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               TextSpan(
                                 text: '3 of 3',
-                                style: TextStyle(color: teal, fontWeight: FontWeight.w700),
+                                style: TextStyle(
+                                  color: teal,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ],
                           ),
                         ),
                         Text(
                           'Verification',
-                          style: TextStyle(color: Colors.white54, fontSize: 13.sp),
+                          style: TextStyle(
+                            color: Colors.white54,
+                            fontSize: 13.sp,
+                          ),
                         ),
                       ],
                     ),
@@ -211,7 +232,10 @@ class _SignUpStep3State extends State<SignUpStep3> {
                       child: _hasDocument
                           // ---- Selected state ----
                           ? Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20.w,
+                                vertical: 18.h,
+                              ),
                               child: Row(
                                 children: [
                                   Container(
@@ -230,7 +254,8 @@ class _SignUpStep3State extends State<SignUpStep3> {
                                   SizedBox(width: 14.w),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           _pickedFile!.name,
@@ -245,7 +270,10 @@ class _SignUpStep3State extends State<SignUpStep3> {
                                         SizedBox(height: 4.h),
                                         Text(
                                           _formatSize(_pickedFile!.size),
-                                          style: TextStyle(color: Colors.white38, fontSize: 11.sp),
+                                          style: TextStyle(
+                                            color: Colors.white38,
+                                            fontSize: 11.sp,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -287,9 +315,14 @@ class _SignUpStep3State extends State<SignUpStep3> {
                                         ),
                                       )
                                     : Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.upload_outlined, color: Colors.white54, size: 36.sp),
+                                          Icon(
+                                            Icons.upload_outlined,
+                                            color: Colors.white54,
+                                            size: 36.sp,
+                                          ),
                                           SizedBox(height: 12.h),
                                           Text(
                                             'Tap to upload document',
@@ -302,7 +335,10 @@ class _SignUpStep3State extends State<SignUpStep3> {
                                           SizedBox(height: 6.h),
                                           Text(
                                             'PDF, JPG or PNG (max 5MB)',
-                                            style: TextStyle(color: Colors.white38, fontSize: 11.sp),
+                                            style: TextStyle(
+                                              color: Colors.white38,
+                                              fontSize: 11.sp,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -314,7 +350,8 @@ class _SignUpStep3State extends State<SignUpStep3> {
 
                     // Terms Checkbox
                     GestureDetector(
-                      onTap: () => setState(() => _isTermsAccepted = !_isTermsAccepted),
+                      onTap: () =>
+                          setState(() => _isTermsAccepted = !_isTermsAccepted),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -340,7 +377,11 @@ class _SignUpStep3State extends State<SignUpStep3> {
                           Expanded(
                             child: RichText(
                               text: TextSpan(
-                                style: TextStyle(color: Colors.white60, fontSize: 13.sp, height: 1.5),
+                                style: TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 13.sp,
+                                  height: 1.5,
+                                ),
                                 children: [
                                   const TextSpan(
                                     text:
@@ -368,7 +409,13 @@ class _SignUpStep3State extends State<SignUpStep3> {
                       text: 'Create Account',
                       isActive: _canCreate,
                       onPressed: () {
-                        // TODO: Connect to auth provider
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OtpVerifyView(email: widget.email),
+                          ),
+                        );
                       },
                     ),
 
