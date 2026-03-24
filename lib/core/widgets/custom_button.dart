@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wynante/core/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -24,25 +25,25 @@ class CustomButton extends StatelessWidget {
       height: 54.h,
       decoration: BoxDecoration(
         color: isPrimary
-            ? (isActive ? null : const Color(0xFF1C212A))
+            ? (isActive ? null : AppColors.cardBG.withOpacity(0.1))
             : Colors.transparent,
         gradient: isPrimary && isActive
-            ? const LinearGradient(
+            ? LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF00D5BE), // Light green
-                  Color(0xFF00BBA7), // Medium green
-                  Color(0xFF009689), // Deep green
+                  AppColors.sceTeal, 
+                  AppColors.sceTeal.withOpacity(0.8), 
+                  AppColors.sceTeal.withOpacity(0.6), 
                 ],
               )
             : null,
         borderRadius: BorderRadius.circular(12),
-        border: isPrimary ? null : Border.all(color: isActive ? const Color(0xFFA0AABF) : const Color(0xFF323B4B)),
+        border: isPrimary ? null : Border.all(color: isActive ? AppColors.textHint : AppColors.dividerDark),
         boxShadow: isPrimary && isActive
             ? [
                 BoxShadow(
-                  color: const Color(0xFF00D5BE).withOpacity(0.25),
+                  color: AppColors.sceTeal.withOpacity(0.25),
                   blurRadius: 15,
                   offset: const Offset(0, 4),
                 ),
@@ -67,7 +68,7 @@ class CustomButton extends StatelessWidget {
                 : Text(
                     text,
                     style: TextStyle(
-                      color: isActive ? Colors.white : const Color(0xFF6B7280),
+                      color: isActive ? Colors.white : AppColors.textDisabled,
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                     ),

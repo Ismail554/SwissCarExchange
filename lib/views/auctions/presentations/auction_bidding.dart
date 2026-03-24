@@ -245,7 +245,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                         Container(
                           padding: EdgeInsets.all(12.w),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0F171A),
+                            color: AppColors.sceTealStatBg,
                             borderRadius: BorderRadius.circular(8.r),
                             border: Border.all(color: AppColors.sceTeal.withOpacity(0.2)),
                           ),
@@ -297,7 +297,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   Container(
                     padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F171A).withOpacity(0.5),
+                      color: AppColors.sceTealStatBg.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(color: AppColors.sceTeal.withOpacity(0.2)),
                     ),

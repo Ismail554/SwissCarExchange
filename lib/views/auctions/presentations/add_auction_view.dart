@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/widgets/common_background.dart';
+import 'package:wynante/core/app_colors.dart';
 
 class AddAuctionView extends StatelessWidget {
   const AddAuctionView({super.key});
@@ -8,7 +9,7 @@ class AddAuctionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: AppColors.sceDarkBg,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -24,7 +25,7 @@ class AddAuctionView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add_circle_outline_rounded, color: const Color(0xFF00D5BE), size: 80.sp),
+              Icon(Icons.add_circle_outline_rounded, color: AppColors.sceTeal, size: 80.sp),
               SizedBox(height: 24.h),
               Text(
                 'Premium Feature',

@@ -19,9 +19,21 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Swiss Car Exchange',
           theme: ThemeData(
-            scaffoldBackgroundColor: AppColors.white,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-            primarySwatch: Colors.blue,
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: AppColors.sceDarkBg,
+            colorScheme: ColorScheme.dark(
+              primary: AppColors.sceTeal,
+              surface: AppColors.sceDarkBg,
+              onSurface: AppColors.defTextColor,
+            ),
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              foregroundColor: AppColors.defTextColor,
+            ),
+            useMaterial3: true,
           ),
           home: child,
         );

@@ -109,7 +109,7 @@ class AuctionDetails extends StatelessWidget {
                         width: double.infinity,
                         padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F171A), // Dark slightly tinted bg
+                          color: AppColors.sceTealStatBg,
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(color: AppColors.sceTeal.withOpacity(0.3)),
                         ),
