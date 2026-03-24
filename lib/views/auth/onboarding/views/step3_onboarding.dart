@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wynante/views/auth/login/login_views.dart';
-import 'package:wynante/views/home/presentation/home_view.dart';
+import 'package:rionydo/views/auth/login/login_views.dart';
+import 'package:rionydo/views/home/presentation/home_view.dart';
 import '../onboardign_common_scaff.dart';
 
 class Step3Onboarding extends StatelessWidget {
@@ -21,12 +21,12 @@ class Step3Onboarding extends StatelessWidget {
           MaterialPageRoute(builder: (_) => const LoginViews()),
         );
       },
-    //   onSkip: () {
-    //     Navigator.pushReplacement(
-    //       context,
-    //       MaterialPageRoute(builder: (_) => const LoginViews()),
-    //     );
-    //   },
+      //   onSkip: () {
+      //     Navigator.pushReplacement(
+      //       context,
+      //       MaterialPageRoute(builder: (_) => const LoginViews()),
+      //     );
+      //   },
     );
   }
 }

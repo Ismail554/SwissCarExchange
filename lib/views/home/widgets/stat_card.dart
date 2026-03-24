@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/utils/app_colors.dart';
-import 'package:wynante/core/constants/font_manager.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/core/constants/font_manager.dart';
 
 class StatCard extends StatelessWidget {
   final String label;
@@ -42,10 +42,7 @@ class StatCard extends StatelessWidget {
                 style: FontManager.labelMedium(
                   color: accentColor.withOpacity(0.8),
                   fontSize: 10.sp,
-                ).copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
-                ),
+                ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.5),
               ),
               SizedBox(height: 4.h),
               Text(

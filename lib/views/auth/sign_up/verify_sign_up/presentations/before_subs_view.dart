@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wynante/core/utils/app_spacing.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/widgets/widget_outlined_btn.dart';
-import 'package:wynante/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';
-import 'package:wynante/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
+import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/core/widgets/widget_outlined_btn.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
 
 class BeforeSubsView extends StatelessWidget {
   const BeforeSubsView({super.key});

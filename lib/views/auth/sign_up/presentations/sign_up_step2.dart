@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/widgets/custom_button.dart';
-import 'package:wynante/core/widgets/custom_text_field.dart';
-import 'package:wynante/core/widgets/custom_back_button.dart';
-import 'package:wynante/views/auth/sign_up/presentations/sign_up_step3.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/core/widgets/custom_text_field.dart';
+import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step3.dart';
 
 class SignUpStep2 extends StatefulWidget {
   final String email;
@@ -37,7 +37,8 @@ class _SignUpStep2State extends State<SignUpStep2> {
   }
 
   void _validate() {
-    final valid = _companyController.text.trim().isNotEmpty &&
+    final valid =
+        _companyController.text.trim().isNotEmpty &&
         _uidController.text.trim().isNotEmpty &&
         _addressController.text.trim().isNotEmpty;
     if (_isFormValid != valid) setState(() => _isFormValid = valid);
@@ -75,18 +76,27 @@ class _SignUpStep2State extends State<SignUpStep2> {
                             children: const [
                               TextSpan(
                                 text: 'Step  ',
-                                style: TextStyle(color: Color(0xFF00D5BE), fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  color: Color(0xFF00D5BE),
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               TextSpan(
                                 text: '2 of 3',
-                                style: TextStyle(color: Color(0xFF00D5BE), fontWeight: FontWeight.w700),
+                                style: TextStyle(
+                                  color: Color(0xFF00D5BE),
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ],
                           ),
                         ),
                         Text(
                           'Company',
-                          style: TextStyle(color: Colors.white54, fontSize: 13.sp),
+                          style: TextStyle(
+                            color: Colors.white54,
+                            fontSize: 13.sp,
+                          ),
                         ),
                       ],
                     ),
@@ -99,7 +109,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
                       child: LinearProgressIndicator(
                         value: 2 / 3,
                         backgroundColor: Colors.white12,
-                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00D5BE)),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF00D5BE),
+                        ),
                         minHeight: 3,
                       ),
                     ),
@@ -115,7 +127,11 @@ class _SignUpStep2State extends State<SignUpStep2> {
                     CustomTextField(
                       controller: _companyController,
                       hintText: 'Premium Auto Group AG',
-                      prefixIcon: const Icon(Icons.business_outlined, color: Color(0xFFA0AABF), size: 20),
+                      prefixIcon: const Icon(
+                        Icons.business_outlined,
+                        color: Color(0xFFA0AABF),
+                        size: 20,
+                      ),
                     ),
 
                     SizedBox(height: 20.h),
@@ -129,7 +145,11 @@ class _SignUpStep2State extends State<SignUpStep2> {
                     CustomTextField(
                       controller: _uidController,
                       hintText: 'CHE-123.456.789',
-                      prefixIcon: const Icon(Icons.business_center_outlined, color: Color(0xFFA0AABF), size: 20),
+                      prefixIcon: const Icon(
+                        Icons.business_center_outlined,
+                        color: Color(0xFFA0AABF),
+                        size: 20,
+                      ),
                     ),
 
                     SizedBox(height: 20.h),
@@ -143,7 +163,11 @@ class _SignUpStep2State extends State<SignUpStep2> {
                     CustomTextField(
                       controller: _addressController,
                       hintText: 'Streets, ZIP, City',
-                      prefixIcon: const Icon(Icons.location_on_outlined, color: Color(0xFFA0AABF), size: 20),
+                      prefixIcon: const Icon(
+                        Icons.location_on_outlined,
+                        color: Color(0xFFA0AABF),
+                        size: 20,
+                      ),
                     ),
 
                     SizedBox(height: 40.h),
@@ -155,7 +179,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => SignUpStep3(email: widget.email)),
+                          MaterialPageRoute(
+                            builder: (_) => SignUpStep3(email: widget.email),
+                          ),
                         );
                       },
                     ),

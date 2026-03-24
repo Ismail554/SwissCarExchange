@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/constants/font_manager.dart';
-import 'package:wynante/core/utils/app_colors.dart';
-import 'package:wynante/core/widgets/custom_back_button.dart';
-import 'package:wynante/core/widgets/custom_button.dart';
-import 'package:wynante/views/bidding/presentations/pay_successful.dart';
+import 'package:rionydo/core/constants/font_manager.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
 
 /// Card (online) payment screen.
 /// Receives the [carName] and [amount] from the payment option sheet.
@@ -90,8 +90,9 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
                     _CardNumberFormatter(),
                   ],
                   maxLength: 19,
-                  validator: (v) =>
-                      (v == null || v.length < 19) ? 'Enter a valid card number' : null,
+                  validator: (v) => (v == null || v.length < 19)
+                      ? 'Enter a valid card number'
+                      : null,
                 ),
                 SizedBox(height: 18.h),
 
@@ -102,8 +103,9 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
                   controller: _cardHolderCtrl,
                   hint: 'John Doe',
                   keyboardType: TextInputType.name,
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Enter cardholder name' : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'Enter cardholder name'
+                      : null,
                 ),
                 SizedBox(height: 18.h),
 
@@ -158,10 +160,7 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
                 SizedBox(height: 36.h),
 
                 // --- Pay button ---
-                CustomButton(
-                  text: 'Pay ${widget.amount}',
-                  onPressed: _submit,
-                ),
+                CustomButton(text: 'Pay ${widget.amount}', onPressed: _submit),
                 SizedBox(height: 20.h),
               ],
             ),
@@ -200,10 +199,7 @@ class _PaymentSummaryCard extends StatelessWidget {
             style: FontManager.labelSmall(color: AppColors.grey),
           ),
           SizedBox(height: 6.h),
-          Text(
-            carName,
-            style: FontManager.bodyMedium(color: AppColors.white),
-          ),
+          Text(carName, style: FontManager.bodyMedium(color: AppColors.white)),
           SizedBox(height: 14.h),
           Row(
             children: [
@@ -233,10 +229,7 @@ class _FieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: FontManager.labelMedium(color: AppColors.white),
-    );
+    return Text(text, style: FontManager.labelMedium(color: AppColors.white));
   }
 }
 
@@ -275,11 +268,14 @@ class _CardTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       style: FontManager.bodyMedium(color: AppColors.white),
-      buildCounter: (_, {required currentLength, required isFocused, maxLength}) =>
-          const SizedBox.shrink(),
+      buildCounter:
+          (_, {required currentLength, required isFocused, maxLength}) =>
+              const SizedBox.shrink(),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: FontManager.bodyMedium(color: AppColors.grey.withOpacity(0.5)),
+        hintStyle: FontManager.bodyMedium(
+          color: AppColors.grey.withOpacity(0.5),
+        ),
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon, color: AppColors.grey, size: 20.sp)
             : null,

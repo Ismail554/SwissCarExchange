@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wynante/views/home/presentation/home_view.dart';
+import 'package:rionydo/views/home/presentation/home_view.dart';
 import '../onboardign_common_scaff.dart';
 import 'step3_onboarding.dart';
 
@@ -11,7 +11,8 @@ class Step2Onboarding extends StatelessWidget {
     return OnboardignCommonScaff(
       stepNumber: '02',
       title: 'Swiss Precision\nTrading',
-      subtitle: 'Transparent pricing, verified histories, and secure transactions — built to the standards you expect.',
+      subtitle:
+          'Transparent pricing, verified histories, and secure transactions — built to the standards you expect.',
       currentIndex: 1,
       nextText: 'Next ➔',
       onNext: () {

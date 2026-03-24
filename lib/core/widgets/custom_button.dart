@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/utils/app_colors.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -32,14 +32,18 @@ class CustomButton extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  AppColors.sceTeal, 
-                  AppColors.sceTeal.withOpacity(0.8), 
-                  AppColors.sceTeal.withOpacity(0.6), 
+                  AppColors.sceTeal,
+                  AppColors.sceTeal.withOpacity(0.8),
+                  AppColors.sceTeal.withOpacity(0.6),
                 ],
               )
             : null,
         borderRadius: BorderRadius.circular(12),
-        border: isPrimary ? null : Border.all(color: isActive ? AppColors.textHint : AppColors.dividerDark),
+        border: isPrimary
+            ? null
+            : Border.all(
+                color: isActive ? AppColors.textHint : AppColors.dividerDark,
+              ),
         boxShadow: isPrimary && isActive
             ? [
                 BoxShadow(

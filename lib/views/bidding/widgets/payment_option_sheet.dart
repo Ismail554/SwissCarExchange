@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/constants/font_manager.dart';
-import 'package:wynante/core/utils/app_colors.dart';
-import 'package:wynante/views/bidding/presentations/offline_payment.dart';
-import 'package:wynante/views/bidding/presentations/online_payment.dart';
+import 'package:rionydo/core/constants/font_manager.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/views/bidding/presentations/offline_payment.dart';
+import 'package:rionydo/views/bidding/presentations/online_payment.dart';
 
 /// Shows a modal bottom sheet with two payment options:
 ///  - In-App Payment (card/wallet)
@@ -25,10 +25,7 @@ class _PaymentOptionSheet extends StatelessWidget {
   final String carName;
   final String amount;
 
-  const _PaymentOptionSheet({
-    required this.carName,
-    required this.amount,
-  });
+  const _PaymentOptionSheet({required this.carName, required this.amount});
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +78,8 @@ class _PaymentOptionSheet extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => OnlinePaymentView(
-                    carName: carName,
-                    amount: amount,
-                  ),
+                  builder: (_) =>
+                      OnlinePaymentView(carName: carName, amount: amount),
                 ),
               );
             },
@@ -103,10 +98,8 @@ class _PaymentOptionSheet extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => OfflinePaymentView(
-                    carName: carName,
-                    amount: amount,
-                  ),
+                  builder: (_) =>
+                      OfflinePaymentView(carName: carName, amount: amount),
                 ),
               );
             },

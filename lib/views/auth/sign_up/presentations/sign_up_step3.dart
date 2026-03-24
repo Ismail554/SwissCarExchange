@@ -3,10 +3,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/widgets/custom_button.dart';
-import 'package:wynante/core/widgets/custom_back_button.dart';
-import 'package:wynante/views/auth/forgot_password/otp_verify_view.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
 
 class SignUpStep3 extends StatefulWidget {
   final String email;

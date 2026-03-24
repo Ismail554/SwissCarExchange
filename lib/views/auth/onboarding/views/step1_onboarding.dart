@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wynante/views/home/presentation/home_view.dart';
+import 'package:rionydo/views/home/presentation/home_view.dart';
 
 import '../onboardign_common_scaff.dart';
 import 'step2_onborading.dart';
@@ -12,7 +12,8 @@ class Step1Onboarding extends StatelessWidget {
     return OnboardignCommonScaff(
       stepNumber: '01',
       title: 'Live B2B Auctions',
-      subtitle: 'Bid in real-time on verified vehicles from licensed dealers across Switzerland. Every auction is legally binding.',
+      subtitle:
+          'Bid in real-time on verified vehicles from licensed dealers across Switzerland. Every auction is legally binding.',
       currentIndex: 0,
       nextText: 'Next ➔',
       onNext: () {

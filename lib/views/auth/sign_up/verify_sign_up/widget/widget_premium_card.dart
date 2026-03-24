@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:wynante/core/constants/font_manager.dart';
-import 'package:wynante/core/utils/app_spacing.dart';
+import 'package:rionydo/core/constants/font_manager.dart';
+import 'package:rionydo/core/utils/app_spacing.dart';
 
 class WidgetPremiumCard extends StatelessWidget {
   final String title;
@@ -26,7 +26,9 @@ class WidgetPremiumCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeColor = isPremium ? const Color(0xFFE2B93B) : Colors.white;
-    final checkColor = isPremium ? const Color(0xFFE2B93B) : const Color(0xFF28A745);
+    final checkColor = isPremium
+        ? const Color(0xFFE2B93B)
+        : const Color(0xFF28A745);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
@@ -39,7 +41,9 @@ class WidgetPremiumCard extends StatelessWidget {
             color: const Color(0xFF1E1E1E).withOpacity(0.4),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isPremium ? const Color(0xFFE2B93B).withOpacity(0.3) : Colors.white.withOpacity(0.1),
+              color: isPremium
+                  ? const Color(0xFFE2B93B).withOpacity(0.3)
+                  : Colors.white.withOpacity(0.1),
               width: 1,
             ),
           ),
@@ -55,18 +59,27 @@ class WidgetPremiumCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: FontManager.heading3(color: themeColor, fontSize: 18),
+                        style: FontManager.heading3(
+                          color: themeColor,
+                          fontSize: 18,
+                        ),
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             price,
-                            style: FontManager.heading3(color: themeColor, fontSize: 18),
+                            style: FontManager.heading3(
+                              color: themeColor,
+                              fontSize: 18,
+                            ),
                           ),
                           Text(
                             period,
-                            style: FontManager.bodySmall(color: Colors.white54, fontSize: 10),
+                            style: FontManager.bodySmall(
+                              color: Colors.white54,
+                              fontSize: 10,
+                            ),
                           ),
                         ],
                       ),
@@ -75,24 +88,36 @@ class WidgetPremiumCard extends StatelessWidget {
                   AppSpacing.h8,
                   Text(
                     roleText,
-                    style: FontManager.bodySmall(color: Colors.white54, fontSize: 12),
+                    style: FontManager.bodySmall(
+                      color: Colors.white54,
+                      fontSize: 12,
+                    ),
                   ),
                   AppSpacing.h24,
-                  ...features.map((feature) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      children: [
-                        Icon(Icons.check_circle_outline, color: checkColor, size: 20),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            feature,
-                            style: FontManager.bodyMedium(color: Colors.white70, fontSize: 14),
+                  ...features.map(
+                    (feature) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline,
+                            color: checkColor,
+                            size: 20,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              feature,
+                              style: FontManager.bodyMedium(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
                   AppSpacing.h16,
                   SizedBox(
                     width: double.infinity,
@@ -100,13 +125,13 @@ class WidgetPremiumCard extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: onSelect,
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: isPremium 
-                            ? const Color(0xFFE2B93B).withOpacity(0.1) 
+                        backgroundColor: isPremium
+                            ? const Color(0xFFE2B93B).withOpacity(0.1)
                             : Colors.white.withOpacity(0.05),
                         side: BorderSide(
-                          color: isPremium 
-                              ? const Color(0xFFE2B93B).withOpacity(0.5) 
-                              : Colors.white.withOpacity(0.2)
+                          color: isPremium
+                              ? const Color(0xFFE2B93B).withOpacity(0.5)
+                              : Colors.white.withOpacity(0.2),
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -115,7 +140,9 @@ class WidgetPremiumCard extends StatelessWidget {
                       child: Text(
                         'Select $title',
                         style: FontManager.labelLarge(
-                          color: isPremium ? const Color(0xFFE2B93B) : Colors.white,
+                          color: isPremium
+                              ? const Color(0xFFE2B93B)
+                              : Colors.white,
                         ),
                       ),
                     ),
@@ -127,7 +154,10 @@ class WidgetPremiumCard extends StatelessWidget {
                   top: -24,
                   right: -24,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
                     decoration: const BoxDecoration(
                       color: Color(0xFFE2B93B),
                       borderRadius: BorderRadius.only(
@@ -137,8 +167,10 @@ class WidgetPremiumCard extends StatelessWidget {
                     ),
                     child: Text(
                       'Recommended',
-                      style: FontManager.labelSmall(color: Colors.black, fontSize: 10)
-                          .copyWith(fontWeight: FontWeight.w700),
+                      style: FontManager.labelSmall(
+                        color: Colors.black,
+                        fontSize: 10,
+                      ).copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),

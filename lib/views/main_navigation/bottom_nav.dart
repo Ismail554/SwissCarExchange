@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/constants/global_state.dart';
-import 'package:wynante/core/widgets/widget_snackbar.dart';
-import 'package:wynante/views/auctions/presentations/add_auction_view.dart';
+import 'package:rionydo/core/constants/global_state.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/views/auctions/presentations/add_auction_view.dart';
 
 /// The app-wide scaffold with custom bottom navigation.
 ///

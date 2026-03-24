@@ -1,11 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/utils/app_spacing.dart';
-import 'package:wynante/core/utils/assets_manager.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/widgets/widget_outlined_btn.dart';
-import 'package:wynante/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
+import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/core/widgets/widget_outlined_btn.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
 
 class PendingView extends StatelessWidget {
   const PendingView({super.key});

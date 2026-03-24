@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wynante/core/utils/app_spacing.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
-import 'package:wynante/views/auth/sign_up/verify_sign_up/widget/widget_premium_card.dart';
+import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_premium_card.dart';
 
 class SubscriptionView extends StatelessWidget {
   const SubscriptionView({super.key});
@@ -21,7 +21,7 @@ class SubscriptionView extends StatelessWidget {
               subtitle: "Your account has been successfully verified",
             ),
             AppSpacing.h40,
-            
+
             // Premium Cards
             WidgetPremiumCard(
               title: "Basic",

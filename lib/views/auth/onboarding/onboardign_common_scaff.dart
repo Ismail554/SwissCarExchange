@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/views/auth/login/login_views.dart';
-import 'package:wynante/views/main_navigation/bottom_nav.dart';
-import 'package:wynante/views/home/presentation/home_view.dart';
-import 'package:wynante/views/auctions/presentations/auctions_view.dart';
-import 'package:wynante/views/bidding/presentations/bids_view.dart';
-import 'package:wynante/views/profile/profile_view.dart';
+import 'package:rionydo/views/auth/login/login_views.dart';
+import 'package:rionydo/views/main_navigation/bottom_nav.dart';
+import 'package:rionydo/views/home/presentation/home_view.dart';
+import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
+import 'package:rionydo/views/bidding/presentations/bids_view.dart';
+import 'package:rionydo/views/profile/profile_view.dart';
 
 class OnboardignCommonScaff extends StatelessWidget {
   final String stepNumber;

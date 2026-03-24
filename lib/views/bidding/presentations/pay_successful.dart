@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wynante/core/widgets/common_background.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
 
 class PaySuccessful extends StatefulWidget {
   const PaySuccessful({super.key});
@@ -12,13 +12,10 @@ class _PaySuccessfulState extends State<PaySuccessful> {
   @override
   Widget build(BuildContext context) {
     return CommonBackground(
-      child: Center(
-        child: Column(
-          children: [
+      child: Center(child: Column(children: [
 
           ],
-        ),
-      ),
+        )),
     );
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/constants/font_manager.dart';
-import 'package:wynante/core/utils/app_colors.dart';
-import 'package:wynante/core/widgets/custom_back_button.dart';
-import 'package:wynante/core/widgets/custom_button.dart';
-import 'package:wynante/views/bidding/presentations/pay_successful.dart';
+import 'package:rionydo/core/constants/font_manager.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
 
 // ---------------------------------------------------------------------------
 // Static bank detail model
@@ -150,10 +150,7 @@ class _PaymentSummaryCard extends StatelessWidget {
             style: FontManager.labelSmall(color: AppColors.grey),
           ),
           SizedBox(height: 6.h),
-          Text(
-            carName,
-            style: FontManager.bodyMedium(color: AppColors.white),
-          ),
+          Text(carName, style: FontManager.bodyMedium(color: AppColors.white)),
           SizedBox(height: 14.h),
           Row(
             children: [
@@ -270,10 +267,7 @@ class _BankDetailRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: FontManager.labelSmall(color: AppColors.grey),
-          ),
+          Text(label, style: FontManager.labelSmall(color: AppColors.grey)),
           SizedBox(height: 4.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -295,10 +289,7 @@ class _BankDetailRow extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10.h),
-          Divider(
-            color: AppColors.grey.withOpacity(0.12),
-            height: 1,
-          ),
+          Divider(color: AppColors.grey.withOpacity(0.12), height: 1),
         ],
       ),
     );
@@ -334,7 +325,9 @@ class _WarningBox extends StatelessWidget {
             TextSpan(
               text:
                   'Please include the reference number in your bank transfer to ensure proper processing.',
-              style: FontManager.labelSmall(color: AppColors.sceGold.withOpacity(0.85)),
+              style: FontManager.labelSmall(
+                color: AppColors.sceGold.withOpacity(0.85),
+              ),
             ),
           ],
         ),

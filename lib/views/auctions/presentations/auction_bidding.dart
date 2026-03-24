@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/constants/font_manager.dart';
-import 'package:wynante/core/utils/app_colors.dart';
-import 'package:wynante/core/widgets/custom_button.dart';
-import 'package:wynante/core/widgets/custom_back_button.dart';
-import 'package:wynante/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/core/constants/font_manager.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
 
 class AuctionBidding extends StatefulWidget {
   final Map<String, dynamic> data;

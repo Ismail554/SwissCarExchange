@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/utils/app_colors.dart';
-import 'package:wynante/core/widgets/custom_back_button.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/core/widgets/custom_back_button.dart';
 
 class AddAuctionView extends StatelessWidget {
   const AddAuctionView({super.key});
@@ -14,7 +14,10 @@ class AddAuctionView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Post New Auction', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Post New Auction',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: Padding(
           padding: EdgeInsets.only(left: 16.w),
           child: Align(
@@ -30,11 +33,19 @@ class AddAuctionView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add_circle_outline_rounded, color: AppColors.sceTeal, size: 80.sp),
+              Icon(
+                Icons.add_circle_outline_rounded,
+                color: AppColors.sceTeal,
+                size: 80.sp,
+              ),
               SizedBox(height: 24.h),
               Text(
                 'Premium Feature',
-                style: TextStyle(color: Colors.white, fontSize: 22.sp, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 12.h),
               const Text(

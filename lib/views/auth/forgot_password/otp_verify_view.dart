@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
-import 'package:wynante/core/utils/assets_manager.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/widgets/custom_button.dart';
-import 'package:wynante/core/widgets/widget_snackbar.dart';
-import 'package:wynante/core/widgets/custom_back_button.dart';
-import 'package:wynante/views/auth/forgot_password/successful_view.dart';
+import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/views/auth/forgot_password/successful_view.dart';
 
 class OtpVerifyView extends StatefulWidget {
   final String email;
@@ -48,7 +48,10 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
       _canResend = false;
     });
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (!mounted) { t.cancel(); return; }
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
       setState(() {
         if (_secondsLeft > 1) {
           _secondsLeft--;

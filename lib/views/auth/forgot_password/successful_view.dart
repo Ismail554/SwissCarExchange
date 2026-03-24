@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:wynante/core/utils/app_spacing.dart';
-import 'package:wynante/core/utils/assets_manager.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/widgets/custom_button.dart';
-import 'package:wynante/views/auth/login/login_views.dart';
+import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/views/auth/login/login_views.dart';
 
 class SuccessfulView extends StatelessWidget {
   const SuccessfulView({super.key});

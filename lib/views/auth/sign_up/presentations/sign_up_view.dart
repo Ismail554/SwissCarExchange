@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/utils/assets_manager.dart';
-import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/widgets/custom_button.dart';
-import 'package:wynante/core/widgets/custom_text_field.dart';
-import 'package:wynante/views/auth/sign_up/presentations/sign_up_step2.dart';
+import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/core/widgets/custom_text_field.dart';
+import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step2.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -37,7 +37,8 @@ class _SignUpViewState extends State<SignUpView> {
   }
 
   void _validate() {
-    final valid = _emailController.text.trim().contains('@') &&
+    final valid =
+        _emailController.text.trim().contains('@') &&
         _passwordController.text.length >= 6 &&
         _phoneController.text.trim().length >= 6;
     if (_isFormValid != valid) setState(() => _isFormValid = valid);
@@ -60,11 +61,16 @@ class _SignUpViewState extends State<SignUpView> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 8.h,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF2A2208),
                           borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: const Color(0xFFE2B93B).withOpacity(0.4)),
+                          border: Border.all(
+                            color: const Color(0xFFE2B93B).withOpacity(0.4),
+                          ),
                         ),
                         child: Text(
                           '1. REGISTRATION',
@@ -82,10 +88,7 @@ class _SignUpViewState extends State<SignUpView> {
 
                     // Logo
                     Center(
-                      child: Image.asset(
-                        IconAssets.app_logo,
-                        height: 80.h,
-                      ),
+                      child: Image.asset(IconAssets.app_logo, height: 80.h),
                     ),
 
                     SizedBox(height: 36.h),
@@ -124,7 +127,11 @@ class _SignUpViewState extends State<SignUpView> {
                       controller: _emailController,
                       hintText: 'info@premiumauto.ch',
                       keyboardType: TextInputType.emailAddress,
-                      prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFFA0AABF), size: 20),
+                      prefixIcon: const Icon(
+                        Icons.email_outlined,
+                        color: Color(0xFFA0AABF),
+                        size: 20,
+                      ),
                     ),
 
                     SizedBox(height: 20.h),
@@ -139,11 +146,19 @@ class _SignUpViewState extends State<SignUpView> {
                       controller: _passwordController,
                       hintText: '••••••••',
                       obscureText: _obscurePassword,
-                      prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFFA0AABF), size: 20),
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: Color(0xFFA0AABF),
+                        size: 20,
+                      ),
                       suffixIcon: GestureDetector(
-                        onTap: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onTap: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                         child: Icon(
-                          _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                          _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
                           color: const Color(0xFFA0AABF),
                           size: 20,
                         ),
@@ -162,7 +177,11 @@ class _SignUpViewState extends State<SignUpView> {
                       controller: _phoneController,
                       hintText: '+41 79 123 45 67',
                       keyboardType: TextInputType.phone,
-                      prefixIcon: const Icon(Icons.phone_outlined, color: Color(0xFFA0AABF), size: 20),
+                      prefixIcon: const Icon(
+                        Icons.phone_outlined,
+                        color: Color(0xFFA0AABF),
+                        size: 20,
+                      ),
                     ),
 
                     SizedBox(height: 32.h),
@@ -174,7 +193,11 @@ class _SignUpViewState extends State<SignUpView> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => SignUpStep2(email: _emailController.text.trim())),
+                          MaterialPageRoute(
+                            builder: (_) => SignUpStep2(
+                              email: _emailController.text.trim(),
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -187,7 +210,10 @@ class _SignUpViewState extends State<SignUpView> {
                       children: [
                         Text(
                           'Already registered?  ',
-                          style: TextStyle(color: Colors.white54, fontSize: 13.sp),
+                          style: TextStyle(
+                            color: Colors.white54,
+                            fontSize: 13.sp,
+                          ),
                         ),
                         GestureDetector(
                           onTap: () => Navigator.pop(context),
@@ -209,9 +235,15 @@ class _SignUpViewState extends State<SignUpView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _SecurityBadge(icon: Icons.shield_outlined, label: 'Secure Connection'),
+                        _SecurityBadge(
+                          icon: Icons.shield_outlined,
+                          label: 'Secure Connection',
+                        ),
                         SizedBox(width: 12.w),
-                        _SecurityBadge(icon: Icons.lock_outline, label: 'SSL Encrypted'),
+                        _SecurityBadge(
+                          icon: Icons.lock_outline,
+                          label: 'SSL Encrypted',
+                        ),
                       ],
                     ),
 
