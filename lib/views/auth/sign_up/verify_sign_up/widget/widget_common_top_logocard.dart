@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/app_spacing.dart';
-import 'package:wynante/core/assets_manager.dart';
+import 'package:wynante/core/utils/app_spacing.dart';
+import 'package:wynante/core/utils/assets_manager.dart';
 
 class WidgetCommonTopLogocard extends StatelessWidget {
   final String title;

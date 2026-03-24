@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/widgets/common_background.dart';
-import 'package:wynante/core/app_colors.dart';
+import 'package:wynante/core/utils/app_colors.dart';
 import 'package:wynante/core/widgets/custom_back_button.dart';
 
 class AddAuctionView extends StatelessWidget {

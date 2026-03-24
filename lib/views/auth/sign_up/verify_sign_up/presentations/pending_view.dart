@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/app_spacing.dart';
-import 'package:wynante/core/assets_manager.dart';
+import 'package:wynante/core/utils/app_spacing.dart';
+import 'package:wynante/core/utils/assets_manager.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/widget_outlined_btn.dart';
 import 'package:wynante/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';

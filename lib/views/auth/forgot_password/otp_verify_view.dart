@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
-import 'package:wynante/core/assets_manager.dart';
+import 'package:wynante/core/utils/assets_manager.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 import 'package:wynante/core/widgets/widget_snackbar.dart';

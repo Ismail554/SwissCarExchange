@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wynante/core/app_spacing.dart';
+import 'package:wynante/core/utils/app_spacing.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/widget_outlined_btn.dart';
 import 'package:wynante/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';

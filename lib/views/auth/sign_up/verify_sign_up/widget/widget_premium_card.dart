@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:wynante/core/font_manager.dart';
-import 'package:wynante/core/app_spacing.dart';
+import 'package:wynante/core/constants/font_manager.dart';
+import 'package:wynante/core/utils/app_spacing.dart';
 
 class WidgetPremiumCard extends StatelessWidget {
   final String title;

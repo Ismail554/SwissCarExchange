@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:wynante/core/app_colors.dart';
+import 'package:wynante/core/utils/app_colors.dart';
 
 class CommonBackground extends StatelessWidget {
   final Widget child;

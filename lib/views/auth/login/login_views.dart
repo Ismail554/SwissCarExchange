@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/assets_manager.dart';
-import 'package:wynante/core/global_state.dart';
+import 'package:wynante/core/utils/assets_manager.dart';
+import 'package:wynante/core/constants/global_state.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 import 'package:wynante/core/widgets/custom_text_field.dart';

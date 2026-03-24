@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/global_state.dart';
+import 'package:wynante/core/constants/global_state.dart';
 import 'package:wynante/core/widgets/widget_snackbar.dart';
 import 'package:wynante/views/auctions/presentations/add_auction_view.dart';
 
@@ -100,7 +100,8 @@ class _BottomNavBar extends StatelessWidget {
     return SizedBox(
       height: 82.h,
       child: Stack(
-        clipBehavior: Clip.none,
+        
+        clipBehavior: Clip.antiAlias,
         alignment: Alignment.bottomCenter,
         children: [
           // ── Bar background ──────────────────────────────────────────────
@@ -109,7 +110,7 @@ class _BottomNavBar extends StatelessWidget {
             left: 0,
             right: 0,
             child: Container(
-              height: 70.h,
+              height: 64.h,
               decoration: BoxDecoration(
                 color: const Color(0xFF111827),
                 borderRadius: const BorderRadius.vertical(

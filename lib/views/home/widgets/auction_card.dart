@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/app_colors.dart';
-import 'package:wynante/core/app_spacing.dart';
-import 'package:wynante/core/font_manager.dart';
+import 'package:wynante/core/utils/app_colors.dart';
+import 'package:wynante/core/utils/app_spacing.dart';
+import 'package:wynante/core/constants/font_manager.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 
 class AuctionCard extends StatelessWidget {

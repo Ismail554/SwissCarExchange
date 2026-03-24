@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wynante/core/app_colors.dart';
+import 'package:wynante/core/utils/app_colors.dart';
 
 class NotificationBadge extends StatelessWidget {
   const NotificationBadge({super.key});
