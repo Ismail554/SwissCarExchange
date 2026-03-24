@@ -4,6 +4,7 @@ import 'package:wynante/core/assets_manager.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 import 'package:wynante/core/widgets/custom_text_field.dart';
+import 'package:wynante/core/widgets/custom_back_button.dart';
 import 'package:wynante/views/auth/forgot_password/otp_verify_view.dart';
 
 class ForgotPassView extends StatefulWidget {
@@ -53,22 +54,7 @@ class _ForgotPassViewState extends State<ForgotPassView> {
               padding: EdgeInsets.only(left: 16.w, top: 16.h),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: InkWell(
-                  onTap: () => Navigator.pop(context),
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    padding: EdgeInsets.all(12.w),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.04),
-                    ),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 20.sp,
-                    ),
-                  ),
-                ),
+                child: const CustomBackButton(),
               ),
             ),
 

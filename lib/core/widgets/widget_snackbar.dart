@@ -9,7 +9,7 @@ class AppSnackBar {
     BuildContext context, {
     required String message,
     SnackBarType type = SnackBarType.info,
-    Duration duration = const Duration(seconds: 3),
+    Duration duration = const Duration(milliseconds: 1500),
     String? actionLabel,
     VoidCallback? onAction,
   }) {
@@ -85,17 +85,57 @@ class AppSnackBar {
   }
 
   // Convenience shortcuts
-  static void success(BuildContext context, String message, {String? actionLabel, VoidCallback? onAction}) =>
-      show(context, message: message, type: SnackBarType.success, actionLabel: actionLabel, onAction: onAction);
+  static void success(
+    BuildContext context,
+    String message, {
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) => show(
+    context,
+    message: message,
+    type: SnackBarType.success,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 
-  static void error(BuildContext context, String message, {String? actionLabel, VoidCallback? onAction}) =>
-      show(context, message: message, type: SnackBarType.error, actionLabel: actionLabel, onAction: onAction);
+  static void error(
+    BuildContext context,
+    String message, {
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) => show(
+    context,
+    message: message,
+    type: SnackBarType.error,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 
-  static void info(BuildContext context, String message, {String? actionLabel, VoidCallback? onAction}) =>
-      show(context, message: message, type: SnackBarType.info, actionLabel: actionLabel, onAction: onAction);
+  static void info(
+    BuildContext context,
+    String message, {
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) => show(
+    context,
+    message: message,
+    type: SnackBarType.info,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 
-  static void warning(BuildContext context, String message, {String? actionLabel, VoidCallback? onAction}) =>
-      show(context, message: message, type: SnackBarType.warning, actionLabel: actionLabel, onAction: onAction);
+  static void warning(
+    BuildContext context,
+    String message, {
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) => show(
+    context,
+    message: message,
+    type: SnackBarType.warning,
+    actionLabel: actionLabel,
+    onAction: onAction,
+  );
 
   static _SnackBarConfig _config(SnackBarType type) {
     switch (type) {

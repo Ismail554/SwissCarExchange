@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 import 'package:wynante/core/widgets/custom_text_field.dart';
+import 'package:wynante/core/widgets/custom_back_button.dart';
 import 'package:wynante/views/auth/sign_up/presentations/sign_up_step3.dart';
 
 class SignUpStep2 extends StatefulWidget {
@@ -52,19 +53,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
             // Back Button
             Padding(
               padding: EdgeInsets.only(left: 16.w, top: 16.h),
-              child: InkWell(
-                onTap: () => Navigator.pop(context),
-                borderRadius: BorderRadius.circular(30),
-                child: Container(
-                  width: 40.w,
-                  height: 40.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.07),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
-                  ),
-                  child: Icon(Icons.arrow_back, color: Colors.white, size: 18.sp),
-                ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: const CustomBackButton(),
               ),
             ),
 

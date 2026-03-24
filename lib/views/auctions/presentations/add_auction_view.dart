@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/app_colors.dart';
+import 'package:wynante/core/widgets/custom_back_button.dart';
 
 class AddAuctionView extends StatelessWidget {
   const AddAuctionView({super.key});
@@ -14,10 +15,14 @@ class AddAuctionView extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text('Post New Auction', style: TextStyle(color: Colors.white)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+        leading: Padding(
+          padding: EdgeInsets.only(left: 16.w),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: const CustomBackButton(),
+          ),
         ),
+        leadingWidth: 64.w,
       ),
       body: CommonBackground(
         child: Padding(

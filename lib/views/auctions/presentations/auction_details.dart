@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/font_manager.dart';
 import 'package:wynante/core/app_colors.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
+import 'package:wynante/core/widgets/custom_back_button.dart';
 import 'package:wynante/views/auctions/presentations/auction_bidding.dart';
 
 class AuctionDetails extends StatelessWidget {
@@ -23,19 +24,13 @@ class AuctionDetails extends StatelessWidget {
                 expandedHeight: 300.h,
                 pinned: true,
                 leading: Padding(
-                  padding: EdgeInsets.only(left: 16.w, top: 8.h, bottom: 8.h),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.black45,
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                    ),
+                  padding: EdgeInsets.only(left: 16.w),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: const CustomBackButton(),
                   ),
                 ),
+                leadingWidth: 64.w,
                 actions: [
                   Padding(
                     padding: EdgeInsets.only(

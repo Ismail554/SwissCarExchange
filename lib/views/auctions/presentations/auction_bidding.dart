@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/font_manager.dart';
 import 'package:wynante/core/app_colors.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
+import 'package:wynante/core/widgets/custom_back_button.dart';
+import 'package:wynante/core/widgets/widget_snackbar.dart';
 
 class AuctionBidding extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -21,7 +23,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
   @override
   void initState() {
     super.initState();
-    _currentBid = int.parse(widget.data['currentBid'].replaceAll(RegExp(r'[^0-9]'), ''));
+    _currentBid = int.parse(
+      widget.data['currentBid'].replaceAll(RegExp(r'[^0-9]'), ''),
+    );
     _userBid = _currentBid + _minIncrement;
   }
 
@@ -45,15 +49,13 @@ class _AuctionBiddingState extends State<AuctionBidding> {
             expandedHeight: 250.h,
             pinned: true,
             leading: Padding(
-              padding: EdgeInsets.only(left: 16.w, top: 8.h, bottom: 8.h),
-              child: CircleAvatar(
-                backgroundColor: AppColors.sceCardBg.withOpacity(0.8),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
-                  onPressed: () => Navigator.pop(context),
-                ),
+              padding: EdgeInsets.only(left: 16.w),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: const CustomBackButton(),
               ),
             ),
+            leadingWidth: 64.w,
             title: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
               decoration: BoxDecoration(
@@ -73,7 +75,11 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                 child: CircleAvatar(
                   backgroundColor: AppColors.sceCardBg.withOpacity(0.8),
                   child: IconButton(
-                    icon: const Icon(Icons.favorite_border, color: Colors.white, size: 20),
+                    icon: const Icon(
+                      Icons.favorite_border,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                     onPressed: () {},
                   ),
                 ),
@@ -90,28 +96,38 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     ),
                     child: Image.asset(widget.data['image'], fit: BoxFit.cover),
                   ),
-                  Positioned(
-                    top: 100.h,
-                    left: 16.w,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: AppColors.sceTeal,
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.trending_up, color: Colors.white, size: 14.sp),
-                          SizedBox(width: 4.w),
-                          Text(
-                            "Auto Bid Enabled",
-                            style: FontManager.labelSmall(color: Colors.white).copyWith(fontSize: 10.sp),
-                          ),
-                        ],
+                  if (_isAutoBidEnabled)
+                    Positioned(
+                      top: 100.h,
+                      left: 16.w,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.sceTeal,
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.trending_up,
+                              color: Colors.white,
+                              size: 14.sp,
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              "Auto Bid Enabled",
+                              style: FontManager.labelSmall(
+                                color: Colors.white,
+                              ).copyWith(fontSize: 10.sp),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -138,7 +154,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   // Current Bid
                   Text(
                     "CURRENT BID",
-                    style: FontManager.labelSmall(color: AppColors.textHint).copyWith(letterSpacing: 0.5),
+                    style: FontManager.labelSmall(
+                      color: AppColors.textHint,
+                    ).copyWith(letterSpacing: 0.5),
                   ),
                   SizedBox(height: 4.h),
                   Row(
@@ -151,7 +169,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                       ),
                       Text(
                         widget.data['currentBid'],
-                        style: FontManager.heading1(color: AppColors.sceTeal).copyWith(fontSize: 32.sp),
+                        style: FontManager.heading1(
+                          color: AppColors.sceTeal,
+                        ).copyWith(fontSize: 32.sp),
                       ),
                     ],
                   ),
@@ -160,7 +180,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   // Time Remaining
                   Text(
                     "TIME REMAINING",
-                    style: FontManager.labelSmall(color: AppColors.textHint).copyWith(letterSpacing: 0.5),
+                    style: FontManager.labelSmall(
+                      color: AppColors.textHint,
+                    ).copyWith(letterSpacing: 0.5),
                   ),
                   SizedBox(height: 8.h),
                   Row(
@@ -168,12 +190,22 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                       _buildTimeBox("00", "DAYS"),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.w),
-                        child: Text(":", style: FontManager.heading3(color: AppColors.textHint)),
+                        child: Text(
+                          ":",
+                          style: FontManager.heading3(
+                            color: AppColors.textHint,
+                          ),
+                        ),
                       ),
                       _buildTimeBox("03", "HRS"),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.w),
-                        child: Text(":", style: FontManager.heading3(color: AppColors.textHint)),
+                        child: Text(
+                          ":",
+                          style: FontManager.heading3(
+                            color: AppColors.textHint,
+                          ),
+                        ),
                       ),
                       _buildTimeBox("34", "MIN"),
                     ],
@@ -191,7 +223,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                       SizedBox(width: 8.w),
                       Text(
                         "RECENT BIDS",
-                        style: FontManager.labelMedium(color: Colors.white).copyWith(letterSpacing: 0.5),
+                        style: FontManager.labelMedium(
+                          color: Colors.white,
+                        ).copyWith(letterSpacing: 0.5),
                       ),
                     ],
                   ),
@@ -208,7 +242,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     "You",
                     "5 min ago",
                     "35,500",
-                    const LinearGradient(colors: [Colors.grey, Colors.blueGrey]),
+                    const LinearGradient(
+                      colors: [Colors.grey, Colors.blueGrey],
+                    ),
                   ),
                   _buildBidTile(
                     "Anonymous 3",
@@ -227,7 +263,10 @@ class _AuctionBiddingState extends State<AuctionBidding> {
 
                   // Bid Input Container
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 12.h,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.sceCardBg,
                       borderRadius: BorderRadius.circular(12.r),
@@ -238,7 +277,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                       children: [
                         Text(
                           "CHF",
-                          style: FontManager.labelSmall(color: AppColors.textHint),
+                          style: FontManager.labelSmall(
+                            color: AppColors.textHint,
+                          ),
                         ),
                         SizedBox(height: 4.h),
                         Row(
@@ -246,7 +287,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                           children: [
                             Text(
                               _formatCurrency(_userBid),
-                              style: FontManager.heading1(color: Colors.white).copyWith(color: Colors.white.withOpacity(0.4)),
+                              style: FontManager.heading1(
+                                color: Colors.white,
+                              ).copyWith(color: Colors.white.withOpacity(0.4)),
                             ),
                             GestureDetector(
                               onTap: () {
@@ -260,7 +303,11 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                   color: AppColors.sceTeal,
                                   borderRadius: BorderRadius.circular(8.r),
                                 ),
-                                child: const Icon(Icons.add, color: Colors.white, size: 20),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ],
@@ -271,19 +318,25 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                           decoration: BoxDecoration(
                             color: AppColors.sceTealStatBg,
                             borderRadius: BorderRadius.circular(8.r),
-                            border: Border.all(color: AppColors.sceTeal.withOpacity(0.2)),
+                            border: Border.all(
+                              color: AppColors.sceTeal.withOpacity(0.2),
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 "Minimum bid increment: CHF 150",
-                                style: FontManager.bodySmall(color: AppColors.sceTeal).copyWith(fontSize: 11.sp),
+                                style: FontManager.bodySmall(
+                                  color: AppColors.sceTeal,
+                                ).copyWith(fontSize: 11.sp),
                               ),
                               SizedBox(height: 2.h),
                               Text(
                                 "Next minimum bid: CHF ${_formatCurrency(_userBid)}",
-                                style: FontManager.bodySmall(color: AppColors.textHint).copyWith(fontSize: 11.sp),
+                                style: FontManager.bodySmall(
+                                  color: AppColors.textHint,
+                                ).copyWith(fontSize: 11.sp),
                               ),
                             ],
                           ),
@@ -313,7 +366,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   // Place Bid Button
                   CustomButton(
                     text: "PLACE BID",
-                    onPressed: () {},
+                    onPressed: () {
+                      AppSnackBar.success(context, "Bid placed successfully!");
+                    },
                   ),
                   SizedBox(height: 24.h),
 
@@ -323,7 +378,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     decoration: BoxDecoration(
                       color: AppColors.sceTealStatBg.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(color: AppColors.sceTeal.withOpacity(0.2)),
+                      border: Border.all(
+                        color: AppColors.sceTeal.withOpacity(0.2),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -339,14 +396,20 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                             },
                             activeColor: AppColors.sceTeal,
                             checkColor: Colors.white,
-                            side: BorderSide(color: AppColors.sceTeal.withOpacity(0.5)),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
+                            side: BorderSide(
+                              color: AppColors.sceTeal.withOpacity(0.5),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
                           ),
                         ),
                         SizedBox(width: 12.w),
                         Text(
                           "Enable Auto Bidding",
-                          style: FontManager.labelMedium(color: AppColors.sceTeal),
+                          style: FontManager.labelMedium(
+                            color: AppColors.sceTeal,
+                          ),
                         ),
                       ],
                     ),
@@ -360,33 +423,44 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                       decoration: BoxDecoration(
                         color: AppColors.sceCardBg.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: Colors.white.withOpacity(0.05)),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.05),
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "MAXIMUM BID AMOUNT",
-                            style: FontManager.labelSmall(color: AppColors.sceTeal).copyWith(letterSpacing: 0.5),
+                            style: FontManager.labelSmall(
+                              color: AppColors.sceTeal,
+                            ).copyWith(letterSpacing: 0.5),
                           ),
                           SizedBox(height: 12.h),
                           Row(
                             children: [
                               Text(
                                 "CHF",
-                                style: FontManager.labelLarge(color: AppColors.textHint),
+                                style: FontManager.labelLarge(
+                                  color: AppColors.textHint,
+                                ),
                               ),
                               SizedBox(width: 12.w),
                               Expanded(
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                    vertical: 12.h,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.05),
                                     borderRadius: BorderRadius.circular(8.r),
                                   ),
                                   child: Text(
                                     "36,850",
-                                    style: FontManager.bodyMedium(color: AppColors.textHint),
+                                    style: FontManager.bodyMedium(
+                                      color: AppColors.textHint,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -395,7 +469,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                           SizedBox(height: 16.h),
                           Text(
                             "System will automatically bid up to this amount in CHF 150 increments",
-                            style: FontManager.bodySmall(color: AppColors.textHint).copyWith(fontSize: 12.sp),
+                            style: FontManager.bodySmall(
+                              color: AppColors.textHint,
+                            ).copyWith(fontSize: 12.sp),
                           ),
                         ],
                       ),
@@ -424,19 +500,28 @@ class _AuctionBiddingState extends State<AuctionBidding> {
         children: [
           Text(
             value,
-            style: FontManager.heading3(color: Colors.white).copyWith(fontSize: 22.sp),
+            style: FontManager.heading3(
+              color: Colors.white,
+            ).copyWith(fontSize: 22.sp),
           ),
           SizedBox(height: 4.h),
           Text(
             label,
-            style: FontManager.labelSmall(color: AppColors.textHint).copyWith(fontSize: 10.sp),
+            style: FontManager.labelSmall(
+              color: AppColors.textHint,
+            ).copyWith(fontSize: 10.sp),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBidTile(String name, String time, String amount, Gradient gradient) {
+  Widget _buildBidTile(
+    String name,
+    String time,
+    String amount,
+    Gradient gradient,
+  ) {
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -459,22 +544,18 @@ class _AuctionBiddingState extends State<AuctionBidding> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                name,
-                style: FontManager.labelMedium(color: Colors.white),
-              ),
+              Text(name, style: FontManager.labelMedium(color: Colors.white)),
               SizedBox(height: 2.h),
               Text(
                 time,
-                style: FontManager.bodySmall(color: AppColors.textHint).copyWith(fontSize: 11.sp),
+                style: FontManager.bodySmall(
+                  color: AppColors.textHint,
+                ).copyWith(fontSize: 11.sp),
               ),
             ],
           ),
           const Spacer(),
-          Text(
-            amount,
-            style: FontManager.heading3(color: AppColors.sceTeal),
-          ),
+          Text(amount, style: FontManager.heading3(color: AppColors.sceTeal)),
         ],
       ),
     );
@@ -501,4 +582,4 @@ class _AuctionBiddingState extends State<AuctionBidding> {
       ),
     );
   }
-}
+}

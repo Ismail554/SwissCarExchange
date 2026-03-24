@@ -6,6 +6,7 @@ import 'package:wynante/core/assets_manager.dart';
 import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_button.dart';
 import 'package:wynante/core/widgets/widget_snackbar.dart';
+import 'package:wynante/core/widgets/custom_back_button.dart';
 import 'package:wynante/views/auth/forgot_password/successful_view.dart';
 
 class OtpVerifyView extends StatefulWidget {
@@ -115,22 +116,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
               padding: EdgeInsets.only(left: 16.w, top: 16.h),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: InkWell(
-                  onTap: () => Navigator.pop(context),
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    padding: EdgeInsets.all(12.w),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.04),
-                    ),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 20.sp,
-                    ),
-                  ),
-                ),
+                child: const CustomBackButton(),
               ),
             ),
 
