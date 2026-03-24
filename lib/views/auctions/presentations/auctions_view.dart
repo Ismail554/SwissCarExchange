@@ -5,6 +5,7 @@ import 'package:wynante/core/widgets/common_background.dart';
 import 'package:wynante/core/widgets/custom_text_field.dart';
 import 'package:wynante/core/app_colors.dart';
 import 'package:wynante/core/assets_manager.dart';
+import 'package:wynante/views/auctions/presentations/auction_details.dart';
 
 class AuctionsView extends StatefulWidget {
   const AuctionsView({super.key});
@@ -164,102 +165,116 @@ class _AuctionsViewState extends State<AuctionsView> {
 
     final data = dummyData[index];
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.sceCardBg,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image Section
-          Expanded(
-            flex: 4,
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(16.r),
-                    ),
-                    color: Colors.white.withOpacity(0.1),
-                    image: DecorationImage(
-                      image: AssetImage(data['image']),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  width: double.infinity,
-                ),
-                if (data['isLive'] == true)
-                  Positioned(
-                    top: 8.h,
-                    right: 8.w,
-                    child: Container(
-                      width: 10.w,
-                      height: 10.w,
-                      decoration: const BoxDecoration(
-                        color: Colors.redAccent,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          // Details Section
-          Expanded(
-            flex: 5,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 18.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AuctionDetails(data: data)),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.sceCardBg,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Section
+            Expanded(
+              flex: 4,
+              child: Stack(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        data['title'],
-                        style: FontManager.bodyMedium(
-                          color: Colors.white,
-                        ).copyWith(fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16.r),
                       ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        data['year'],
-                        style: FontManager.bodySmall(color: AppColors.textHint),
+                      color: Colors.white.withOpacity(0.1),
+                      image: DecorationImage(
+                        image: AssetImage(data['image']),
+                        fit: BoxFit.cover,
                       ),
-                    ],
+                    ),
+                    width: double.infinity,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Current Bid",
-                        style: FontManager.bodySmall(color: AppColors.textHint),
+                  if (data['isLive'] == true)
+                    Positioned(
+                      top: 8.h,
+                      right: 8.w,
+                      child: Container(
+                        width: 10.w,
+                        height: 10.w,
+                        decoration: const BoxDecoration(
+                          color: Colors.redAccent,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                      SizedBox(height: 2.h),
-                      Text(
-                        data['currentBid'],
-                        style: FontManager.heading2(
-                          color: AppColors.sceTeal,
-                        ).copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        data['timeRemaining'],
-                        style: FontManager.bodySmall(color: AppColors.textHint),
-                      ),
-                    ],
-                  ),
+                    ),
                 ],
               ),
             ),
-          ),
-        ],
+            // Details Section
+            Expanded(
+              flex: 5,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 18.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data['title'],
+                          style: FontManager.bodyMedium(
+                            color: Colors.white,
+                          ).copyWith(fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          data['year'],
+                          style: FontManager.bodySmall(
+                            color: AppColors.textHint,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Current Bid",
+                          style: FontManager.bodySmall(
+                            color: AppColors.textHint,
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          data['currentBid'],
+                          style: FontManager.heading2(
+                            color: AppColors.sceTeal,
+                          ).copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          data['timeRemaining'],
+                          style: FontManager.bodySmall(
+                            color: AppColors.textHint,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
