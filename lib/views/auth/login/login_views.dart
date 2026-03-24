@@ -8,7 +8,7 @@ import 'package:wynante/core/widgets/custom_text_field.dart';
 import 'package:wynante/views/auth/forgot_password/forgot_pass_view.dart';
 import 'package:wynante/views/home/presentation/home_view.dart';
 import 'package:wynante/views/auctions/presentations/auctions_view.dart';
-import 'package:wynante/views/bidding/bids_view.dart';
+import 'package:wynante/views/bidding/presentations/bids_view.dart';
 import 'package:wynante/views/profile/profile_view.dart';
 import 'package:wynante/views/main_navigation/bottom_nav.dart';
 

@@ -65,13 +65,17 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color(0xFF0A0A0A),
+        extendBody: true,
+        // backgroundColor: const Color(0xFF0A0A0A),
         body: IndexedStack(index: _currentIndex, children: widget.pages),
+        floatingActionButton: _PremiumFab(
+          isPremium: isPremium,
+          onTap: _onPremiumFabTap,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: _BottomNavBar(
           activeIndex: activeTab,
-          isPremiumUser: isPremium,
           onTabTap: _onTabTap,
-          onFabTap: _onPremiumFabTap,
         ),
       ),
     );
@@ -84,94 +88,75 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
 
 class _BottomNavBar extends StatelessWidget {
   final int activeIndex;
-  final bool isPremiumUser;
   final ValueChanged<int> onTabTap;
-  final VoidCallback onFabTap;
 
-  const _BottomNavBar({
-    required this.activeIndex,
-    required this.isPremiumUser,
-    required this.onTabTap,
-    required this.onFabTap,
-  });
+  const _BottomNavBar({required this.activeIndex, required this.onTabTap});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 82.h,
-      child: Stack(
-        
-        clipBehavior: Clip.antiAlias,
-        alignment: Alignment.bottomCenter,
-        children: [
-          // ── Bar background ──────────────────────────────────────────────
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 64.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFF111827),
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
-                    blurRadius: 20,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _NavItem(
-                    index: 0,
-                    activeIndex: activeIndex,
-                    icon: Icons.home_outlined,
-                    activeIcon: Icons.home_rounded,
-                    label: 'Home',
-                    onTap: onTabTap,
-                  ),
-                  _NavItem(
-                    index: 1,
-                    activeIndex: activeIndex,
-                    icon: Icons.gavel_outlined,
-                    activeIcon: Icons.gavel_rounded,
-                    label: 'Auctions',
-                    onTap: onTabTap,
-                  ),
-                  // Centre spacer for the FAB
-                  SizedBox(width: 64.w),
-                  _NavItem(
-                    index: 3,
-                    activeIndex: activeIndex,
-                    icon: Icons.card_giftcard_outlined,
-                    activeIcon: Icons.card_giftcard_rounded,
-                    label: 'Bids',
-                    onTap: onTabTap,
-                  ),
-                  _NavItem(
-                    index: 4,
-                    activeIndex: activeIndex,
-                    icon: Icons.person_outline_rounded,
-                    activeIcon: Icons.person_rounded,
-                    label: 'Profile',
-                    onTap: onTabTap,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // ── Centre Premium FAB ──────────────────────────────────────────
-          Positioned(
-            top: 0,
-            child: _PremiumFab(isPremium: isPremiumUser, onTap: onFabTap),
+    return Container(
+      height: 66.h,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
           ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        child: BottomAppBar(
+          color: const Color(0xFF111827),
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8.0,
+          padding: EdgeInsets.zero,
+          clipBehavior: Clip.none,
+          child: SizedBox(
+            height: 20.h,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _NavItem(
+                  index: 0,
+                  activeIndex: activeIndex,
+                  icon: Icons.home_outlined,
+                  activeIcon: Icons.home_rounded,
+                  label: 'Home',
+                  onTap: onTabTap,
+                ),
+                _NavItem(
+                  index: 1,
+                  activeIndex: activeIndex,
+                  icon: Icons.gavel_outlined,
+                  activeIcon: Icons.gavel_rounded,
+                  label: 'Auctions',
+                  onTap: onTabTap,
+                ),
+                // Centre spacer for the FAB cutout
+                SizedBox(width: 48.w),
+                _NavItem(
+                  index: 3,
+                  activeIndex: activeIndex,
+                  icon: Icons.card_giftcard_outlined,
+                  activeIcon: Icons.card_giftcard_rounded,
+                  label: 'Bids',
+                  onTap: onTabTap,
+                ),
+                _NavItem(
+                  index: 4,
+                  activeIndex: activeIndex,
+                  icon: Icons.person_outline_rounded,
+                  activeIcon: Icons.person_rounded,
+                  label: 'Profile',
+                  onTap: onTabTap,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -207,7 +192,7 @@ class _NavItem extends StatelessWidget {
       onTap: () => onTap(index),
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: 70.w,
+        width: 64.w,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -254,14 +239,21 @@ class _PremiumFab extends StatelessWidget {
     final iconColor = isPremium ? teal : const Color(0xFF6B7280);
     final ringColor = isPremium ? teal : const Color(0xFF374151);
 
-    return GestureDetector(
-      onTap: onTap,
+    return FloatingActionButton(
+      onPressed: onTap,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      highlightElevation: 0,
+      shape: const CircleBorder(),
       child: Container(
         width: 58.w,
         height: 58.w,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: const Color(0xFF111827),
+          color: Colors.transparent,
           border: Border.all(color: ringColor, width: 1.8),
           boxShadow: isPremium
               ? [
@@ -288,7 +280,7 @@ class _PremiumFab extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF111827),
+                    color: Color(0xFF0A0A0A),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

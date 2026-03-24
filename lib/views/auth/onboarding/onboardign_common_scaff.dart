@@ -5,7 +5,7 @@ import 'package:wynante/views/auth/login/login_views.dart';
 import 'package:wynante/views/main_navigation/bottom_nav.dart';
 import 'package:wynante/views/home/presentation/home_view.dart';
 import 'package:wynante/views/auctions/presentations/auctions_view.dart';
-import 'package:wynante/views/bidding/bids_view.dart';
+import 'package:wynante/views/bidding/presentations/bids_view.dart';
 import 'package:wynante/views/profile/profile_view.dart';
 
 class OnboardignCommonScaff extends StatelessWidget {
