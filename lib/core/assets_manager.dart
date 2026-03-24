@@ -12,6 +12,12 @@ class ImageAssets {
   static const String onboadiing3 = "$imagePath/onboarding3_bg.png";
   static const String home_bg = '$imagePath/home_bg.jpg';
   static const String news_im1 = "$imagePath/news_im1.png";
+  static const String car1 = "$imagePath/car1.png";
+  static const String car2 = "$imagePath/car2.png";
+  static const String car3 = "$imagePath/car3.png";
+  static const String car4 = "$imagePath/car4.png";
+  static const String car5 = "$imagePath/car5.png";
+  static const String car6 = "$imagePath/car6.png";
 }
 
 class IconAssets {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wynante/core/global_state.dart';
 import 'package:wynante/core/widgets/widget_snackbar.dart';
-import 'package:wynante/views/auctions/add_auction_view.dart';
+import 'package:wynante/views/auctions/presentations/add_auction_view.dart';
 
 /// The app-wide scaffold with custom bottom navigation.
 ///

@@ -4,19 +4,21 @@ import 'package:wynante/core/app_colors.dart';
 
 class CommonBackground extends StatelessWidget {
   final Widget child;
-
-  const CommonBackground({super.key, required this.child});
+  final AppBar? appBar;
+  const CommonBackground({super.key, required this.child, this.appBar});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      extendBodyBehindAppBar: true,
+      appBar: appBar,
+      backgroundColor: AppColors.sceDarkBg,
       body: Stack(
         children: [
           // Background Gradient Overlay
           Container(
-            width: double.infinity,
-            height: double.infinity,
+            width: double.maxFinite,
+            height: double.maxFinite,
             decoration: const BoxDecoration(gradient: AppColors.bgColor),
           ),
 
@@ -29,9 +31,9 @@ class CommonBackground extends StatelessWidget {
                 child: Container(
                   width: 384,
                   height: 384,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Color.fromRGBO(0, 187, 167, 0.1),
+                    color: AppColors.sceTeal.withOpacity(0.1),
                   ),
                 ),
               ),

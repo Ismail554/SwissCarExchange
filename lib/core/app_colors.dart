@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   /* ==================== Primary Colors ==================== */
   /// Primary brand color (Orange) - Extract exact value from Figma
-  static const Color primaryColor = Color(0xFFFF7931);
+  static const Color primaryColor = Color(0xFF181818);
   static const Color primaryDark = Color(0xFFE6681F);
   static const Color primaryLight = Color(0xFFFF9D6B);
   static const Color primaryContainer = Color(0xFFFFE8DC);

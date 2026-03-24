@@ -1,6 +1,12 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wynante/views/auth/login/login_views.dart';
+import 'package:wynante/views/main_navigation/bottom_nav.dart';
+import 'package:wynante/views/home/presentation/home_view.dart';
+import 'package:wynante/views/auctions/presentations/auctions_view.dart';
+import 'package:wynante/views/bidding/bids_view.dart';
+import 'package:wynante/views/profile/profile_view.dart';
 
 class OnboardignCommonScaff extends StatelessWidget {
   final String stepNumber;
@@ -10,7 +16,7 @@ class OnboardignCommonScaff extends StatelessWidget {
   final int totalSteps;
   final String nextText;
   final VoidCallback onNext;
-  final VoidCallback onSkip;
+  final VoidCallback? onSkip;
 
   const OnboardignCommonScaff({
     super.key,
@@ -21,7 +27,7 @@ class OnboardignCommonScaff extends StatelessWidget {
     this.totalSteps = 3,
     required this.nextText,
     required this.onNext,
-    required this.onSkip,
+    this.onSkip,
   });
 
   @override
@@ -63,7 +69,16 @@ class OnboardignCommonScaff extends StatelessWidget {
                       vertical: 8.0,
                     ),
                     child: TextButton(
-                      onPressed: onSkip,
+                      onPressed:
+                          onSkip ??
+                          () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginViews(),
+                              ),
+                            );
+                          },
                       style: TextButton.styleFrom(
                         foregroundColor: const Color(0xFFA0AABF),
                         textStyle: const TextStyle(
@@ -132,15 +147,25 @@ class OnboardignCommonScaff extends StatelessWidget {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: currentIndex == 0
-                                  ? const [Color(0xFFD4AF37), Colors.transparent]
+                                  ? const [
+                                      Color(0xFFD4AF37),
+                                      Colors.transparent,
+                                    ]
                                   : currentIndex == 1
-                                      ? const [Colors.transparent, Color(0xFFD4AF37), Colors.transparent]
-                                      : const [Colors.transparent, Color(0xFFD4AF37)],
+                                  ? const [
+                                      Colors.transparent,
+                                      Color(0xFFD4AF37),
+                                      Colors.transparent,
+                                    ]
+                                  : const [
+                                      Colors.transparent,
+                                      Color(0xFFD4AF37),
+                                    ],
                               stops: currentIndex == 0
                                   ? const [0.0, 1.0]
                                   : currentIndex == 1
-                                      ? const [0.0, 0.5, 1.0]
-                                      : const [0.0, 1.0],
+                                  ? const [0.0, 0.5, 1.0]
+                                  : const [0.0, 1.0],
                             ),
                           ),
                         ),

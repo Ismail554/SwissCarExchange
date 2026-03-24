@@ -21,12 +21,12 @@ class Step1Onboarding extends StatelessWidget {
           MaterialPageRoute(builder: (_) => const Step2Onboarding()),
         );
       },
-      onSkip: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeView()),
-        );
-      },
+      // onSkip: () {
+      //   Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(builder: (_) => const HomeView()),
+      //   );
+      // },
     );
   }
 }

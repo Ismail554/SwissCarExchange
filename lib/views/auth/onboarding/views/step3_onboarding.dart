@@ -21,12 +21,12 @@ class Step3Onboarding extends StatelessWidget {
           MaterialPageRoute(builder: (_) => const LoginViews()),
         );
       },
-      onSkip: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginViews()),
-        );
-      },
+    //   onSkip: () {
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(builder: (_) => const LoginViews()),
+    //     );
+    //   },
     );
   }
 }
