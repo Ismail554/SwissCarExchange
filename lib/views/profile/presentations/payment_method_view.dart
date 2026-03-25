@@ -5,25 +5,17 @@ import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
 
-/// Card (online) payment screen.
-/// Receives the [carName] and [amount] from the payment option sheet.
-class OnlinePaymentView extends StatefulWidget {
-  final String carName;
-  final String amount;
-
-  const OnlinePaymentView({
-    super.key,
-    required this.carName,
-    required this.amount,
-  });
+/// Screen to save and manage user payment methods (cards).
+class PaymentMethodView extends StatefulWidget {
+  const PaymentMethodView({super.key});
 
   @override
-  State<OnlinePaymentView> createState() => _OnlinePaymentViewState();
+  State<PaymentMethodView> createState() => _PaymentMethodViewState();
 }
 
-class _OnlinePaymentViewState extends State<OnlinePaymentView> {
+class _PaymentMethodViewState extends State<PaymentMethodView> {
   final _formKey = GlobalKey<FormState>();
   final _cardNumberCtrl = TextEditingController();
   final _cardHolderCtrl = TextEditingController();
@@ -39,12 +31,11 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
     super.dispose();
   }
 
-  void _submit() {
+  void _saveCard() {
     if (_formKey.currentState?.validate() ?? false) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PaySuccessful()),
-      );
+      // Logic to save the card would go here.
+      AppSnackBar.success(context, "Card saved successfully!");
+      Navigator.pop(context);
     }
   }
 
@@ -58,7 +49,7 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
         leadingWidth: 56.w,
         leading: const CustomBackButton(),
         title: Text(
-          'Card Payment',
+          'Payment Methods',
           style: FontManager.heading2(color: AppColors.white),
         ),
       ),
@@ -70,15 +61,14 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Payment summary card ---
-                _PaymentSummaryCard(
-                  carName: widget.carName,
-                  amount: widget.amount,
+                Text(
+                  'Save your cards for getting online payments',
+                  style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
                 ),
-                SizedBox(height: 28.h),
+                SizedBox(height: 32.h),
 
                 // --- Card Number ---
-                _FieldLabel('Card Number'),
+                const _FieldLabel('Card Number'),
                 SizedBox(height: 8.h),
                 _CardTextField(
                   controller: _cardNumberCtrl,
@@ -97,7 +87,7 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
                 SizedBox(height: 18.h),
 
                 // --- Cardholder Name ---
-                _FieldLabel('Cardholder Name'),
+                const _FieldLabel('Cardholder Name'),
                 SizedBox(height: 8.h),
                 _CardTextField(
                   controller: _cardHolderCtrl,
@@ -116,7 +106,7 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _FieldLabel('Expiry Date'),
+                          const _FieldLabel('Expiry Date'),
                           SizedBox(height: 8.h),
                           _CardTextField(
                             controller: _expiryCtrl,
@@ -138,7 +128,7 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _FieldLabel('CVV'),
+                          const _FieldLabel('CVV'),
                           SizedBox(height: 8.h),
                           _CardTextField(
                             controller: _cvvCtrl,
@@ -157,10 +147,10 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
                     ),
                   ],
                 ),
-                SizedBox(height: 36.h),
+                SizedBox(height: 48.h),
 
-                // --- Pay button ---
-                CustomButton(text: 'Pay ${widget.amount}', onPressed: _submit),
+                // --- Save button ---
+                CustomButton(text: 'Save', onPressed: _saveCard),
                 SizedBox(height: 20.h),
               ],
             ),
@@ -172,64 +162,7 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
 }
 
 // ---------------------------------------------------------------------------
-// Payment summary card (top teal box)
-// ---------------------------------------------------------------------------
-
-class _PaymentSummaryCard extends StatelessWidget {
-  final String carName;
-  final String amount;
-
-  const _PaymentSummaryCard({required this.carName, required this.amount});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.maxFinite,
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
-      decoration: BoxDecoration(
-        color: AppColors.sceTeal.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.sceTeal.withOpacity(0.25)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              Text(
-                'Payment For',
-                style: FontManager.labelSmall(color: AppColors.grey),
-              ),
-              SizedBox(height: 6.h),
-              Text(
-                carName,
-                style: FontManager.bodyMedium(color: AppColors.white),
-              ),
-            ],
-          ),
-          SizedBox(height: 14.h),
-          Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              Text(
-                'Total Amount: ',
-                style: FontManager.labelMedium(color: AppColors.grey),
-              ),
-              Text(
-                amount,
-                style: FontManager.heading2(color: AppColors.sceTeal),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Field label
+// Reused Internal Widgets (adapted from OnlinePaymentView for better encapsulation)
 // ---------------------------------------------------------------------------
 
 class _FieldLabel extends StatelessWidget {
@@ -241,10 +174,6 @@ class _FieldLabel extends StatelessWidget {
     return Text(text, style: FontManager.labelMedium(color: AppColors.white));
   }
 }
-
-// ---------------------------------------------------------------------------
-// Reusable card text field
-// ---------------------------------------------------------------------------
 
 class _CardTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -292,35 +221,30 @@ class _CardTextField extends StatelessWidget {
         fillColor: AppColors.sceCardBg,
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide(color: AppColors.grey.withOpacity(0.2)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide(color: AppColors.grey.withOpacity(0.2)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: AppColors.sceTeal, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error),
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: Colors.redAccent),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
         ),
       ),
     );
   }
 }
 
-// ---------------------------------------------------------------------------
-// Input formatters
-// ---------------------------------------------------------------------------
-
-/// Formats raw digits as: 1234 5678 9012 3456
 class _CardNumberFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
@@ -341,7 +265,6 @@ class _CardNumberFormatter extends TextInputFormatter {
   }
 }
 
-/// Formats raw digits as: MM/YY
 class _ExpiryFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(

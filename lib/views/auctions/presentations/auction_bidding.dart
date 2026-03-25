@@ -94,7 +94,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
                     ),
-                    child: Image.asset(widget.data['image'], fit: BoxFit.cover),
+                    child: widget.data['image'].startsWith('http')
+                        ? Image.network(widget.data['image'], fit: BoxFit.cover)
+                        : Image.asset(widget.data['image'], fit: BoxFit.cover),
                   ),
                   if (_isAutoBidEnabled)
                     Positioned(

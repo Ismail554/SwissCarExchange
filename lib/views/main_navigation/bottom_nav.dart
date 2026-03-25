@@ -5,6 +5,9 @@ import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/constants/global_state.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auctions/presentations/add_auction_view.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';
+import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
+import 'package:rionydo/views/premium/presentations/subscription_view.dart';
 
 /// The app-wide scaffold with custom bottom navigation.
 ///
@@ -56,7 +59,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     if (isPremium) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const AddAuctionView()),
+        MaterialPageRoute(builder: (context) => const CreateAuction()),
       );
     } else {
       AppSnackBar.warning(
@@ -64,7 +67,10 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         'This feature is for Premium members only.',
         actionLabel: 'Upgrade',
         onAction: () {
-          // TODO: navigate to subscription page
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SubscriptionViews()),
+          );
         },
       );
     }

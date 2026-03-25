@@ -98,19 +98,19 @@ class PremiumFeaturesCard extends StatelessWidget {
                 },
               ),
               ProfileDivider(),
-              ProfileListTile(
-                Icons.reviews_outlined,
-                'Dealer Reviews',
-                isPremiumFeature: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DealerReviewsView(),
-                    ),
-                  );
-                },
-              ),
+              // ProfileListTile(
+              //   Icons.reviews_outlined,
+              //   'Dealer Reviews',
+              //   isPremiumFeature: true,
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => DealerReviewsView(),
+              //       ),
+              //     );
+              //   },
+              // ),
             ],
           ),
         ),

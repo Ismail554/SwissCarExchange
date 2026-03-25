@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/views/profile/presentations/my_bids_view.dart';
 
-class MyBidsCard extends StatelessWidget {
-  const MyBidsCard({super.key});
+class MyBidsTile extends StatelessWidget {
+  const MyBidsTile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,11 @@ class MyBidsCard extends StatelessWidget {
         border: Border.all(color: AppColors.darkGrey, width: 1),
       ),
       child: ListTile(
-        leading: Icon(Icons.feed_outlined, color: AppColors.sceGold, size: 20.sp),
+        leading: Icon(
+          Icons.feed_outlined,
+          color: AppColors.sceGold,
+          size: 20.sp,
+        ),
         title: Text(
           'My Bids',
           style: TextStyle(
@@ -24,7 +29,12 @@ class MyBidsCard extends StatelessWidget {
           ),
         ),
         trailing: Icon(Icons.chevron_right, color: AppColors.grey, size: 20.sp),
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MyBidsView()),
+          );
+        },
       ),
     );
   }

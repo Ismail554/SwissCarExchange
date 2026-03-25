@@ -9,7 +9,7 @@ import 'package:rionydo/core/widgets/common_background.dart';
 
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/profile/widgets/profile_header_card.dart';
-import 'package:rionydo/views/profile/widgets/my_bids_card.dart';
+import 'package:rionydo/views/profile/widgets/my_bids_tile.dart';
 import 'package:rionydo/views/profile/widgets/dealer_rating_card.dart';
 import 'package:rionydo/views/profile/widgets/upgrade_premium_card.dart';
 import 'package:rionydo/views/profile/widgets/premium_features_card.dart';
@@ -68,13 +68,15 @@ class _ProfileViewState extends State<ProfileView> {
               AppSpacing.h24,
               ProfileHeaderCard(isPremium: isPremium),
               AppSpacing.h16,
-              const MyBidsCard(),
+              const MyBidsTile(),
               AppSpacing.h24,
               const ProfileSectionTitle('DEALER RATING'),
               AppSpacing.h12,
               const DealerRatingCard(),
               AppSpacing.h24,
-              isPremium ? const PremiumFeaturesCard() : const UpgradePremiumCard(),
+              isPremium
+                  ? const PremiumFeaturesCard()
+                  : const UpgradePremiumCard(),
               AppSpacing.h24,
               const ProfileSectionTitle('ACCOUNT INFORMATION'),
               AppSpacing.h12,

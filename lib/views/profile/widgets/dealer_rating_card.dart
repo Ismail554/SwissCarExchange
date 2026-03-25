@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/views/premium/presentations/dealer_reviews_view.dart';
 
 class DealerRatingCard extends StatelessWidget {
   const DealerRatingCard({super.key});
@@ -24,7 +25,7 @@ class DealerRatingCard extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(12.w),
                 decoration: const BoxDecoration(
-                  color: AppColors.buttonColor, 
+                  color: AppColors.buttonColor,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.star, color: AppColors.white, size: 24.sp),
@@ -67,10 +68,7 @@ class DealerRatingCard extends StatelessWidget {
             ],
           ),
           AppSpacing.h20,
-          Container(
-            height: 1,
-            color: AppColors.darkGrey,
-          ),
+          Container(height: 1, color: AppColors.darkGrey),
           AppSpacing.h16,
           Text(
             '28 completed sales',
@@ -80,7 +78,12 @@ class DealerRatingCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DealerReviewsView()),
+                );
+              },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: AppColors.darkGrey),
                 shape: RoundedRectangleBorder(
@@ -100,7 +103,11 @@ class DealerRatingCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 4.w),
-                  Icon(Icons.chevron_right, color: AppColors.white, size: 18.sp),
+                  Icon(
+                    Icons.chevron_right,
+                    color: AppColors.white,
+                    size: 18.sp,
+                  ),
                 ],
               ),
             ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/views/profile/presentations/account_settings_view.dart';
+import 'package:rionydo/views/profile/presentations/notification_settings_view.dart';
+import 'package:rionydo/views/profile/presentations/payment_method_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 
 class SettingsCard extends StatelessWidget {
@@ -16,19 +19,60 @@ class SettingsCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          ProfileListTile(Icons.person_outline, 'Account Settings', onTap: () {  },),
+          ProfileListTile(
+            Icons.person_outline,
+            'Account Settings',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AccountSettingsView(),
+                ),
+              );
+            },
+          ),
           ProfileDivider(),
-          ProfileListTile(Icons.notifications_outlined, 'Notification setting', onTap: () {  },),
+          ProfileListTile(
+            Icons.notifications_outlined,
+            'Notification setting',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationSettingsView(),
+                ),
+              );
+            },
+          ),
           ProfileDivider(),
-          ProfileListTile(Icons.credit_card_outlined, 'Payment Methods', onTap: () {  },),
+          ProfileListTile(
+            Icons.credit_card_outlined,
+            'Payment Methods',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PaymentMethodView(),
+                ),
+              );
+            },
+          ),
           ProfileDivider(),
-          ProfileListTile(Icons.emoji_events_outlined, 'Won Auctions', onTap: () {  },),
-          ProfileDivider(), 
-          ProfileListTile(Icons.security_outlined, 'Security & Privacy', onTap: () {  },),
+          ProfileListTile(
+            Icons.emoji_events_outlined,
+            'Won Auctions',
+            onTap: () {},
+          ),
           ProfileDivider(),
-          ProfileListTile(Icons.language_outlined, 'Languages', onTap: () {  },),
+          ProfileListTile(
+            Icons.security_outlined,
+            'Security & Privacy',
+            onTap: () {},
+          ),
           ProfileDivider(),
-          ProfileListTile(Icons.help_outline, 'Help & Support', onTap: () {  },),
+          ProfileListTile(Icons.language_outlined, 'Languages', onTap: () {}),
+          ProfileDivider(),
+          ProfileListTile(Icons.help_outline, 'Help & Support', onTap: () {}),
         ],
       ),
     );
