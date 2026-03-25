@@ -4,7 +4,7 @@ import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-import 'package:rionydo/views/premium/presentations/create_auction.dart';
+import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
 import 'package:rionydo/views/auctions/presentations/auction_details.dart';
 import '../widgets/auction_management_card.dart';
 

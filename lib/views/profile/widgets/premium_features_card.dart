@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/views/premium/presentations/advance_statistics.dart';
-import 'package:rionydo/views/premium/presentations/auction_management.dart';
-import 'package:rionydo/views/premium/presentations/create_auction.dart';
-import 'package:rionydo/views/premium/presentations/recieve_payments.dart';
+import 'package:rionydo/views/premium/presentations/auction_management_view.dart';
+import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
+import 'package:rionydo/views/premium/presentations/dealer_reviews_view.dart';
+import 'package:rionydo/views/premium/presentations/recieve_payments_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 
 class PremiumFeaturesCard extends StatelessWidget {
@@ -93,6 +94,20 @@ class PremiumFeaturesCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => RecievePayments()),
+                  );
+                },
+              ),
+              ProfileDivider(),
+              ProfileListTile(
+                Icons.reviews_outlined,
+                'Dealer Reviews',
+                isPremiumFeature: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DealerReviewsView(),
+                    ),
                   );
                 },
               ),

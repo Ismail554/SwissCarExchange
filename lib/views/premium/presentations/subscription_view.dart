@@ -162,12 +162,9 @@ class SubscriptionViews extends StatelessWidget {
                   children: [
                     Text(
                       'DEALER SUBSCRIPTION',
-                      style: TextStyle(
+                      style: FontManager.labelSmall(
                         color: AppColors.scePremiumGold,
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.2,
-                      ),
+                      ).copyWith(letterSpacing: 1.2, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 8.h),
                     Row(
@@ -177,21 +174,16 @@ class SubscriptionViews extends StatelessWidget {
                       children: [
                         Text(
                           '299',
-                          style: TextStyle(
+                          style: FontManager.heading2(
                             color: AppColors.scePremiumGold,
-                            fontSize: 48.sp,
-                            fontWeight: FontWeight.w800,
-                            height: 1.0,
-                          ),
+                          ).copyWith(fontSize: 48.sp),
                         ),
                         SizedBox(width: 8.w),
                         Text(
                           'CHF',
-                          style: TextStyle(
+                          style: FontManager.heading2(
                             color: AppColors.sceGrey99,
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          ).copyWith(fontSize: 20.sp),
                         ),
                       ],
                     ),
@@ -214,12 +206,9 @@ class SubscriptionViews extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'PREMIUM FEATURES',
-                  style: TextStyle(
+                  style: FontManager.labelSmall(
                     color: AppColors.greyD4,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.0,
-                  ),
+                  ).copyWith(letterSpacing: 1.0, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(height: 16.h),
@@ -262,21 +251,16 @@ class SubscriptionViews extends StatelessWidget {
                             children: [
                               Text(
                                 feature.title,
-                                style: TextStyle(
+                                style: FontManager.labelMedium(
                                   color: Colors.white,
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                ).copyWith(fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 4.h),
                               Text(
                                 feature.subtitle,
-                                style: TextStyle(
+                                style: FontManager.labelSmall(
                                   color: const Color(0xFF99A1AF),
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w400,
-                                  height: 1.4,
-                                ),
+                                ).copyWith(height: 1.4),
                               ),
                             ],
                           ),
@@ -331,11 +315,9 @@ class SubscriptionViews extends StatelessWidget {
                   child: Center(
                     child: Text(
                       'Upgrade to Premium',
-                      style: TextStyle(
+                      style: FontManager.labelMedium(
                         color: Colors.white,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      ).copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -346,11 +328,9 @@ class SubscriptionViews extends StatelessWidget {
               Text(
                 'Cancel anytime. Terms and conditions apply.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: FontManager.labelSmall(
                   color: AppColors.grey,
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w400,
-                ),
+                ).copyWith(fontWeight: FontWeight.w400),
               ),
               SizedBox(height: 40.h),
             ],
