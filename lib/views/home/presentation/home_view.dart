@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/app_spacing.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
@@ -23,7 +24,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
-    final isPremium = GlobalState.isPremium;
+    final isPremium = context.watch<GlobalState>().isPremium;
 
     return CommonBackground(
       child: CustomScrollView(
@@ -63,7 +64,7 @@ class _HomeViewState extends State<HomeView> {
                           ),
                         ),
                         Text(
-                          GlobalState.userName,
+                          context.watch<GlobalState>().userName,
                           style: FontManager.heading3(
                             color: Colors.white,
                             fontSize: 20.sp,

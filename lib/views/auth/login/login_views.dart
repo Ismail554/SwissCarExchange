@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
 import 'package:rionydo/core/constants/global_state.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
@@ -9,7 +10,7 @@ import 'package:rionydo/views/auth/forgot_password/forgot_pass_view.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
 import 'package:rionydo/views/bidding/presentations/bids_view.dart';
-import 'package:rionydo/views/profile/profile_view.dart';
+import 'package:rionydo/views/profile/presentations/profile_view.dart';
 import 'package:rionydo/views/main_navigation/bottom_nav.dart';
 
 class LoginViews extends StatefulWidget {
@@ -102,7 +103,7 @@ class _LoginViewsState extends State<LoginViews> {
                 text: 'Login',
                 onPressed: () {
                   // Store premium status globally
-                  GlobalState.isPremium =
+                  context.read<GlobalState>().isPremium =
                       true; // Toggle to false to test basic user UI
 
                   Navigator.push(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/core/constants/global_state.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auctions/presentations/add_auction_view.dart';
@@ -49,7 +50,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   }
 
   void _onPremiumFabTap() {
-    final isPremium = widget.isPremiumUser ?? GlobalState.isPremium;
+    final isPremium = widget.isPremiumUser ?? context.read<GlobalState>().isPremium;
     if (isPremium) {
       Navigator.push(
         context,
@@ -70,7 +71,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   @override
   Widget build(BuildContext context) {
     final activeTab = _pageToTab[_currentIndex] ?? 0;
-    final isPremium = widget.isPremiumUser ?? GlobalState.isPremium;
+    final isPremium = widget.isPremiumUser ?? context.watch<GlobalState>().isPremium;
 
     return SafeArea(
       child: Scaffold(

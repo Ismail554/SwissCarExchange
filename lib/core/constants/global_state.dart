@@ -1,8 +1,19 @@
-class GlobalState {
+import 'package:flutter/material.dart';
+
+class GlobalState extends ChangeNotifier {
   /// Simple global flag to track premium status throughout the app.
-  static bool isPremium = true;
+  bool _isPremium = false;
+
+  bool get isPremium => _isPremium;
+
+  set isPremium(bool value) {
+    if (_isPremium != value) {
+      _isPremium = value;
+      notifyListeners();
+    }
+  }
 
   /// User info (mockup data)
-  static String userName = "Premium Auto Group AG";
-  static String userRole = "Dealer";
+  String userName = "Premium Auto Group AG";
+  String userRole = "Dealer";
 }

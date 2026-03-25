@@ -6,7 +6,7 @@ import 'package:rionydo/views/main_navigation/bottom_nav.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
 import 'package:rionydo/views/bidding/presentations/bids_view.dart';
-import 'package:rionydo/views/profile/profile_view.dart';
+import 'package:rionydo/views/profile/presentations/profile_view.dart';
 
 class OnboardignCommonScaff extends StatelessWidget {
   final String stepNumber;

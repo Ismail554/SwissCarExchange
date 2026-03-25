@@ -30,11 +30,12 @@ class IconAssets {
 
 class JsonAssets {
   static const String loading = "$jsonPath/loading.json";
+  static const String successmark = "$jsonPath/success_mark.json";
 }
 
 class SvgAssets {
   // ✅ General SVG Files
   static const String splash = "$svgPath/splash_screen.svg";
   static const String logo = "$svgPath/logo.svg";
-  static const String successmark = "$svgPath/successmark.svg";
+  static const String successmark = "$svgPath/success_mark.svg";
 }

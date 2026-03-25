@@ -3,11 +3,12 @@ import 'package:lottie/lottie.dart';
 import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/core/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
 import 'package:rionydo/views/bidding/presentations/bids_view.dart';
-import 'package:rionydo/views/profile/profile_view.dart';
+import 'package:rionydo/views/profile/presentations/profile_view.dart';
 import 'package:rionydo/views/main_navigation/bottom_nav.dart';
 
 class PaySuccessful extends StatefulWidget {
@@ -27,12 +28,7 @@ class _PaySuccessfulState extends State<PaySuccessful> {
           MaterialPageRoute(
             builder: (context) => const MainNavigationShell(
               initialIndex: 2,
-              pages: [
-                HomeView(),
-                AuctionsView(),
-                BidsView(),
-                ProfileView(),
-              ],
+              pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
             ),
           ),
           (route) => false,
@@ -51,11 +47,7 @@ class _PaySuccessfulState extends State<PaySuccessful> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Success animation
-              Lottie.asset(
-                'assets/jsons/success_mark.json',
-                height: 150,
-                repeat: false,
-              ),
+              Lottie.asset(JsonAssets.successmark, height: 150, repeat: false),
 
               // Success message
               Text(
