@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
@@ -77,14 +78,14 @@ class _SignUpStep2State extends State<SignUpStep2> {
                               TextSpan(
                                 text: 'Step  ',
                                 style: TextStyle(
-                                  color: Color(0xFF00D5BE),
+                                  color: AppColors.sceTeal,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               TextSpan(
                                 text: '2 of 3',
                                 style: TextStyle(
-                                  color: Color(0xFF00D5BE),
+                                  color: AppColors.sceTeal,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -110,7 +111,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
                         value: 2 / 3,
                         backgroundColor: Colors.white12,
                         valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF00D5BE),
+                          AppColors.sceTeal,
                         ),
                         minHeight: 3,
                       ),
@@ -127,9 +128,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
                     CustomTextField(
                       controller: _companyController,
                       hintText: 'Premium Auto Group AG',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.business_outlined,
-                        color: Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         size: 20,
                       ),
                     ),
@@ -145,9 +146,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
                     CustomTextField(
                       controller: _uidController,
                       hintText: 'CHE-123.456.789',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.business_center_outlined,
-                        color: Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         size: 20,
                       ),
                     ),
@@ -163,9 +164,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
                     CustomTextField(
                       controller: _addressController,
                       hintText: 'Streets, ZIP, City',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.location_on_outlined,
-                        color: Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         size: 20,
                       ),
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 
 enum SnackBarType { success, error, info, warning }
 
@@ -141,39 +142,39 @@ class AppSnackBar {
     switch (type) {
       case SnackBarType.success:
         return _SnackBarConfig(
-          bgColor: const Color(0xFF0D2018),
-          borderColor: const Color(0xFF00D5BE).withOpacity(0.4),
-          glowColor: const Color(0xFF00D5BE),
+          bgColor: AppColors.sceSuccessDarkBg,
+          borderColor: AppColors.sceTeal.withOpacity(0.4),
+          glowColor: AppColors.sceTeal,
           icon: Icons.check_circle_outline_rounded,
-          iconColor: const Color(0xFF00D5BE),
-          iconBgColor: const Color(0xFF00D5BE).withOpacity(0.12),
+          iconColor: AppColors.sceTeal,
+          iconBgColor: AppColors.sceTeal.withOpacity(0.12),
         );
       case SnackBarType.error:
         return _SnackBarConfig(
-          bgColor: const Color(0xFF1E0A0A),
-          borderColor: Colors.redAccent.withOpacity(0.4),
-          glowColor: Colors.redAccent,
+          bgColor: AppColors.sceErrorDarkBg,
+          borderColor: AppColors.errorRed.withOpacity(0.4),
+          glowColor: AppColors.errorRed,
           icon: Icons.error_outline_rounded,
-          iconColor: Colors.redAccent,
-          iconBgColor: Colors.redAccent.withOpacity(0.12),
+          iconColor: AppColors.errorRed,
+          iconBgColor: AppColors.errorRed.withOpacity(0.12),
         );
       case SnackBarType.warning:
         return _SnackBarConfig(
-          bgColor: const Color(0xFF1E1400),
-          borderColor: const Color(0xFFE2B93B).withOpacity(0.4),
-          glowColor: const Color(0xFFE2B93B),
+          bgColor: AppColors.sceWarningDarkBg,
+          borderColor: AppColors.sceRegistrationGold.withOpacity(0.4),
+          glowColor: AppColors.sceRegistrationGold,
           icon: Icons.warning_amber_rounded,
-          iconColor: const Color(0xFFE2B93B),
-          iconBgColor: const Color(0xFFE2B93B).withOpacity(0.12),
+          iconColor: AppColors.sceRegistrationGold,
+          iconBgColor: AppColors.sceRegistrationGold.withOpacity(0.12),
         );
       case SnackBarType.info:
         return _SnackBarConfig(
-          bgColor: const Color(0xFF0A1020),
-          borderColor: const Color(0xFF1E90FF).withOpacity(0.4),
-          glowColor: const Color(0xFF1E90FF),
+          bgColor: AppColors.sceInfoDarkBg,
+          borderColor: AppColors.info.withOpacity(0.4),
+          glowColor: AppColors.info,
           icon: Icons.info_outline_rounded,
-          iconColor: const Color(0xFF1E90FF),
-          iconBgColor: const Color(0xFF1E90FF).withOpacity(0.12),
+          iconColor: AppColors.info,
+          iconBgColor: AppColors.info.withOpacity(0.12),
         );
     }
   }

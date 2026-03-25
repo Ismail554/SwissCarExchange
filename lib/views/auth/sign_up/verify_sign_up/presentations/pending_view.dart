@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_outlined_btn.dart';
@@ -116,16 +117,16 @@ class PendingView extends StatelessWidget {
               width: 8,
               height: 8,
               decoration: const BoxDecoration(
-                color: Color(0xFF00FF88),
+                color: AppColors.scePendingGreen,
                 shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: Color(0xFF00FF88), blurRadius: 8)],
+                boxShadow: [BoxShadow(color: AppColors.scePendingGreen, blurRadius: 8)],
               ),
             ),
             const SizedBox(width: 10),
             Text(
               status,
               style: const TextStyle(
-                color: Color(0xFF00FF88),
+                color: AppColors.scePendingGreen,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),

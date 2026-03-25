@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
@@ -64,7 +65,7 @@ class _SignUpStep3State extends State<SignUpStep3> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                backgroundColor: Colors.redAccent.withOpacity(0.9),
+                backgroundColor: AppColors.errorRed.withOpacity(0.9),
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -92,7 +93,7 @@ class _SignUpStep3State extends State<SignUpStep3> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: Colors.redAccent.withOpacity(0.9),
+            backgroundColor: AppColors.errorRed.withOpacity(0.9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -108,7 +109,7 @@ class _SignUpStep3State extends State<SignUpStep3> {
 
   @override
   Widget build(BuildContext context) {
-    final teal = const Color(0xFF00D5BE);
+    final teal = AppColors.sceTeal;
 
     return CommonBackground(
       child: SafeArea(

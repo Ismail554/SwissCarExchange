@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/app_spacing.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
 
@@ -26,7 +27,7 @@ class WidgetCommonTopLogocard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF00D5BE),
+                    color: AppColors.sceTeal,
                     width: 5.0,
                   ),
                 ),

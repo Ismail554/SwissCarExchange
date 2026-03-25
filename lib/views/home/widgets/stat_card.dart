@@ -56,7 +56,7 @@ class StatCard extends StatelessWidget {
                 Text(
                   subValue!,
                   style: FontManager.bodySmall(
-                    color: const Color(0xFF00D5BE).withOpacity(0.6),
+                    color: AppColors.sceTeal.withOpacity(0.6),
                     fontSize: 10.sp,
                   ),
                 ),

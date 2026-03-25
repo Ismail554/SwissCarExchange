@@ -191,7 +191,7 @@ class _BankDetailsCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF111827),
+        color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.grey.withOpacity(0.15)),
       ),

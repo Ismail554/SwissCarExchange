@@ -24,15 +24,18 @@ class _PaySuccessfulState extends State<PaySuccessful> {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const MainNavigationShell(
-              initialIndex: 2,
-              pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
-            ),
-          ),
-          (route) => false,
-        );
+        int count = 0;
+        Navigator.popUntil(context, (route) => count++ == 3);
+        // Navigator.of(context).pushAndRemoveUntil(
+        //   MaterialPageRoute(
+        //     builder: (context) => const
+        //     MainNavigationShell(
+        //       initialIndex: 2,
+        //       pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
+        //     ),
+        //   ),
+        //   (route) => false,
+        // );
       }
     });
   }

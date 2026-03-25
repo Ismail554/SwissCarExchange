@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/views/premium/presentations/subscription_views.dart';
 
 class UpgradePremiumCard extends StatelessWidget {
   const UpgradePremiumCard({super.key});
@@ -15,7 +16,10 @@ class UpgradePremiumCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF3B250A), Color(0xFF1D1408)],
+          colors: [
+            AppColors.scePremiumCardGradientStart,
+            AppColors.scePremiumCardGradientEnd
+          ],
         ),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: AppColors.sceGold.withOpacity(0.3), width: 1),
@@ -42,7 +46,12 @@ class UpgradePremiumCard extends StatelessWidget {
           ),
           AppSpacing.h16,
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SubscriptionViews()),
+              );
+            },
             style: OutlinedButton.styleFrom(
               backgroundColor: AppColors.scePremiumDealerBg,
               side: BorderSide(color: AppColors.sceGold.withOpacity(0.5)),

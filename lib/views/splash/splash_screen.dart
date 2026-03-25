@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/views/auth/onboarding/views/step1_onboarding.dart';
-import 'package:rionydo/views/home/presentation/home_view.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -103,13 +103,13 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Container(
                       width: _dividerWidth.value,
                       height: 4,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                           colors: [
                             Colors.transparent,
-                            Color(0xFF0CFFE5),
+                            AppColors.sceSplashCyan,
                             Colors.transparent,
                           ],
                           stops: [0.0, 0.5, 1.0],

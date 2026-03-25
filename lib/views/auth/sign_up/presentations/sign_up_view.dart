@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
@@ -66,16 +67,16 @@ class _SignUpViewState extends State<SignUpView> {
                           vertical: 8.h,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2A2208),
+                          color: AppColors.sceRegistrationGoldBg,
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(
-                            color: const Color(0xFFE2B93B).withOpacity(0.4),
+                            color: AppColors.sceRegistrationGold.withOpacity(0.4),
                           ),
                         ),
                         child: Text(
                           '1. REGISTRATION',
                           style: TextStyle(
-                            color: const Color(0xFFE2B93B),
+                            color: AppColors.sceRegistrationGold,
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 1.2,
@@ -108,7 +109,7 @@ class _SignUpViewState extends State<SignUpView> {
                       'REGISTRATION',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: const Color(0xFF00D5BE),
+                        color: AppColors.sceTeal,
                         fontSize: 28.sp,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 2,
@@ -127,9 +128,9 @@ class _SignUpViewState extends State<SignUpView> {
                       controller: _emailController,
                       hintText: 'info@premiumauto.ch',
                       keyboardType: TextInputType.emailAddress,
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.email_outlined,
-                        color: Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         size: 20,
                       ),
                     ),
@@ -146,9 +147,9 @@ class _SignUpViewState extends State<SignUpView> {
                       controller: _passwordController,
                       hintText: '••••••••',
                       obscureText: _obscurePassword,
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         size: 20,
                       ),
                       suffixIcon: GestureDetector(
@@ -159,7 +160,7 @@ class _SignUpViewState extends State<SignUpView> {
                           _obscurePassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: const Color(0xFFA0AABF),
+                          color: AppColors.sceGreyA0,
                           size: 20,
                         ),
                       ),
@@ -177,9 +178,9 @@ class _SignUpViewState extends State<SignUpView> {
                       controller: _phoneController,
                       hintText: '+41 79 123 45 67',
                       keyboardType: TextInputType.phone,
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.phone_outlined,
-                        color: Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         size: 20,
                       ),
                     ),
@@ -220,7 +221,7 @@ class _SignUpViewState extends State<SignUpView> {
                           child: Text(
                             'Login',
                             style: TextStyle(
-                              color: const Color(0xFF00D5BE),
+                              color: AppColors.sceTeal,
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w600,
                             ),
@@ -272,11 +273,11 @@ class _SecurityBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.04),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: const Color(0xFFE2B93B).withOpacity(0.3)),
+        border: Border.all(color: AppColors.sceRegistrationGold.withOpacity(0.3)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFFE2B93B), size: 14.sp),
+          Icon(icon, color: AppColors.sceRegistrationGold, size: 14.sp),
           SizedBox(width: 6.w),
           Text(
             label,

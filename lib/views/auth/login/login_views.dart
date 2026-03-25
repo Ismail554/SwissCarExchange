@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
 import 'package:rionydo/core/constants/global_state.dart';
@@ -54,9 +55,9 @@ class _LoginViewsState extends State<LoginViews> {
               CustomTextField(
                 controller: _emailController,
                 hintText: 'Email',
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Icons.email_outlined,
-                  color: Color(0xFFA0AABF),
+                  color: AppColors.sceGreyA0,
                   size: 20,
                 ),
               ),
@@ -65,9 +66,9 @@ class _LoginViewsState extends State<LoginViews> {
                 controller: _passwordController,
                 hintText: 'Password',
                 obscureText: _obscurePassword,
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Icons.lock_outline,
-                  color: Color(0xFFA0AABF),
+                  color: AppColors.sceGreyA0,
                   size: 20,
                 ),
                 suffixIcon: IconButton(
@@ -75,7 +76,7 @@ class _LoginViewsState extends State<LoginViews> {
                     _obscurePassword
                         ? Icons.visibility_outlined
                         : Icons.visibility_off_outlined,
-                    color: const Color(0xFFA0AABF),
+                    color: AppColors.sceGreyA0,
                   ),
                   onPressed: () =>
                       setState(() => _obscurePassword = !_obscurePassword),
@@ -94,7 +95,7 @@ class _LoginViewsState extends State<LoginViews> {
                   },
                   child: const Text(
                     'Forgot Password?',
-                    style: TextStyle(color: Color(0xFF00D5BE)),
+                    style: TextStyle(color: AppColors.sceTeal),
                   ),
                 ),
               ),

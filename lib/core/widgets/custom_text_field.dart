@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hintText;
@@ -30,7 +31,7 @@ class CustomTextField extends StatelessWidget {
       style: const TextStyle(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Color(0xFFA0AABF), fontSize: 14),
+        hintStyle: const TextStyle(color: AppColors.sceGreyA0, fontSize: 14),
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         filled: true,
@@ -46,11 +47,11 @@ class CustomTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFD4AF37), width: 1.5),
+          borderSide: const BorderSide(color: AppColors.sceOnboardingGold, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.0),
+          borderSide: const BorderSide(color: AppColors.errorRed, width: 1.0),
         ),
       ),
     );

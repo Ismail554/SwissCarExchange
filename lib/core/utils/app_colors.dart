@@ -137,4 +137,39 @@ class AppColors {
   static const Color sceGoldStatBg = Color(0xFF201608);
   static const Color scePremiumDealerBg = Color(0xFF332008);
   static const Color sceSectionHeaderGold = Color(0xFFD59F00);
+  
+  // Premium & Subscription
+  static const Color scePremiumGold = Color(0xFFFFB900);
+  static const Color scePremiumOrange = Color(0xFFFF7931);
+  static const Color scePremiumGlow = Color(0xFFFE9A00);
+  static const Color scePremiumCardGradientStart = Color(0xFF3B250A);
+  static const Color scePremiumCardGradientEnd = Color(0xFF1D1408);
+  static const Color sceRegistrationGold = Color(0xFFE2B93B);
+  static const Color sceRegistrationGoldBg = Color(0xFF2A2208);
+  static const Color sceOnboardingGold = Color(0xFFD4AF37);
+
+  // UI Containers & Backgrounds
+  static const Color sceChartBg = Color(0xFF0F1923);
+  static const Color sceTileBg = Color(0xFF1C2537);
+  static const Color sceDarkBgSecondary = Color(0xFF05080F);
+  
+  // Navigation
+  static const Color sceNavGrey = Color(0xFF6B7280);
+  static const Color sceNavBorder = Color(0xFF374151);
+
+  // Text & Status
+  static const Color sceGrey99 = Color(0xFF99A1AF);
+  static const Color sceGreyA0 = Color(0xFFA0AABF);
+  static const Color sceGlowGreenLight = Color(0xFF25DD6C);
+  static const Color sceGlowGreenDark = Color(0xFF2F9757);
+  static const Color errorRed = Color(0xFFEF4444);
+  
+  // Additional Semantic Colors
+  static const Color sceSplashCyan = Color(0xFF0CFFE5);
+  static const Color scePendingGreen = Color(0xFF00FF88);
+  static const Color sceDarkBgAlternative = Color(0xFF1E1E1E);
+  static const Color sceSuccessDarkBg = Color(0xFF0D2018);
+  static const Color sceErrorDarkBg = Color(0xFF1E0A0A);
+  static const Color sceWarningDarkBg = Color(0xFF1E1400);
+  static const Color sceInfoDarkBg = Color(0xFF0A1020);
 }

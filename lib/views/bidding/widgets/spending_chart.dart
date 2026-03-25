@@ -90,7 +90,7 @@ class _LineChartPainter extends CustomPainter {
       tp.text = TextSpan(
         text: xLabels[i],
         style: const TextStyle(
-          color: Color(0xFF848484),
+          color: AppColors.grey,
           fontSize: _labelFontSize,
         ),
       );

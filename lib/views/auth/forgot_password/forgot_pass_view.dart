@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
@@ -106,9 +107,9 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                       controller: _emailController,
                       hintText: 'E-Mail',
                       keyboardType: TextInputType.emailAddress,
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.email_outlined,
-                        color: Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                       ),
                     ),
                     SizedBox(height: 32.h),

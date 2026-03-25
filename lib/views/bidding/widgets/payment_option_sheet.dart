@@ -31,7 +31,7 @@ class _PaymentOptionSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF111827),
+        color: AppColors.sceCardBg,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(24.w, 12.h, 24.w, 32.h),
@@ -150,7 +150,7 @@ class _PaymentOptionTile extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           decoration: BoxDecoration(
-            color: const Color(0xFF1C2537),
+            color: AppColors.sceTileBg,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: AppColors.grey.withOpacity(0.15),

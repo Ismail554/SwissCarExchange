@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 
 class WidgetPremiumCard extends StatelessWidget {
   final String title;
@@ -25,10 +26,10 @@ class WidgetPremiumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeColor = isPremium ? const Color(0xFFE2B93B) : Colors.white;
+    final themeColor = isPremium ? AppColors.sceRegistrationGold : Colors.white;
     final checkColor = isPremium
-        ? const Color(0xFFE2B93B)
-        : const Color(0xFF28A745);
+        ? AppColors.sceRegistrationGold
+        : AppColors.success;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
@@ -38,11 +39,11 @@ class WidgetPremiumCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E).withOpacity(0.4),
+            color: AppColors.sceDarkBgAlternative.withOpacity(0.4),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isPremium
-                  ? const Color(0xFFE2B93B).withOpacity(0.3)
+                  ? AppColors.sceRegistrationGold.withOpacity(0.3)
                   : Colors.white.withOpacity(0.1),
               width: 1,
             ),
@@ -126,11 +127,11 @@ class WidgetPremiumCard extends StatelessWidget {
                       onPressed: onSelect,
                       style: OutlinedButton.styleFrom(
                         backgroundColor: isPremium
-                            ? const Color(0xFFE2B93B).withOpacity(0.1)
+                            ? AppColors.sceRegistrationGold.withOpacity(0.1)
                             : Colors.white.withOpacity(0.05),
                         side: BorderSide(
                           color: isPremium
-                              ? const Color(0xFFE2B93B).withOpacity(0.5)
+                              ? AppColors.sceRegistrationGold.withOpacity(0.5)
                               : Colors.white.withOpacity(0.2),
                         ),
                         shape: RoundedRectangleBorder(
@@ -159,7 +160,7 @@ class WidgetPremiumCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: const BoxDecoration(
-                      color: Color(0xFFE2B93B),
+                      color: AppColors.sceRegistrationGold,
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
                         bottomLeft: Radius.circular(20),

@@ -1,12 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/views/auth/login/login_views.dart';
-import 'package:rionydo/views/main_navigation/bottom_nav.dart';
-import 'package:rionydo/views/home/presentation/home_view.dart';
-import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
-import 'package:rionydo/views/bidding/presentations/bids_view.dart';
-import 'package:rionydo/views/profile/presentations/profile_view.dart';
 
 class OnboardignCommonScaff extends StatelessWidget {
   final String stepNumber;
@@ -33,7 +29,7 @@ class OnboardignCommonScaff extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF05080F),
+      backgroundColor: AppColors.sceDarkBgSecondary,
       body: Stack(
         children: [
           // Top-right background glow
@@ -80,7 +76,7 @@ class OnboardignCommonScaff extends StatelessWidget {
                             );
                           },
                       style: TextButton.styleFrom(
-                        foregroundColor: const Color(0xFFA0AABF),
+                        foregroundColor: AppColors.sceGreyA0,
                         textStyle: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -108,7 +104,7 @@ class OnboardignCommonScaff extends StatelessWidget {
                               Text(
                                 stepNumber,
                                 style: TextStyle(
-                                  color: Color(0xFFD4AF37),
+                                  color: AppColors.sceOnboardingGold,
                                   fontSize: 64.sp,
                                   height: 1.0,
                                   fontWeight: FontWeight.w400,
@@ -147,19 +143,19 @@ class OnboardignCommonScaff extends StatelessWidget {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: currentIndex == 0
-                                  ? const [
-                                      Color(0xFFD4AF37),
+                                  ? [
+                                      AppColors.sceOnboardingGold,
                                       Colors.transparent,
                                     ]
                                   : currentIndex == 1
-                                  ? const [
+                                  ? [
                                       Colors.transparent,
-                                      Color(0xFFD4AF37),
+                                      AppColors.sceOnboardingGold,
                                       Colors.transparent,
                                     ]
-                                  : const [
+                                  : [
                                       Colors.transparent,
-                                      Color(0xFFD4AF37),
+                                      AppColors.sceOnboardingGold,
                                     ],
                               stops: currentIndex == 0
                                   ? const [0.0, 1.0]
@@ -226,7 +222,7 @@ class OnboardignCommonScaff extends StatelessWidget {
                           child: Text(
                             nextText,
                             style: const TextStyle(
-                              color: Color(0xFF00D5BE),
+                              color: AppColors.sceTeal,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -252,12 +248,12 @@ class OnboardignCommonScaff extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF25DD6C).withOpacity(0.3),
+            color: AppColors.sceGlowGreenLight.withOpacity(0.3),
             blurRadius: 60,
             spreadRadius: 20,
           ),
           BoxShadow(
-            color: const Color(0xFF2F9757).withOpacity(0.2),
+            color: AppColors.sceGlowGreenDark.withOpacity(0.2),
             blurRadius: 100,
             spreadRadius: 40,
           ),

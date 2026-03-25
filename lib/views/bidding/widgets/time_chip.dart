@@ -24,7 +24,7 @@ class BidsTimeChip extends StatelessWidget {
         curve: Curves.easeInOut,
         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.sceTeal : const Color(0xFF1C2537),
+          color: isSelected ? AppColors.sceTeal : AppColors.sceTileBg,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected

@@ -194,14 +194,23 @@ class _PaymentSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Payment For',
-            style: FontManager.labelSmall(color: AppColors.grey),
+          Row(
+            mainAxisAlignment: .spaceBetween,
+            children: [
+              Text(
+                'Payment For',
+                style: FontManager.labelSmall(color: AppColors.grey),
+              ),
+              SizedBox(height: 6.h),
+              Text(
+                carName,
+                style: FontManager.bodyMedium(color: AppColors.white),
+              ),
+            ],
           ),
-          SizedBox(height: 6.h),
-          Text(carName, style: FontManager.bodyMedium(color: AppColors.white)),
           SizedBox(height: 14.h),
           Row(
+            mainAxisAlignment: .spaceBetween,
             children: [
               Text(
                 'Total Amount: ',
@@ -280,7 +289,7 @@ class _CardTextField extends StatelessWidget {
             ? Icon(prefixIcon, color: AppColors.grey, size: 20.sp)
             : null,
         filled: true,
-        fillColor: const Color(0xFF111827),
+        fillColor: AppColors.sceCardBg,
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

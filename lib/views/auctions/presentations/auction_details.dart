@@ -234,7 +234,7 @@ class AuctionDetails extends StatelessWidget {
 
           // Bottom Sticky Button
           Positioned(
-            bottom: 14.h,
+            bottom: -10.h,
             left: 0,
             right: 0,
             child: Container(
@@ -251,19 +251,20 @@ class AuctionDetails extends StatelessWidget {
               ),
               child: SizedBox(
                 width: double.infinity,
-                height: 50.h,
-                child: CustomButton(
-                  text: "JETZT BIETEN",
-                  // Override default color if CustomButton supports it, else wrap nicely
-                  // Assuming AppColors.sceTeal is needed for background
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AuctionBidding(data: data),
-                      ),
-                    );
-                  },
+                child: SafeArea(
+                  child: CustomButton(
+                    text: "JETZT BIETEN",
+                    // Override default color if CustomButton supports it, else wrap nicely
+                    // Assuming AppColors.sceTeal is needed for background
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AuctionBidding(data: data),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

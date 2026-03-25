@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/constants/global_state.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auctions/presentations/add_auction_view.dart';
@@ -121,7 +122,7 @@ class _BottomNavBar extends StatelessWidget {
       child: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: BottomAppBar(
-          color: const Color(0xFF111827),
+          color: AppColors.sceCardBg,
           shape: const CircularNotchedRectangle(),
           notchMargin: 8.0,
           padding: EdgeInsets.zero,
@@ -198,7 +199,7 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isActive = index == activeIndex;
-    const teal = Color(0xFF00D5BE);
+    final teal = AppColors.sceTeal;
 
     return GestureDetector(
       onTap: () => onTap(index),
@@ -215,7 +216,7 @@ class _NavItem extends StatelessWidget {
               child: Icon(
                 isActive ? activeIcon : icon,
                 key: ValueKey(isActive),
-                color: isActive ? teal : const Color(0xFF6B7280),
+                color: isActive ? teal : AppColors.sceNavGrey,
                 size: 24.sp,
               ),
             ),
@@ -223,7 +224,7 @@ class _NavItem extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: isActive ? teal : const Color(0xFF6B7280),
+                color: isActive ? teal : AppColors.sceNavGrey,
                 fontSize: 11.sp,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
               ),
@@ -247,9 +248,9 @@ class _PremiumFab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const teal = Color(0xFF00D5BE);
-    final iconColor = isPremium ? teal : const Color(0xFF6B7280);
-    final ringColor = isPremium ? teal : const Color(0xFF374151);
+    final teal = AppColors.sceTeal;
+    final iconColor = isPremium ? teal : AppColors.sceNavGrey;
+    final ringColor = isPremium ? teal : AppColors.sceNavBorder;
 
     return FloatingActionButton(
       onPressed: onTap,
@@ -292,12 +293,12 @@ class _PremiumFab extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF0A0A0A),
+                    color: AppColors.sceDarkBg,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.lock_outline,
-                    color: const Color(0xFF6B7280),
+                    color: AppColors.sceNavGrey,
                     size: 9.sp,
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:pinput/pinput.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
@@ -99,14 +100,14 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
 
     final focusedPinTheme = defaultPinTheme.copyDecorationWith(
       border: Border.all(
-        color: const Color(0xFFD4AF37),
+        color: AppColors.sceOnboardingGold,
         width: 1.5,
       ), // Gold accent
     );
 
     final submittedPinTheme = defaultPinTheme.copyWith(
       decoration: defaultPinTheme.decoration?.copyWith(
-        border: Border.all(color: const Color(0xFF00D5BE)), // Cyan accent
+        border: Border.all(color: AppColors.sceTeal), // Cyan accent
       ),
     );
 
@@ -158,7 +159,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                       "We've sent a 6-digit code to",
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        color: const Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         fontSize: 15.sp,
                         height: 1.5,
                         fontWeight: FontWeight.w400,
@@ -168,7 +169,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                       widget.email,
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        color: const Color(0xFF02B6A3),
+                        color: AppColors.sceTeal,
                         fontSize: 15.sp,
                         height: 1.5,
                         fontWeight: FontWeight.w400,
@@ -199,7 +200,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                         Text(
                           "Didn't receive the code?",
                           style: TextStyle(
-                            color: const Color(0xFFA0AABF),
+                            color: AppColors.sceGreyA0,
                             fontSize: 14.sp,
                           ),
                         ),
@@ -213,7 +214,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                                     'Resend Code',
                                     key: const ValueKey('resend'),
                                     style: TextStyle(
-                                      color: const Color(0xFF00D5BE),
+                                      color: AppColors.sceTeal,
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -222,7 +223,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                                     'Resend in ${_secondsLeft}s',
                                     key: const ValueKey('countdown'),
                                     style: TextStyle(
-                                      color: const Color(0xFFA0AABF),
+                                      color: AppColors.sceGreyA0,
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w500,
                                     ),
