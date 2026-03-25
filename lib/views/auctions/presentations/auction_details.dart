@@ -23,12 +23,9 @@ class AuctionDetails extends StatelessWidget {
                 backgroundColor: AppColors.primaryColor,
                 expandedHeight: 300.h,
                 pinned: true,
-                leading: Padding(
-                  padding: EdgeInsets.only(left: 16.w),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: const CustomBackButton(),
-                  ),
+                leading: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: CustomBackButton(),
                 ),
                 leadingWidth: 64.w,
                 actions: [
@@ -58,7 +55,9 @@ class AuctionDetails extends StatelessWidget {
                       // Placeholder styling for Image
                       Container(
                         color: Colors.white.withOpacity(0.1),
-                        child: Image.asset(data['image'], fit: BoxFit.cover),
+                        child: data['image'].startsWith('http')
+                            ? Image.network(data['image'], fit: BoxFit.cover)
+                            : Image.asset(data['image'], fit: BoxFit.cover),
                       ),
                       // Gradient overlay at bottom for text
                       Positioned(

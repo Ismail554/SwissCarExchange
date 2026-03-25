@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/views/premium/presentations/advance_statistics.dart';
+import 'package:rionydo/views/premium/presentations/auction_management.dart';
 import 'package:rionydo/views/premium/presentations/create_auction.dart';
+import 'package:rionydo/views/premium/presentations/recieve_payments.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 
 class PremiumFeaturesCard extends StatelessWidget {
@@ -58,19 +61,40 @@ class PremiumFeaturesCard extends StatelessWidget {
                 Icons.inventory_2_outlined,
                 'Auction Management',
                 isPremiumFeature: true,
-                onTap: () => CreateAuction(),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AuctionManagement(),
+                    ),
+                  );
+                },
               ),
               ProfileDivider(),
               ProfileListTile(
                 Icons.trending_up,
                 'Advanced Statistics',
-                isPremiumFeature: true, onTap: () {  },
+                isPremiumFeature: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdvanceStatistics(),
+                    ),
+                  );
+                },
               ),
               ProfileDivider(),
               ProfileListTile(
                 Icons.attach_money,
                 'Receive Payments',
-                isPremiumFeature: true, onTap: () {  },
+                isPremiumFeature: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RecievePayments()),
+                  );
+                },
               ),
             ],
           ),
