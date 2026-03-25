@@ -72,7 +72,23 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ],
                     ),
-                    const NotificationBadge(),
+                    Row(
+                      children: [
+                        // Text(
+                        //   isPremium ? "Premium" : "Basic",
+                        //   style: TextStyle(color: AppColors.sceGold, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                        // ),
+                        // Switch(
+                        //   value: isPremium,
+                        //   activeColor: AppColors.sceGold,
+                        //   onChanged: (val) {
+                        //     context.read<GlobalState>().isPremium = val;
+                        //   },
+                        // ),
+                        SizedBox(width: 8.w),
+                        const NotificationBadge(),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -111,7 +127,8 @@ class _HomeViewState extends State<HomeView> {
                 AppSpacing.h20,
 
                 // ── Premium Card ────────────────────────────────────────
-                if (!isPremium) ...[const PremiumDealerCard(), AppSpacing.h20],
+                const PremiumDealerCard(),
+                AppSpacing.h20,
 
                 // ── Search Button ───────────────────────────────────────
                 CustomButton(

@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/utils/app_colors.dart';
+
+class MyBidsCard extends StatelessWidget {
+  const MyBidsCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.sceCardBg,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: AppColors.darkGrey, width: 1),
+      ),
+      child: ListTile(
+        leading: Icon(Icons.feed_outlined, color: AppColors.sceGold, size: 20.sp),
+        title: Text(
+          'My Bids',
+          style: TextStyle(
+            color: AppColors.sceGold,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        trailing: Icon(Icons.chevron_right, color: AppColors.grey, size: 20.sp),
+        onTap: () {},
+      ),
+    );
+  }
+}

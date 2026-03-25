@@ -35,7 +35,7 @@ class _LoginViewsState extends State<LoginViews> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: 48.h),
-              Image.asset(IconAssets.app_logo, height: 40.h),
+              Image.asset(IconAssets.app_logo, height: 74.h),
               SizedBox(height: 48.h),
               Text(
                 'Welcome Back',

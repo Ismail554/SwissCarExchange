@@ -50,7 +50,8 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   }
 
   void _onPremiumFabTap() {
-    final isPremium = widget.isPremiumUser ?? context.read<GlobalState>().isPremium;
+    final isPremium =
+        widget.isPremiumUser ?? context.read<GlobalState>().isPremium;
     if (isPremium) {
       Navigator.push(
         context,
@@ -71,7 +72,8 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   @override
   Widget build(BuildContext context) {
     final activeTab = _pageToTab[_currentIndex] ?? 0;
-    final isPremium = widget.isPremiumUser ?? context.watch<GlobalState>().isPremium;
+    final isPremium =
+        widget.isPremiumUser ?? context.watch<GlobalState>().isPremium;
 
     return SafeArea(
       child: Scaffold(
@@ -150,9 +152,9 @@ class _BottomNavBar extends StatelessWidget {
                 _NavItem(
                   index: 3,
                   activeIndex: activeIndex,
-                  icon: Icons.card_giftcard_outlined,
-                  activeIcon: Icons.card_giftcard_rounded,
-                  label: 'Bids',
+                  icon: Icons.analytics_outlined,
+                  activeIcon: Icons.analytics_rounded,
+                  label: 'Analysis',
                   onTap: onTabTap,
                 ),
                 _NavItem(
