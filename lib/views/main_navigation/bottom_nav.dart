@@ -14,10 +14,13 @@ class MainNavigationShell extends StatefulWidget {
   /// Whether the signed-in user has a Premium subscription.
   final bool? isPremiumUser;
 
+  final int initialIndex;
+
   const MainNavigationShell({
     super.key,
     required this.pages,
     this.isPremiumUser,
+    this.initialIndex = 0,
   });
 
   @override
@@ -25,7 +28,13 @@ class MainNavigationShell extends StatefulWidget {
 }
 
 class _MainNavigationShellState extends State<MainNavigationShell> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
 
   // Map raw tab indices (skipping the centre FAB slot) to page indices.
   // Raw order: 0=Home, 1=Auctions, [fab], 2=Bids, 3=Profile

@@ -21,6 +21,7 @@ dependencies:
   pinput: ^6.0.2
   file_picker: ^10.3.10
   open_filex: ^4.7.0
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +39,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/svgs/
+    - assets/jsons/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
