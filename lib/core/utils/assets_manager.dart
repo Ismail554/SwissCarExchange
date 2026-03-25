@@ -26,6 +26,7 @@ class IconAssets {
   static const String red_card = "$iconPath/red_card.png";
   static const String yellow_card = "$iconPath/yellow_card.png";
   static const String trophy = "$iconPath/trophy.png";
+  static const String customBack = "$iconPath/back_rounded.png";
 }
 
 class JsonAssets {

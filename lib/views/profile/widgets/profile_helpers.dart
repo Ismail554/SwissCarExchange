@@ -3,16 +3,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 
-class ProfileSectionTitle extends StatelessWidget {
+class ProfileSectionTitle extends StatefulWidget {
   final String title;
-  const ProfileSectionTitle(this.title, {super.key});
+  final VoidCallback? onTap;
+  const ProfileSectionTitle(this.title, {super.key, this.onTap});
 
+  @override
+  State<ProfileSectionTitle> createState() => _ProfileSectionTitleState();
+}
+
+class _ProfileSectionTitleState extends State<ProfileSectionTitle> {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 4.w),
       child: Text(
-        title,
+        widget.title,
         style: TextStyle(
           color: AppColors.greyD4,
           fontSize: 12.sp,
@@ -44,10 +50,7 @@ class ProfileStatItem extends StatelessWidget {
           ),
         ),
         SizedBox(height: 4.h),
-        Text(
-          label,
-          style: FontManager.bodySmall(color: AppColors.grey),
-        ),
+        Text(label, style: FontManager.bodySmall(color: AppColors.grey)),
       ],
     );
   }
@@ -57,8 +60,15 @@ class ProfileListTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final bool isPremiumFeature;
+  final VoidCallback? onTap;
 
-  const ProfileListTile(this.icon, this.title, {super.key, this.isPremiumFeature = false});
+  const ProfileListTile(
+    this.icon,
+    this.title, {
+    super.key,
+    this.isPremiumFeature = false,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +88,7 @@ class ProfileListTile extends StatelessWidget {
         ),
       ),
       trailing: Icon(Icons.chevron_right, color: AppColors.grey, size: 20.sp),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }
@@ -112,15 +122,9 @@ class ProfileInfoRow extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              label,
-              style: FontManager.bodySmall(color: AppColors.grey),
-            ),
+            Text(label, style: FontManager.bodySmall(color: AppColors.grey)),
             SizedBox(height: 4.h),
-            Text(
-              value,
-              style: FontManager.bodyMedium(color: AppColors.white),
-            ),
+            Text(value, style: FontManager.bodyMedium(color: AppColors.white)),
           ],
         ),
       ),
