@@ -7,9 +7,15 @@ import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 
-/// Screen to save and manage user payment methods (cards).
+import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
+import 'package:rionydo/views/won_auction/presentations/auction_contact_view.dart';
+
+/// Screen to save and manage user payment methods (cards) or complete a payment.
 class PaymentMethodView extends StatefulWidget {
-  const PaymentMethodView({super.key});
+  final bool isPaymentFlow;
+  
+  const PaymentMethodView({super.key, this.isPaymentFlow = false});
+
 
   @override
   State<PaymentMethodView> createState() => _PaymentMethodViewState();
@@ -33,9 +39,19 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
 
   void _saveCard() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Logic to save the card would go here.
-      AppSnackBar.success(context, "Card saved successfully!");
-      Navigator.pop(context);
+      if (widget.isPaymentFlow) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PaySuccessful(
+              nextScreen: AuctionContactView(),
+            ),
+          ),
+        );
+      } else {
+        AppSnackBar.success(context, "Card saved successfully!");
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -62,7 +78,9 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Save your cards for getting online payments',
+                  widget.isPaymentFlow 
+                      ? 'Enter your card details to complete the payment'
+                      : 'Save your cards for getting online payments',
                   style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
                 ),
                 SizedBox(height: 32.h),
@@ -150,7 +168,10 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
                 SizedBox(height: 48.h),
 
                 // --- Save button ---
-                CustomButton(text: 'Save', onPressed: _saveCard),
+                CustomButton(
+                  text: widget.isPaymentFlow ? 'Pay Now' : 'Save',
+                  onPressed: _saveCard,
+                ),
                 SizedBox(height: 20.h),
               ],
             ),

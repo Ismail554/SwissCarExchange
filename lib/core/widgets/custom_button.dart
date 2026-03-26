@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
@@ -8,6 +9,7 @@ class CustomButton extends StatelessWidget {
   final bool isPrimary;
   final bool isLoading;
   final bool isActive;
+  final IconData? icon;
 
   const CustomButton({
     super.key,
@@ -16,6 +18,7 @@ class CustomButton extends StatelessWidget {
     this.isPrimary = true,
     this.isLoading = false,
     this.isActive = true,
+    this.icon,
   });
 
   @override
@@ -69,13 +72,18 @@ class CustomButton extends StatelessWidget {
                       strokeWidth: 2,
                     ),
                   )
-                : Text(
-                    text,
-                    style: TextStyle(
-                      color: isActive ? Colors.white : AppColors.textDisabled,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (icon != null) ...[
+                        Icon(icon, color: Colors.white, size: 20.sp),
+                        SizedBox(width: 8.w),
+                      ],
+                      Text(
+                        text,
+                        style: FontManager.buttonText(color: AppColors.white),
+                      ),
+                    ],
                   ),
           ),
         ),

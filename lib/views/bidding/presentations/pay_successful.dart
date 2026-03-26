@@ -12,7 +12,8 @@ import 'package:rionydo/views/profile/presentations/profile_view.dart';
 import 'package:rionydo/views/main_navigation/bottom_nav.dart';
 
 class PaySuccessful extends StatefulWidget {
-  const PaySuccessful({super.key});
+  final Widget? nextScreen;
+  const PaySuccessful({super.key, this.nextScreen});
 
   @override
   State<PaySuccessful> createState() => _PaySuccessfulState();
@@ -24,18 +25,15 @@ class _PaySuccessfulState extends State<PaySuccessful> {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        int count = 0;
-        Navigator.popUntil(context, (route) => count++ == 3);
-        // Navigator.of(context).pushAndRemoveUntil(
-        //   MaterialPageRoute(
-        //     builder: (context) => const
-        //     MainNavigationShell(
-        //       initialIndex: 2,
-        //       pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
-        //     ),
-        //   ),
-        //   (route) => false,
-        // );
+        if (widget.nextScreen != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => widget.nextScreen!),
+          );
+        } else {
+          int count = 0;
+          Navigator.popUntil(context, (route) => count++ == 3);
+        }
       }
     });
   }

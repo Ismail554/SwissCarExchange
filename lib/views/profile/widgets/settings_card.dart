@@ -5,6 +5,7 @@ import 'package:rionydo/views/profile/presentations/account_settings_view.dart';
 import 'package:rionydo/views/profile/presentations/notification_settings_view.dart';
 import 'package:rionydo/views/profile/presentations/payment_method_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
+import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
 
 class SettingsCard extends StatelessWidget {
   const SettingsCard({super.key});
@@ -61,7 +62,12 @@ class SettingsCard extends StatelessWidget {
           ProfileListTile(
             Icons.emoji_events_outlined,
             'Won Auctions',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const WonAuctionHome()),
+              );
+            },
           ),
           ProfileDivider(),
           ProfileListTile(

@@ -118,7 +118,7 @@ class ProfileInfoRow extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 12.h),
       child: SizedBox(
-        width: double.infinity,
+        width: double.maxFinite,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
