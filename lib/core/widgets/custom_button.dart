@@ -9,6 +9,7 @@ class CustomButton extends StatelessWidget {
   final bool isPrimary;
   final bool isLoading;
   final bool isActive;
+  final bool isDanger;
   final IconData? icon;
 
   const CustomButton({
@@ -18,6 +19,7 @@ class CustomButton extends StatelessWidget {
     this.isPrimary = true,
     this.isLoading = false,
     this.isActive = true,
+    this.isDanger = false,
     this.icon,
   });
 
@@ -34,23 +36,30 @@ class CustomButton extends StatelessWidget {
             ? LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  AppColors.sceTeal,
-                  AppColors.sceTeal.withOpacity(0.8),
-                  AppColors.sceTeal.withOpacity(0.6),
-                ],
+                colors: isDanger
+                    ? [
+                        AppColors.errorRed,
+                        AppColors.errorRed.withOpacity(0.8),
+                      ]
+                    : [
+                        AppColors.sceTeal,
+                        AppColors.sceTeal.withOpacity(0.8),
+                        AppColors.sceTeal.withOpacity(0.6),
+                      ],
               )
             : null,
         borderRadius: BorderRadius.circular(12),
         border: isPrimary
             ? null
             : Border.all(
-                color: isActive ? AppColors.textHint : AppColors.dividerDark,
+                color: isDanger
+                    ? AppColors.errorRed
+                    : (isActive ? AppColors.textHint : AppColors.dividerDark),
               ),
         boxShadow: isPrimary && isActive
             ? [
                 BoxShadow(
-                  color: AppColors.sceTeal.withOpacity(0.25),
+                  color: (isDanger ? AppColors.errorRed : AppColors.sceTeal).withOpacity(0.25),
                   blurRadius: 15,
                   offset: const Offset(0, 4),
                 ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
-import 'package:rionydo/views/profile/presentations/account_settings_view.dart';
+import 'package:rionydo/views/settings/presentations/account_settings_view.dart';
 import 'package:rionydo/views/profile/presentations/notification_settings_view.dart';
 import 'package:rionydo/views/profile/presentations/payment_method_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
+import 'package:rionydo/views/settings/presentations/help_support_view.dart';
+import 'package:rionydo/views/settings/presentations/privacy_settings_view.dart';
 import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
 
 class SettingsCard extends StatelessWidget {
@@ -73,12 +75,30 @@ class SettingsCard extends StatelessWidget {
           ProfileListTile(
             Icons.security_outlined,
             'Security & Privacy',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PrivacySettingsView(),
+                ),
+              );
+            },
           ),
           ProfileDivider(),
           ProfileListTile(Icons.language_outlined, 'Languages', onTap: () {}),
           ProfileDivider(),
-          ProfileListTile(Icons.help_outline, 'Help & Support', onTap: () {}),
+          ProfileListTile(
+            Icons.help_outline,
+            'Help & Support',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HelpSupportView(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
