@@ -131,11 +131,11 @@ class _HomeViewState extends State<HomeView> {
                 AppSpacing.h20,
 
                 // ── Search Button ───────────────────────────────────────
-                CustomButton(
-                  text: 'SEARCH VEHICLE',
-                  onPressed: () {},
-                  isPrimary: true,
-                ),
+                // CustomButton(
+                //   text: 'SEARCH VEHICLE',
+                //   onPressed: () {},
+                //   isPrimary: true,
+                // ),
                 AppSpacing.h32,
 
                 // ── Live Auctions Section ────────────────────────────────

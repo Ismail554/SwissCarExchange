@@ -9,9 +9,11 @@ class LogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
+      width: double.maxFinite,
       child: OutlinedButton(
-        onPressed: () {},
+        onPressed: () {
+          // Navigator.pop()
+        },
         style: OutlinedButton.styleFrom(
           backgroundColor: AppColors.error.withOpacity(0.05),
           side: BorderSide(color: AppColors.error.withOpacity(0.3)),
