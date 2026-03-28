@@ -6,6 +6,7 @@ import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_outlined_btn.dart';
+import 'package:rionydo/views/auth/login/login_views.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
 
 class PendingView extends StatelessWidget {
@@ -61,13 +62,20 @@ class PendingView extends StatelessWidget {
               ),
             ),
             Spacer(),
-            AppSpacing.h40,
 
-            WidgetOutlinedBtn(
-              title: 'Logout',
-              icon: Icons.logout,
-              themeColor: Colors.red,
-              onPressed: () {},
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: WidgetOutlinedBtn(
+                title: 'Logout',
+                icon: Icons.logout,
+                themeColor: Colors.red,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginViews()),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -119,7 +127,9 @@ class PendingView extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: AppColors.scePendingGreen,
                 shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: AppColors.scePendingGreen, blurRadius: 8)],
+                boxShadow: [
+                  BoxShadow(color: AppColors.scePendingGreen, blurRadius: 8),
+                ],
               ),
             ),
             const SizedBox(width: 10),

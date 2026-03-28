@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/core/utils/assets_manager.dart';
@@ -8,6 +9,7 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/views/auth/forgot_password/forgot_pass_view.dart';
+import 'package:rionydo/views/auth/sign_up/presentations/sign_up_view.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
 import 'package:rionydo/views/bidding/presentations/bids_view.dart';
@@ -121,6 +123,32 @@ class _LoginViewsState extends State<LoginViews> {
                     ),
                   );
                 },
+              ),
+              SizedBox(height: 24.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account? ",
+                    style: FontManager.bodySmall(color: AppColors.sceGrey99),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpView(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "Sign Up",
+                      style: FontManager.bodySmall(
+                        color: AppColors.sceTeal,
+                      ).copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

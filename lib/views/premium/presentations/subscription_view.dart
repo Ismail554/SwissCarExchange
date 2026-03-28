@@ -162,9 +162,13 @@ class SubscriptionViews extends StatelessWidget {
                   children: [
                     Text(
                       'DEALER SUBSCRIPTION',
-                      style: FontManager.labelSmall(
-                        color: AppColors.scePremiumGold,
-                      ).copyWith(letterSpacing: 1.2, fontWeight: FontWeight.bold),
+                      style:
+                          FontManager.labelSmall(
+                            color: AppColors.scePremiumGold,
+                          ).copyWith(
+                            letterSpacing: 1.2,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     SizedBox(height: 8.h),
                     Row(
@@ -286,13 +290,13 @@ class SubscriptionViews extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => OnlinePaymentView(
                         carName: "Premium Plan",
-                        amount: "899 CHF",
+                        amount: "299 CHF",
                       ),
                     ),
                   );
                 },
                 child: Container(
-                  width: double.infinity,
+                  width: double.maxFinite,
                   height: 56.h,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
