@@ -188,7 +188,7 @@ class _BankDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: double.maxFinite,
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
@@ -308,7 +308,7 @@ class _WarningBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: double.maxFinite,
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: AppColors.sceGold.withOpacity(0.08),

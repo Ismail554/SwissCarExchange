@@ -22,8 +22,8 @@ class WidgetCommonTopLogocard extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Container(
-                width: 184,
-                height: 184,
+                width: 184.w,
+                height: 184.h,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(

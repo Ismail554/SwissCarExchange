@@ -181,7 +181,7 @@ class _SignUpViewState extends State<SignUpView> {
                       prefixIcon: Icon(
                         Icons.phone_outlined,
                         color: AppColors.sceGreyA0,
-                        size: 20,
+                        size: 20.sp,
                       ),
                     ),
 

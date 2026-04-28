@@ -32,11 +32,11 @@ class _ReviewSubmittedViewState extends State<ReviewSubmittedView> {
     return CommonBackground(
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: EdgeInsets.symmetric(horizontal: 20.0.h),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Lottie.asset(JsonAssets.successmark, height: 150, repeat: true),
+              Lottie.asset(JsonAssets.successmark, height: 150.h, width: 150.w, repeat: true),
               AppSpacing.h14,
               Column(
                 spacing: 4.h,

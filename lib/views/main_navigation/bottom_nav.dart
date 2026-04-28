@@ -269,11 +269,11 @@ class _PremiumFab extends StatelessWidget {
       shape: const CircleBorder(),
       child: Container(
         width: 58.w,
-        height: 58.w,
+        height: 58.h,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.transparent,
-          border: Border.all(color: ringColor, width: 1.8),
+          border: Border.all(color: ringColor, width: 1.8.w),
           boxShadow: isPremium
               ? [
                   BoxShadow(

@@ -45,7 +45,7 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
             children: [
               /// 🔴 ICON
               Container(
-                height: 70.w,
+                height: 70.h,
                 width: 70.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -57,7 +57,7 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                   ),
                   border: Border.all(
                     color: Colors.redAccent.withOpacity(0.4),
-                    width: 1.2,
+                    width: 1.2.w,
                   ),
                 ),
                 child: Icon(

@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/core/constants/font_manager.dart';
 import 'package:rionydo/core/utils/app_spacing.dart';
 import 'package:rionydo/core/utils/app_colors.dart';
@@ -91,27 +92,27 @@ class WidgetPremiumCard extends StatelessWidget {
                     roleText,
                     style: FontManager.bodySmall(
                       color: Colors.white54,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                     ),
                   ),
                   AppSpacing.h24,
                   ...features.map(
                     (feature) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.only(bottom: 12.h),
                       child: Row(
                         children: [
                           Icon(
                             Icons.check_circle_outline,
                             color: checkColor,
-                            size: 20,
+                            size: 20.sp,
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Expanded(
                             child: Text(
                               feature,
                               style: FontManager.bodyMedium(
                                 color: Colors.white70,
-                                fontSize: 14,
+                                fontSize: 14.sp,
                               ),
                             ),
                           ),
@@ -121,8 +122,8 @@ class WidgetPremiumCard extends StatelessWidget {
                   ),
                   AppSpacing.h16,
                   SizedBox(
-                    width: double.infinity,
-                    height: 52,
+                    width: double.maxFinite,
+                    height: 52.h,
                     child: OutlinedButton(
                       onPressed: onSelect,
                       style: OutlinedButton.styleFrom(
@@ -155,9 +156,9 @@ class WidgetPremiumCard extends StatelessWidget {
                   top: -24,
                   right: -24,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 6.h,
                     ),
                     decoration: const BoxDecoration(
                       color: AppColors.sceRegistrationGold,
@@ -170,7 +171,7 @@ class WidgetPremiumCard extends StatelessWidget {
                       'Recommended',
                       style: FontManager.labelSmall(
                         color: Colors.black,
-                        fontSize: 10,
+                        fontSize: 10.sp,
                       ).copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),

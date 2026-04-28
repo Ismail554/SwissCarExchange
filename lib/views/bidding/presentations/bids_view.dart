@@ -199,7 +199,7 @@ class _BidsViewState extends State<BidsView> {
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
           if (index.isOdd) {
-            return Divider(color: AppColors.grey.withOpacity(0.15), height: 1);
+            return Divider(color: AppColors.grey.withOpacity(0.15), height: 1.h);
           }
           final tx = transactions[index ~/ 2];
           return TransactionRow(
