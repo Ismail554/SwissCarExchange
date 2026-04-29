@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/views/auth/login/login_views.dart';
 

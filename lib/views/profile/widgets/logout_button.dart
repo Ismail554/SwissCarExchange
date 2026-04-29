@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_helper/secure_storage_helper.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/network/dio_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/views/auth/login/login_views.dart';
 
 class LogoutButton extends StatelessWidget {
   const LogoutButton({super.key});
@@ -12,6 +15,16 @@ class LogoutButton extends StatelessWidget {
       width: double.maxFinite,
       child: OutlinedButton(
         onPressed: () {
+          Navigator.pop(context); // Close dialog
+          SecureStorageHelper.clearSession();
+          DioManager.logout();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginViews(),
+            ),
+            (route) => false,
+          );
           // Navigator.pop()
         },
         style: OutlinedButton.styleFrom(

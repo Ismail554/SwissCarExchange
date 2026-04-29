@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
-import 'package:rionydo/core/constants/global_state.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auctions/presentations/add_auction_view.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';

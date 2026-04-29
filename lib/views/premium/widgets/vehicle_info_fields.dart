@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/core/widgets/custom_dropdown_field.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'section_header.dart';
 
@@ -11,6 +12,7 @@ class VehicleInfoFields extends StatelessWidget {
   final TextEditingController yearController;
   final TextEditingController mileageController;
   final TextEditingController vinController;
+  final TextEditingController carCategoryController;
   final TextEditingController descriptionController;
 
   const VehicleInfoFields({
@@ -21,6 +23,7 @@ class VehicleInfoFields extends StatelessWidget {
     required this.yearController,
     required this.mileageController,
     required this.vinController,
+    required this.carCategoryController,
     required this.descriptionController,
   });
 
@@ -33,10 +36,7 @@ class VehicleInfoFields extends StatelessWidget {
         SizedBox(height: 12.h),
 
         // Auction Title
-        CustomTextField(
-          hintText: "Auction Title",
-          controller: titleController,
-        ),
+        CustomTextField(hintText: "Auction Title", controller: titleController),
         SizedBox(height: 12.h),
 
         // Brand & Model row
@@ -82,9 +82,23 @@ class VehicleInfoFields extends StatelessWidget {
         SizedBox(height: 12.h),
 
         // VIN Number
-        CustomTextField(
-          hintText: "VIN Number",
-          controller: vinController,
+        CustomTextField(hintText: "VIN Number", controller: vinController),
+        SizedBox(height: 12.h),
+        // Car Category
+        CustomDropdownField(
+          hintText: "Car Category",
+          items: const [
+            "Sports Car",
+            "Luxury Sedans",
+            "SUVs",
+            "Classical",
+          ],
+          value: carCategoryController.text.isNotEmpty
+              ? carCategoryController.text
+              : null,
+          onChanged: (value) {
+            carCategoryController.text = value ?? "";
+          },
         ),
         SizedBox(height: 12.h),
 
@@ -98,7 +112,10 @@ class VehicleInfoFields extends StatelessWidget {
             hintStyle: TextStyle(color: AppColors.sceGreyA0, fontSize: 14.sp),
             filled: true,
             fillColor: Colors.white.withOpacity(0.04),
-            contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 20.w,
+              vertical: 16.h,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),

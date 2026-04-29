@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
 import 'package:rionydo/views/bidding/presentations/bids_view.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';

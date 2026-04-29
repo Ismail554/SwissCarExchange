@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'section_header.dart';
 

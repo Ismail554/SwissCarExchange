@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'section_header.dart';
 import 'create_auction_helpers.dart';
 

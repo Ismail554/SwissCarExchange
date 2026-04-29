@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 
 class CommonBackground extends StatelessWidget {
   final Widget child;
@@ -29,8 +30,8 @@ class CommonBackground extends StatelessWidget {
               child: ImageFiltered(
                 imageFilter: ImageFilter.blur(sigmaX: 64, sigmaY: 64),
                 child: Container(
-                  width: 384,
-                  height: 384,
+                  width: 384.w,
+                  height: 384.h,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.sceTeal.withOpacity(0.1),

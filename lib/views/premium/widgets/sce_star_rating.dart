@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 
 class SceStarRating extends StatelessWidget {
   final double rating;

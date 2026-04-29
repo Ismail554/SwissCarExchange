@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/views/bidding/widgets/bids_models.dart';
 
 /// A single row in the recent-transactions list.

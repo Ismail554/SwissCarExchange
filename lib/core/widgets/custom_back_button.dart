@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:rionydo/app_utils/utils/assets_manager.dart';
 
 class CustomBackButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -23,8 +24,8 @@ class CustomBackButton extends StatelessWidget {
         child: Align(
           alignment: Alignment.centerLeft,
           child: Container(
-            width: size,
-            height: size,
+            width: size.sp,
+            height: size.sp,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               boxShadow: [

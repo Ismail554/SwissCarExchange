@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
-import 'package:rionydo/core/utils/app_spacing.dart';
-import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_spacing.dart';
+import 'package:rionydo/app_utils/utils/assets_manager.dart';
 
 class WidgetCommonTopLogocard extends StatelessWidget {
   final String title;

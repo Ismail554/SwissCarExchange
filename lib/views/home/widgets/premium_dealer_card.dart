@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:rionydo/core/constants/global_state.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
+import 'package:rionydo/app_utils/constants/global_state.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
 
 class PremiumDealerCard extends StatelessWidget {
   const PremiumDealerCard({super.key});

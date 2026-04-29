@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
-import 'package:rionydo/core/utils/app_spacing.dart';
-import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_spacing.dart';
+import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';

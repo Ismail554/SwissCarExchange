@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:provider/provider.dart';
-import 'package:rionydo/core/utils/assets_manager.dart';
-import 'package:rionydo/core/constants/global_state.dart';
+import 'package:rionydo/app_utils/utils/assets_manager.dart';
+import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
@@ -42,19 +42,22 @@ class _LoginViewsState extends State<LoginViews> {
               SizedBox(height: 48.h),
               Text(
                 'Welcome Back',
-                style: TextStyle(
+                style: FontManager.heading1(
                   color: Colors.white,
                   fontSize: 32.sp,
-                  fontWeight: FontWeight.w700,
                 ),
               ),
               SizedBox(height: 8.h),
               Text(
                 'Sign in to continue',
-                style: TextStyle(color: Colors.white54, fontSize: 16.sp),
+                style: FontManager.bodyMedium(
+                  color: Colors.white54,
+                  fontSize: 16.sp,
+                ),
               ),
               SizedBox(height: 48.h),
               CustomTextField(
+                textInputAction: .next,
                 controller: _emailController,
                 hintText: 'Email',
                 prefixIcon: Icon(
@@ -65,13 +68,14 @@ class _LoginViewsState extends State<LoginViews> {
               ),
               SizedBox(height: 16.h),
               CustomTextField(
+                textInputAction: TextInputAction.done,
                 controller: _passwordController,
                 hintText: 'Password',
                 obscureText: _obscurePassword,
                 prefixIcon: Icon(
                   Icons.lock_outline,
                   color: AppColors.sceGreyA0,
-                  size: 20,
+                  size: 20.sp,
                 ),
                 suffixIcon: IconButton(
                   icon: Icon(

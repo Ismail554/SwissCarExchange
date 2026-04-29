@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
-import 'package:rionydo/core/utils/app_spacing.dart';
-import 'package:rionydo/core/utils/assets_manager.dart';
-import 'package:rionydo/core/constants/global_state.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_spacing.dart';
+import 'package:rionydo/app_utils/utils/assets_manager.dart';
+import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/views/home/widgets/auction_card.dart';
 import 'package:rionydo/views/home/widgets/notification_badge.dart';

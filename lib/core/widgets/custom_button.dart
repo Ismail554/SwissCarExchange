@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -73,10 +73,10 @@ class CustomButton extends StatelessWidget {
           onTap: (isLoading || !isActive) ? null : onPressed,
           child: Center(
             child: isLoading
-                ? const SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
+                ? SizedBox(
+                    height: 24.h,
+                    width: 24.w,
+                    child: const CircularProgressIndicator(
                       color: Colors.white,
                       strokeWidth: 2,
                     ),

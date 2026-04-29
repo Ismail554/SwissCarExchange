@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 
 /// Renders a smooth curved line chart with a gradient fill.
 ///

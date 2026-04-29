@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rionydo/core/utils/app_spacing.dart';
+import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_premium_card.dart';

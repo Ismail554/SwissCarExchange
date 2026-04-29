@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:rionydo/core/constants/font_manager.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-
 import '../widgets/create_auction_helpers.dart';
 import '../widgets/vehicle_info_fields.dart';
 import '../widgets/media_selection_section.dart';
@@ -33,6 +32,7 @@ class _CreateAuctionState extends State<CreateAuction> {
   final _yearController = TextEditingController();
   final _mileageController = TextEditingController();
   final _vinController = TextEditingController();
+  final _carCategoryController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _reservePriceController = TextEditingController();
   final _buyNowPriceController = TextEditingController();
@@ -54,6 +54,7 @@ class _CreateAuctionState extends State<CreateAuction> {
     _yearController.dispose();
     _mileageController.dispose();
     _vinController.dispose();
+    _carCategoryController.dispose();
     _descriptionController.dispose();
     _reservePriceController.dispose();
     _buyNowPriceController.dispose();
@@ -125,9 +126,14 @@ class _CreateAuctionState extends State<CreateAuction> {
       _showLimitSnackbar("Maximum $_maxImages images allowed");
       return;
     }
-    final List<XFile> photos = await _imagePicker.pickMultiImage(imageQuality: 85);
+    final List<XFile> photos = await _imagePicker.pickMultiImage(
+      imageQuality: 85,
+    );
     if (photos.isNotEmpty) {
-      setState(() => _imageFiles.addAll(photos.take(remaining).map((x) => File(x.path))));
+      setState(
+        () =>
+            _imageFiles.addAll(photos.take(remaining).map((x) => File(x.path))),
+      );
     }
   }
 
@@ -190,17 +196,33 @@ class _CreateAuctionState extends State<CreateAuction> {
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png'],
+      allowedExtensions: [
+        'pdf',
+        'doc',
+        'docx',
+        'xls',
+        'xlsx',
+        'jpg',
+        'jpeg',
+        'png',
+      ],
     );
     if (result != null) {
-      setState(() => _documentFiles.addAll(result.files.where((f) => f.path != null).map((f) => File(f.path!))));
+      setState(
+        () => _documentFiles.addAll(
+          result.files.where((f) => f.path != null).map((f) => File(f.path!)),
+        ),
+      );
     }
   }
 
   void _showLimitSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: FontManager.bodySmall(color: Colors.white)),
+        content: Text(
+          message,
+          style: FontManager.bodySmall(color: Colors.white),
+        ),
         backgroundColor: AppColors.errorRed,
         behavior: SnackBarBehavior.floating,
       ),
@@ -222,15 +244,29 @@ class _CreateAuctionState extends State<CreateAuction> {
             SizedBox(height: 16.h),
             CreateAuctionHelpers.sheetHandle(),
             SizedBox(height: 16.h),
-            Text("Auction Duration", style: FontManager.heading3(color: Colors.white)),
-            ...durations.map((d) => ListTile(
-              title: Text(d, style: FontManager.bodyMedium(color: _selectedDuration == d ? AppColors.sceTeal : Colors.white)),
-              trailing: _selectedDuration == d ? Icon(Icons.check_circle, color: AppColors.sceTeal) : null,
-              onTap: () {
-                setState(() => _selectedDuration = d);
-                Navigator.pop(ctx);
-              },
-            )),
+            Text(
+              "Auction Duration",
+              style: FontManager.heading3(color: Colors.white),
+            ),
+            ...durations.map(
+              (d) => ListTile(
+                title: Text(
+                  d,
+                  style: FontManager.bodyMedium(
+                    color: _selectedDuration == d
+                        ? AppColors.sceTeal
+                        : Colors.white,
+                  ),
+                ),
+                trailing: _selectedDuration == d
+                    ? Icon(Icons.check_circle, color: AppColors.sceTeal)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedDuration = d);
+                  Navigator.pop(ctx);
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -240,7 +276,10 @@ class _CreateAuctionState extends State<CreateAuction> {
   void _onPublish() {
     if (_formKey.currentState?.validate() ?? false) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: const Text("Publishing..."), backgroundColor: AppColors.sceTeal),
+        SnackBar(
+          content: const Text("Publishing..."),
+          backgroundColor: AppColors.sceTeal,
+        ),
       );
     }
   }
@@ -252,7 +291,10 @@ class _CreateAuctionState extends State<CreateAuction> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: const CustomBackButton(),
-        title: Text("Create Auction", style: FontManager.displaySmall(color: Colors.white)),
+        title: Text(
+          "Create Auction",
+          style: FontManager.displaySmall(color: Colors.white),
+        ),
       ),
       child: Form(
         key: _formKey,
@@ -269,6 +311,7 @@ class _CreateAuctionState extends State<CreateAuction> {
                 yearController: _yearController,
                 mileageController: _mileageController,
                 vinController: _vinController,
+                carCategoryController: _carCategoryController,
                 descriptionController: _descriptionController,
               ),
               SizedBox(height: 28.h),
@@ -283,7 +326,8 @@ class _CreateAuctionState extends State<CreateAuction> {
                 onPickDocuments: _pickDocuments,
                 onRemoveImage: (i) => setState(() => _imageFiles.removeAt(i)),
                 onRemoveVideo: () => setState(() => _videoFile = null),
-                onRemoveDocument: (i) => setState(() => _documentFiles.removeAt(i)),
+                onRemoveDocument: (i) =>
+                    setState(() => _documentFiles.removeAt(i)),
               ),
               SizedBox(height: 28.h),
               PricingDurationSection(

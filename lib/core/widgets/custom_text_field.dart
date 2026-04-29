@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hintText;
@@ -27,16 +28,17 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      style: TextStyle(color: Colors.white, fontSize: 14.sp),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: AppColors.sceGreyA0, fontSize: 14),
+        hintStyle: TextStyle(color: AppColors.sceGreyA0, fontSize: 14.sp),
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         filled: true,

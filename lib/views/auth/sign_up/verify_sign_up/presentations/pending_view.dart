@@ -1,9 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/core/utils/app_spacing.dart';
-import 'package:rionydo/core/utils/app_colors.dart';
-import 'package:rionydo/core/utils/assets_manager.dart';
+import 'package:rionydo/app_utils/constants/app_padding.dart';
+import 'package:rionydo/app_utils/utils/app_spacing.dart';
+import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_outlined_btn.dart';
 import 'package:rionydo/views/auth/login/login_views.dart';
@@ -28,16 +29,16 @@ class PendingView extends StatelessWidget {
 
             // --- Section 2: Frosted Glass Status Widget ---
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: AppPadding.v20,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(24.r),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                   child: Container(
                     width: double.maxFinite,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 16,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 18.h,
+                      vertical: 16.w,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.05),
