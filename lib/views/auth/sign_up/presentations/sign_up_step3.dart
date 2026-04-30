@@ -49,7 +49,7 @@ class _SignUpStep3State extends State<SignUpStep3> {
   Future<void> _pickDocument() async {
     setState(() => _isPickingFile = true);
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
         withData: false,

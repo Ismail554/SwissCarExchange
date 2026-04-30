@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
 import 'package:rionydo/app_utils/network/token_manager.dart';
-
 import 'either.dart';
 import 'enums.dart';
 import 'error_handler.dart';

@@ -193,7 +193,7 @@ class _CreateAuctionState extends State<CreateAuction> {
   }
 
   Future<void> _pickDocuments() async {
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: [
