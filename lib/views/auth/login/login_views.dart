@@ -63,7 +63,7 @@ class _LoginViewsState extends State<LoginViews> {
                 prefixIcon: Icon(
                   Icons.email_outlined,
                   color: AppColors.sceGreyA0,
-                  size: 20,
+                  size: 20.sp,
                 ),
               ),
               SizedBox(height: 16.h),

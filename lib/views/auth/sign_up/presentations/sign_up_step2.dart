@@ -874,7 +874,7 @@ class _SheetOption extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: 12.sp,
-                  height: 1.3,
+                  height: 1.3.h,
                 ),
                 textAlign: TextAlign.center,
               ),
