@@ -19,6 +19,25 @@ class NetworkLogger {
     log('📋 Headers: ${jsonEncode(headers)}', name: 'REQUEST');
 
     _logBody(options);
+
+    debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    debugPrint('➡️ REQUEST [${options.method}] ${options.uri}$query');
+    debugPrint('Headers: ${jsonEncode(headers)}');
+    
+    if (options.data != null) {
+      if (options.data is FormData) {
+        final fd = options.data as FormData;
+        debugPrint('Body (FormData): ${jsonEncode({
+          'fields': {for (var e in fd.fields) e.key: e.value},
+          'files': [for (var e in fd.files) {'field': e.key, 'filename': e.value.filename}],
+        })}');
+      } else {
+        debugPrint('Body: ${jsonEncode(options.data)}');
+      }
+    } else if (options.queryParameters.isNotEmpty) {
+      debugPrint('Query: ${jsonEncode(options.queryParameters)}');
+    }
+    debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   }
 
   static void response(Response response) {
