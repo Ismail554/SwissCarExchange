@@ -10,6 +10,13 @@ import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/views/auth/forgot_password/forgot_pass_view.dart';
 import 'package:rionydo/views/auth/sign_up/presentations/sign_up_view.dart';
+import 'package:rionydo/app_utils/network/dio_manager.dart';
+import 'package:rionydo/app_utils/network/enums.dart';
+import 'package:rionydo/app_utils/constants/api_service.dart';
+import 'package:rionydo/models/auth/login_response.dart';
+import 'package:rionydo/app_helper/secure_storage_helper.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
 import 'package:rionydo/views/bidding/presentations/bids_view.dart';
@@ -27,6 +34,70 @@ class _LoginViewsState extends State<LoginViews> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+
+  Future<void> _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      AppSnackBar.error(context, 'Please enter email and password');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.login,
+      method: Methods.post,
+      body: {
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text,
+      },
+      skipAuth: true,
+    );
+
+    response.fold(
+      (error) {
+        setState(() => _isLoading = false);
+        AppSnackBar.error(context, error);
+      },
+      (data) async {
+        setState(() => _isLoading = false);
+        final loginData = LoginResponse.fromJson(data);
+
+        if (loginData.isTwoFactorRequired) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpVerifyView(email: loginData.email),
+            ),
+          );
+        } else {
+          await SecureStorageHelper.saveAccessToken(loginData.access);
+          await SecureStorageHelper.saveRefreshToken(loginData.refresh);
+          await SecureStorageHelper.saveUserType(loginData.userType);
+          
+          if (mounted) {
+            context.read<GlobalState>().userRole = loginData.userType;
+            context.read<GlobalState>().isPremium = true;
+            
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationShell(
+                  pages: [
+                    HomeView(),
+                    AuctionsView(),
+                    BidsView(),
+                    ProfileView(),
+                  ],
+                ),
+              ),
+              (route) => false,
+            );
+          }
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,25 +179,8 @@ class _LoginViewsState extends State<LoginViews> {
               SizedBox(height: 24.h),
               CustomButton(
                 text: 'Login',
-                onPressed: () {
-                  // Store premium status globally
-                  context.read<GlobalState>().isPremium =
-                      true; // Toggle to false to test basic user UI
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MainNavigationShell(
-                        pages: [
-                          HomeView(),
-                          AuctionsView(),
-                          BidsView(),
-                          ProfileView(),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                isLoading: _isLoading,
+                onPressed: _handleLogin,
               ),
               SizedBox(height: 24.h),
               Row(
