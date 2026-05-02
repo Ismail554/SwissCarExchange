@@ -14,7 +14,14 @@ enum UserRole { individual, company }
 
 class SignUpStep2 extends StatefulWidget {
   final String email;
-  const SignUpStep2({super.key, required this.email});
+  final String password;
+  final String phone;
+  const SignUpStep2({
+    super.key,
+    required this.email,
+    required this.password,
+    required this.phone,
+  });
 
   @override
   State<SignUpStep2> createState() => _SignUpStep2State();
@@ -226,7 +233,21 @@ class _SignUpStep2State extends State<SignUpStep2> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => SignUpStep3(email: widget.email),
+                          builder: (_) => SignUpStep3(
+                            email: widget.email,
+                            password: widget.password,
+                            phone: widget.phone,
+                            role: _selectedRole,
+                            // Individual
+                            fullName: _nameController.text.trim(),
+                            address: _selectedRole == UserRole.individual
+                                ? _individualAddressController.text.trim()
+                                : _companyAddressController.text.trim(),
+                            idDocumentFile: _idFile,
+                            // Company
+                            company: _companyController.text.trim(),
+                            uid: _uidController.text.trim(),
+                          ),
                         ),
                       ),
                     ),
@@ -314,8 +335,8 @@ class _PageViewForms extends StatelessWidget {
     // The children are IgnorePointer-safe and physics is locked to prevent
     // accidental swipe (the toggle drives navigation).
     return SizedBox(
-      // Enough height for either form; adjust if your fields differ greatly.
-      height: 340.h,
+      // Enough height for either form; increased to 430.h to prevent overflow.
+      height: 430.h,
       child: PageView(
         controller: pageController,
         onPageChanged: onPageChanged,

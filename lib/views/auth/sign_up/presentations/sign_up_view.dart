@@ -70,7 +70,9 @@ class _SignUpViewState extends State<SignUpView> {
                           color: AppColors.sceRegistrationGoldBg,
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(
-                            color: AppColors.sceRegistrationGold.withOpacity(0.4),
+                            color: AppColors.sceRegistrationGold.withOpacity(
+                              0.4,
+                            ),
                           ),
                         ),
                         child: Text(
@@ -95,16 +97,16 @@ class _SignUpViewState extends State<SignUpView> {
                     SizedBox(height: 36.h),
 
                     // Dealer Registration Title
-                    Text(
-                      'DEALER',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 28.sp,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 2,
-                      ),
-                    ),
+                    // Text(
+                    //   'DEALER',
+                    //   textAlign: TextAlign.center,
+                    //   style: TextStyle(
+                    //     color: Colors.white,
+                    //     fontSize: 28.sp,
+                    //     fontWeight: FontWeight.w800,
+                    //     letterSpacing: 2,
+                    //   ),
+                    // ),
                     Text(
                       'REGISTRATION',
                       textAlign: TextAlign.center,
@@ -125,6 +127,7 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     SizedBox(height: 8.h),
                     CustomTextField(
+                      textInputAction: .next,
                       controller: _emailController,
                       hintText: 'info@premiumauto.ch',
                       keyboardType: TextInputType.emailAddress,
@@ -197,6 +200,8 @@ class _SignUpViewState extends State<SignUpView> {
                           MaterialPageRoute(
                             builder: (_) => SignUpStep2(
                               email: _emailController.text.trim(),
+                              password: _passwordController.text,
+                              phone: _phoneController.text.trim(),
                             ),
                           ),
                         );
@@ -273,7 +278,9 @@ class _SecurityBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.04),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: AppColors.sceRegistrationGold.withOpacity(0.3)),
+        border: Border.all(
+          color: AppColors.sceRegistrationGold.withOpacity(0.3),
+        ),
       ),
       child: Row(
         children: [

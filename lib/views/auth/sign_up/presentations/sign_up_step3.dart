@@ -2,16 +2,47 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/controllers/auth/register_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step2.dart';
 
 class SignUpStep3 extends StatefulWidget {
+  // ── Step-1 data ────────────────────────────────────────
   final String email;
-  const SignUpStep3({super.key, required this.email});
+  final String password;
+  final String phone;
+
+  // ── Step-2 data ────────────────────────────────────────
+  final UserRole role;
+  final String address;
+
+  // Individual only
+  final String fullName;
+  final File? idDocumentFile; // NID / Passport picked in Step 2
+
+  // Company only
+  final String company;
+  final String uid;
+
+  const SignUpStep3({
+    super.key,
+    required this.email,
+    required this.password,
+    required this.phone,
+    required this.role,
+    required this.address,
+    this.fullName = '',
+    this.idDocumentFile,
+    this.company = '',
+    this.uid = '',
+  });
 
   @override
   State<SignUpStep3> createState() => _SignUpStep3State();
@@ -19,20 +50,36 @@ class SignUpStep3 extends StatefulWidget {
 
 class _SignUpStep3State extends State<SignUpStep3> {
   bool _isTermsAccepted = false;
-  PlatformFile? _pickedFile;
+
+  // ── For Individual: profile photo ──────────────────────
+  File? _photoFile;
+  String? _photoFileName;
+
+  // ── For Company: commercial register doc ──────────────
+  PlatformFile? _licensePickedFile;
   bool _isPickingFile = false;
 
-  bool get _hasDocument => _pickedFile != null;
-  bool get _canCreate => _isTermsAccepted && _hasDocument;
+  bool get _isIndividual => widget.role == UserRole.individual;
 
-  // Human-readable file size
+  // Individual: need photo + id doc (from step 2) + terms
+  // Company: need license doc + terms
+  bool get _canCreate {
+    if (!_isTermsAccepted) return false;
+    if (_isIndividual) {
+      return _photoFile != null && widget.idDocumentFile != null;
+    } else {
+      return _licensePickedFile != null;
+    }
+  }
+
+  // ── File helpers ──────────────────────────────────────
+
   String _formatSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 
-  // Extension icon
   IconData _fileIcon(String? ext) {
     switch (ext?.toLowerCase()) {
       case 'pdf':
@@ -46,7 +93,50 @@ class _SignUpStep3State extends State<SignUpStep3> {
     }
   }
 
-  Future<void> _pickDocument() async {
+  // ── Photo picker (Individual) ──────────────────────────
+
+  Future<void> _showPhotoPicker() async {
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _PhotoPickerSheet(
+        onCamera: () => _pickPhoto(ImageSource.camera),
+        onGallery: () => _pickPhoto(ImageSource.gallery),
+        onFile: _pickPhotoFromFiles,
+      ),
+    );
+  }
+
+  Future<void> _pickPhoto(ImageSource source) async {
+    Navigator.pop(context);
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: source, imageQuality: 85);
+    if (picked != null) {
+      setState(() {
+        _photoFile = File(picked.path);
+        _photoFileName = picked.name;
+      });
+    }
+  }
+
+  Future<void> _pickPhotoFromFiles() async {
+    Navigator.pop(context);
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
+    );
+    if (result != null && result.files.single.path != null) {
+      final f = result.files.single;
+      setState(() {
+        _photoFile = File(f.path!);
+        _photoFileName = f.name;
+      });
+    }
+  }
+
+  // ── License picker (Company) ───────────────────────────
+
+  Future<void> _pickLicense() async {
     setState(() => _isPickingFile = true);
     try {
       final result = await FilePicker.pickFiles(
@@ -58,58 +148,68 @@ class _SignUpStep3State extends State<SignUpStep3> {
 
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
-        final sizeBytes = file.size;
-
-        // Validate max 5 MB
-        if (sizeBytes > 5 * 1024 * 1024) {
+        if (file.size > 5 * 1024 * 1024) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: AppColors.errorRed.withOpacity(0.9),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                content: const Text(
-                  'File exceeds 5 MB limit. Please choose a smaller file.',
-                ),
-              ),
+            AppSnackBar.error(
+              context,
+              'File exceeds 5 MB limit. Please choose a smaller file.',
             );
           }
           return;
         }
-
-        setState(() => _pickedFile = file);
+        setState(() => _licensePickedFile = file);
       }
     } finally {
       if (mounted) setState(() => _isPickingFile = false);
     }
   }
 
-  Future<void> _openDocument() async {
-    final path = _pickedFile?.path;
+  Future<void> _openLicense() async {
+    final path = _licensePickedFile?.path;
     if (path == null) return;
     if (!File(path).existsSync()) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppColors.errorRed.withOpacity(0.9),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            content: const Text('File not found. Please pick it again.'),
-          ),
-        );
-      }
+      if (mounted) AppSnackBar.error(context, 'File not found. Please pick it again.');
       return;
     }
     await OpenFilex.open(path);
   }
 
+  // ── Submit ─────────────────────────────────────────────
+
+  Future<void> _submit() async {
+    final provider = context.read<RegisterProvider>();
+
+    if (_isIndividual) {
+      await provider.registerPrivate(
+        context: context,
+        email: widget.email,
+        password: widget.password,
+        phone: widget.phone,
+        address: widget.address,
+        fullName: widget.fullName,
+        photoFile: _photoFile!,
+        idDocumentFile: widget.idDocumentFile!,
+      );
+    } else {
+      await provider.registerCompany(
+        context: context,
+        email: widget.email,
+        password: widget.password,
+        phone: widget.phone,
+        address: widget.address,
+        company: widget.company,
+        uid: widget.uid,
+        licenseFile: File(_licensePickedFile!.path!),
+      );
+    }
+  }
+
+  // ── Build ──────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final teal = AppColors.sceTeal;
+    final isLoading = context.watch<RegisterProvider>().isLoading;
 
     return CommonBackground(
       child: SafeArea(
@@ -181,9 +281,9 @@ class _SignUpStep3State extends State<SignUpStep3> {
 
                     SizedBox(height: 36.h),
 
-                    // Verification Title
+                    // Title & subtitle
                     Text(
-                      'Verification',
+                      _isIndividual ? 'Profile Photo' : 'Business Verification',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22.sp,
@@ -192,7 +292,9 @@ class _SignUpStep3State extends State<SignUpStep3> {
                     ),
                     SizedBox(height: 10.h),
                     Text(
-                      'Upload your commercial register extract\n(Handelsregisterauszug) to verify your B2B status.',
+                      _isIndividual
+                          ? 'Upload a clear profile photo to complete your registration.'
+                          : 'Upload your commercial register extract\n(Handelsregisterauszug) to verify your B2B status.',
                       style: TextStyle(
                         color: Colors.white54,
                         fontSize: 13.sp,
@@ -202,127 +304,88 @@ class _SignUpStep3State extends State<SignUpStep3> {
 
                     SizedBox(height: 28.h),
 
-                    // --- Upload / Document Area ---
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      decoration: BoxDecoration(
-                        color: _hasDocument
-                            ? teal.withOpacity(0.06)
-                            : Colors.white.withOpacity(0.04),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: _hasDocument
-                              ? teal.withOpacity(0.5)
-                              : Colors.white.withOpacity(0.15),
-                          width: 1.5,
-                        ),
+                    // ── Individual: Photo picker ──────────────
+                    if (_isIndividual) ...[
+                      _SectionLabel('Profile Photo'),
+                      SizedBox(height: 8.h),
+                      _PhotoPickerField(
+                        photoFile: _photoFile,
+                        photoFileName: _photoFileName,
+                        onTap: _showPhotoPicker,
+                        onRemove: () => setState(() {
+                          _photoFile = null;
+                          _photoFileName = null;
+                        }),
                       ),
-                      child: _hasDocument
-                          // ---- Selected state ----
-                          ? Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 20.w,
-                                vertical: 18.h,
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 44.w,
-                                    height: 44.w,
-                                    decoration: BoxDecoration(
-                                      color: teal.withOpacity(0.12),
-                                      borderRadius: BorderRadius.circular(10),
+
+                      SizedBox(height: 20.h),
+
+                      // Show the id document selected in step 2
+                      _SectionLabel('ID Document (from Step 2)'),
+                      SizedBox(height: 8.h),
+                      _ReadonlyDocRow(
+                        file: widget.idDocumentFile,
+                        teal: teal,
+                      ),
+                    ],
+
+                    // ── Company: License picker ───────────────
+                    if (!_isIndividual) ...[
+                      _SectionLabel('Commercial Register Extract'),
+                      SizedBox(height: 8.h),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                          color: _licensePickedFile != null
+                              ? teal.withOpacity(0.06)
+                              : Colors.white.withOpacity(0.04),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: _licensePickedFile != null
+                                ? teal.withOpacity(0.5)
+                                : Colors.white.withOpacity(0.15),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: _licensePickedFile != null
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20.w,
+                                  vertical: 18.h,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 44.w,
+                                      height: 44.w,
+                                      decoration: BoxDecoration(
+                                        color: teal.withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        _fileIcon(_licensePickedFile!.extension),
+                                        color: teal,
+                                        size: 22.sp,
+                                      ),
                                     ),
-                                    child: Icon(
-                                      _fileIcon(_pickedFile!.extension),
-                                      color: teal,
-                                      size: 22.sp,
-                                    ),
-                                  ),
-                                  SizedBox(width: 14.w),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          _pickedFile!.name,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 13.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        SizedBox(height: 4.h),
-                                        Text(
-                                          _formatSize(_pickedFile!.size),
-                                          style: TextStyle(
-                                            color: Colors.white38,
-                                            fontSize: 11.sp,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  // View button
-                                  _DocActionBtn(
-                                    icon: Icons.visibility_outlined,
-                                    tooltip: 'View',
-                                    color: teal,
-                                    onTap: _openDocument,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  // Replace button
-                                  _DocActionBtn(
-                                    icon: Icons.swap_horiz,
-                                    tooltip: 'Change',
-                                    color: Colors.white54,
-                                    onTap: _pickDocument,
-                                  ),
-                                ],
-                              ),
-                            )
-                          // ---- Empty / pick state ----
-                          : InkWell(
-                              onTap: _isPickingFile ? null : _pickDocument,
-                              borderRadius: BorderRadius.circular(16),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 40.h),
-                                child: _isPickingFile
-                                    ? Center(
-                                        child: SizedBox(
-                                          width: 28,
-                                          height: 28,
-                                          child: CircularProgressIndicator(
-                                            color: teal,
-                                            strokeWidth: 2,
-                                          ),
-                                        ),
-                                      )
-                                    : Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                    SizedBox(width: 14.w),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Icon(
-                                            Icons.upload_outlined,
-                                            color: Colors.white54,
-                                            size: 36.sp,
-                                          ),
-                                          SizedBox(height: 12.h),
                                           Text(
-                                            'Tap to upload document',
+                                            _licensePickedFile!.name,
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 14.sp,
+                                              fontSize: 13.sp,
                                               fontWeight: FontWeight.w500,
                                             ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          SizedBox(height: 6.h),
+                                          SizedBox(height: 4.h),
                                           Text(
-                                            'PDF, JPG or PNG (max 5MB)',
+                                            _formatSize(_licensePickedFile!.size),
                                             style: TextStyle(
                                               color: Colors.white38,
                                               fontSize: 11.sp,
@@ -330,9 +393,71 @@ class _SignUpStep3State extends State<SignUpStep3> {
                                           ),
                                         ],
                                       ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    _DocActionBtn(
+                                      icon: Icons.visibility_outlined,
+                                      tooltip: 'View',
+                                      color: teal,
+                                      onTap: _openLicense,
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    _DocActionBtn(
+                                      icon: Icons.swap_horiz,
+                                      tooltip: 'Change',
+                                      color: Colors.white54,
+                                      onTap: _pickLicense,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : InkWell(
+                                onTap: _isPickingFile ? null : _pickLicense,
+                                borderRadius: BorderRadius.circular(16),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 40.h),
+                                  child: _isPickingFile
+                                      ? Center(
+                                          child: SizedBox(
+                                            width: 28,
+                                            height: 28,
+                                            child: CircularProgressIndicator(
+                                              color: teal,
+                                              strokeWidth: 2,
+                                            ),
+                                          ),
+                                        )
+                                      : Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.upload_outlined,
+                                              color: Colors.white54,
+                                              size: 36.sp,
+                                            ),
+                                            SizedBox(height: 12.h),
+                                            Text(
+                                              'Tap to upload document',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            SizedBox(height: 6.h),
+                                            Text(
+                                              'PDF, JPG or PNG (max 5MB)',
+                                              style: TextStyle(
+                                                color: Colors.white38,
+                                                fontSize: 11.sp,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                ),
                               ),
-                            ),
-                    ),
+                      ),
+                    ],
 
                     SizedBox(height: 24.h),
 
@@ -371,12 +496,15 @@ class _SignUpStep3State extends State<SignUpStep3> {
                                   height: 1.5,
                                 ),
                                 children: [
-                                  const TextSpan(
-                                    text:
-                                        'I confirm that I am authorized to act on behalf of this company and accept the ',
+                                  TextSpan(
+                                    text: _isIndividual
+                                        ? 'I confirm that all information provided is accurate and I accept the '
+                                        : 'I confirm that I am authorized to act on behalf of this company and accept the ',
                                   ),
                                   TextSpan(
-                                    text: 'B2B Terms & Conditions',
+                                    text: _isIndividual
+                                        ? 'Terms & Conditions'
+                                        : 'B2B Terms & Conditions',
                                     style: TextStyle(
                                       color: teal,
                                       fontWeight: FontWeight.w600,
@@ -396,15 +524,8 @@ class _SignUpStep3State extends State<SignUpStep3> {
                     CustomButton(
                       text: 'Create Account',
                       isActive: _canCreate,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OtpVerifyView(email: widget.email),
-                          ),
-                        );
-                      },
+                      isLoading: isLoading,
+                      onPressed: _submit,
                     ),
 
                     SizedBox(height: 24.h),
@@ -419,6 +540,325 @@ class _SignUpStep3State extends State<SignUpStep3> {
   }
 }
 
+// ─────────────────────────────────────────────────────────
+// Section Label
+// ─────────────────────────────────────────────────────────
+class _SectionLabel extends StatelessWidget {
+  final String text;
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        style: TextStyle(color: Colors.white70, fontSize: 13.sp),
+      );
+}
+
+// ─────────────────────────────────────────────────────────
+// Individual: profile photo picker field
+// ─────────────────────────────────────────────────────────
+class _PhotoPickerField extends StatelessWidget {
+  final File? photoFile;
+  final String? photoFileName;
+  final VoidCallback onTap;
+  final VoidCallback onRemove;
+
+  const _PhotoPickerField({
+    required this.photoFile,
+    required this.photoFileName,
+    required this.onTap,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasFile = photoFile != null;
+    final teal = AppColors.sceTeal;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: 52.h,
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            decoration: BoxDecoration(
+              color: hasFile
+                  ? teal.withOpacity(0.10)
+                  : Colors.white.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: hasFile ? teal.withOpacity(0.5) : Colors.white24,
+                width: 1.2,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  hasFile
+                      ? Icons.check_circle_outline_rounded
+                      : Icons.add_a_photo_outlined,
+                  color: hasFile ? teal : AppColors.sceGreyA0,
+                  size: 20,
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Text(
+                    hasFile ? photoFileName! : 'Camera, Gallery or Image',
+                    style: TextStyle(
+                      color: hasFile ? Colors.white : Colors.white38,
+                      fontSize: 13.sp,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (!hasFile)
+                  Text(
+                    'Upload',
+                    style: TextStyle(
+                      color: teal,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  )
+                else ...[
+                  GestureDetector(
+                    onTap: onTap,
+                    child: Icon(Icons.edit_outlined, color: teal, size: 16),
+                  ),
+                  SizedBox(width: 10.w),
+                  GestureDetector(
+                    onTap: onRemove,
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: Colors.white38,
+                      size: 16,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+
+        // Thumbnail
+        if (hasFile) ...[
+          SizedBox(height: 10.h),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10.r),
+            child: Image.file(
+              photoFile!,
+              height: 130.h,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ],
+
+        if (!hasFile) ...[
+          SizedBox(height: 6.h),
+          Text(
+            'Accepted: JPG, PNG — max 5MB',
+            style: TextStyle(color: Colors.white24, fontSize: 11.sp),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// Readonly row showing the id doc from Step 2
+// ─────────────────────────────────────────────────────────
+class _ReadonlyDocRow extends StatelessWidget {
+  final File? file;
+  final Color teal;
+
+  const _ReadonlyDocRow({required this.file, required this.teal});
+
+  @override
+  Widget build(BuildContext context) {
+    if (file == null) {
+      return Container(
+        height: 52.h,
+        padding: EdgeInsets.symmetric(horizontal: 14.w),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.04),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: Colors.red.withOpacity(0.4), width: 1.2),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.red, size: 18),
+            SizedBox(width: 10.w),
+            Text(
+              'No ID document found — go back to Step 2',
+              style: TextStyle(color: Colors.red, fontSize: 12.sp),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final fileName = file!.path.split(RegExp(r'[/\\]')).last;
+    return Container(
+      height: 52.h,
+      padding: EdgeInsets.symmetric(horizontal: 14.w),
+      decoration: BoxDecoration(
+        color: teal.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: teal.withOpacity(0.4), width: 1.2),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.check_circle_outline_rounded, color: teal, size: 20),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Text(
+              fileName,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 13.sp,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// Bottom Sheet — Photo Picker (Individual)
+// ─────────────────────────────────────────────────────────
+class _PhotoPickerSheet extends StatelessWidget {
+  final VoidCallback onCamera;
+  final VoidCallback onGallery;
+  final VoidCallback onFile;
+
+  const _PhotoPickerSheet({
+    required this.onCamera,
+    required this.onGallery,
+    required this.onFile,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+      padding: EdgeInsets.all(20.r),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E2230),
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Upload Profile Photo',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 6.h),
+          Text(
+            'Choose how you want to provide your photo',
+            style: TextStyle(color: Colors.white38, fontSize: 12.sp),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20.h),
+          Row(
+            children: [
+              _SheetOption(
+                icon: Icons.camera_alt_outlined,
+                label: 'Camera',
+                onTap: onCamera,
+              ),
+              SizedBox(width: 10.w),
+              _SheetOption(
+                icon: Icons.photo_library_outlined,
+                label: 'Gallery',
+                onTap: onGallery,
+              ),
+              SizedBox(width: 10.w),
+              _SheetOption(
+                icon: Icons.insert_drive_file_outlined,
+                label: 'Files\n(JPG/PNG)',
+                onTap: onFile,
+              ),
+            ],
+          ),
+          SizedBox(height: 14.h),
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: Colors.white38,
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SheetOption extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _SheetOption({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: Colors.white12),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: AppColors.sceTeal, size: 26),
+              SizedBox(height: 8.h),
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12.sp,
+                  height: 1.3.h,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────
+// Document Action Button
+// ─────────────────────────────────────────────────────────
 class _DocActionBtn extends StatelessWidget {
   final IconData icon;
   final String tooltip;
