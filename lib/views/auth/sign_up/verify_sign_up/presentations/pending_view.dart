@@ -29,7 +29,7 @@ class PendingView extends StatelessWidget {
 
             // --- Section 2: Frosted Glass Status Widget ---
             Padding(
-              padding: AppPadding.v20,
+              padding: AppPadding.h24v12,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24.r),
                 child: BackdropFilter(
@@ -95,16 +95,17 @@ class PendingView extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.4),
-              fontSize: 16,
+              color: Colors.white,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w400,
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w300,
             ),
           ),
         ],
@@ -118,7 +119,11 @@ class PendingView extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w400,
+          ),
         ),
         Row(
           children: [
@@ -139,7 +144,7 @@ class PendingView extends StatelessWidget {
               style: const TextStyle(
                 color: AppColors.scePendingGreen,
                 fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],

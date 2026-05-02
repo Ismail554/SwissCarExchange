@@ -8,6 +8,7 @@ import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step2.dart' show UserRole;
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
+import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
 
 /// Resolves the MIME content-type from a file extension.
 String _mimeTypeFor(String filePath) {
@@ -217,21 +218,23 @@ class RegisterProvider extends ChangeNotifier {
         return;
       }
 
-      debugPrint('REGISTER: ▶️ Calling /api/auth/register/ for private user...');
+      final payload = {
+        'email': email.trim(),
+        'password': password,
+        'phone': phone.trim(),
+        'address': address.trim(),
+        'user_type': 'private',
+        'full_name': fullName.trim(),
+        'photo_url': photoUrl,
+        'id_document_url': idDocUrl,
+      };
+      debugPrint('REGISTER: ▶️ Calling /api/auth/register/ for private user with payload: $payload');
+      
       final response = await DioManager.apiRequest(
         url: ApiService.register,
         method: Methods.post,
         skipAuth: true,
-        body: {
-          'email': email.trim(),
-          'password': password,
-          'phone': phone.trim(),
-          'address': address.trim(),
-          'user_type': 'private',
-          'full_name': fullName.trim(),
-          'photo_url': photoUrl,
-          'id_document_url': idDocUrl,
-        },
+        body: payload,
         successCode: 201,
         altCodes: [200],
       );
@@ -241,15 +244,25 @@ class RegisterProvider extends ChangeNotifier {
           debugPrint('REGISTER: ❌ registerPrivate API error: $error');
           if (context.mounted) AppSnackBar.error(context, error);
         },
-        (_) {
-          debugPrint('REGISTER: ✅ registerPrivate API success! Navigating to PendingView.');
+        (data) {
+          debugPrint('REGISTER: ✅ registerPrivate API success! Response: $data');
           if (context.mounted) {
             clearRegistrationCache();
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const PendingView()),
-              (route) => false,
-            );
+            if (data['is_email_verified'] == false) {
+              final msg = data['message'] ?? 'Verification code sent to your email.';
+              AppSnackBar.success(context, msg);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => OtpVerifyView(email: email.trim())),
+                (route) => false,
+              );
+            } else {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const PendingView()),
+                (route) => false,
+              );
+            }
           }
         },
       );
@@ -288,21 +301,23 @@ class RegisterProvider extends ChangeNotifier {
         return;
       }
 
-      debugPrint('REGISTER: ▶️ Calling /api/auth/register/ for company user...');
+      final payload = {
+        'email': email.trim(),
+        'password': password,
+        'phone': phone.trim(),
+        'address': address.trim(),
+        'user_type': 'company',
+        'company': company.trim(),
+        'uid': uid.trim(),
+        'license_url': licenseUrl,
+      };
+      debugPrint('REGISTER: ▶️ Calling /api/auth/register/ for company user with payload: $payload');
+      
       final response = await DioManager.apiRequest(
         url: ApiService.register,
         method: Methods.post,
         skipAuth: true,
-        body: {
-          'email': email.trim(),
-          'password': password,
-          'phone': phone.trim(),
-          'address': address.trim(),
-          'user_type': 'company',
-          'company': company.trim(),
-          'uid': uid.trim(),
-          'license_url': licenseUrl,
-        },
+        body: payload,
         successCode: 201,
         altCodes: [200],
       );
@@ -312,15 +327,25 @@ class RegisterProvider extends ChangeNotifier {
           debugPrint('REGISTER: ❌ registerCompany API error: $error');
           if (context.mounted) AppSnackBar.error(context, error);
         },
-        (_) {
-          debugPrint('REGISTER: ✅ registerCompany API success! Navigating to PendingView.');
+        (data) {
+          debugPrint('REGISTER: ✅ registerCompany API success! Response: $data');
           if (context.mounted) {
             clearRegistrationCache();
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const PendingView()),
-              (route) => false,
-            );
+            if (data['is_email_verified'] == false) {
+              final msg = data['message'] ?? 'Verification code sent to your email.';
+              AppSnackBar.success(context, msg);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => OtpVerifyView(email: email.trim())),
+                (route) => false,
+              );
+            } else {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const PendingView()),
+                (route) => false,
+              );
+            }
           }
         },
       );

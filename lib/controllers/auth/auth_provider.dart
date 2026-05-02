@@ -23,13 +23,16 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+    final payload = {
+      'email': email.trim(),
+      'password': password,
+    };
+    debugPrint('LOGIN: ▶️ Calling login API with payload: $payload');
+
     final response = await DioManager.apiRequest(
       url: ApiService.login,
       method: Methods.post,
-      body: {
-        'email': email.trim(),
-        'password': password,
-      },
+      body: payload,
       skipAuth: true,
     );
 
@@ -37,11 +40,26 @@ class AuthProvider extends ChangeNotifier {
       (error) {
         _isLoading = false;
         notifyListeners();
-        AppSnackBar.error(context, error);
+        debugPrint('LOGIN: ❌ Unverified Email: $error');
+        if (error.startsWith('UNVERIFIED_EMAIL:')) {
+          final msg = error.substring('UNVERIFIED_EMAIL:'.length);
+          AppSnackBar.error(context, msg);
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtpVerifyView(email: email.trim()),
+              ),
+            );
+          }
+        } else {
+          AppSnackBar.error(context, error);
+        }
       },
       (data) async {
         _isLoading = false;
         notifyListeners();
+        debugPrint('LOGIN: ✅ API response: $data');
         
         final loginData = LoginResponse.fromJson(data);
 

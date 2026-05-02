@@ -53,6 +53,11 @@ class ErrorHandler {
       }
     }
 
+    final extra = data['extra'];
+    if (extra is Map<String, dynamic> && extra['is_email_verified'] == false) {
+      return 'UNVERIFIED_EMAIL:${_flatMessage(data) ?? "Please verify your email before logging in."}';
+    }
+
     // Try validation fields first, then flat message fields
     final msg = _validationMessage(data) ??
         _nestedErrorMessage(data) ??

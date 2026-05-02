@@ -49,6 +49,8 @@ class _SignUpViewState extends State<SignUpView> {
     if (_isFormValid != valid) setState(() => _isFormValid = valid);
   }
 
+  @override
+  Widget build(BuildContext context) {
     return CommonBackground(
       child: SafeArea(
         child: Column(

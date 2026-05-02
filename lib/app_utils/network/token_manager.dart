@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 
@@ -70,14 +71,17 @@ class TokenManager {
       }
 
       log('🔄 Refreshing access token...', name: _tag);
+      final payload = {'refresh': refreshToken};
+      debugPrint('TOKEN: ▶️ Calling /auth/token/refresh/ with payload: $payload');
 
       final dio = Dio(BaseOptions(baseUrl: ApiService.baseUrl));
       final response = await dio.post(
         '/auth/token/refresh/',
-        data: {'refresh': refreshToken},
+        data: payload,
       );
 
       if (response.statusCode == 200) {
+        debugPrint('TOKEN: ✅ Refresh API success! Response: ${response.data}');
         final newAccess = response.data['access'] as String?;
         final newRefresh = response.data['refresh'] as String?;
 
@@ -95,6 +99,7 @@ class TokenManager {
         }
       }
 
+      debugPrint('TOKEN: ❌ Refresh API invalid response! Response: ${response.data}');
       log('❌ Invalid refresh response [${response.statusCode}]', name: _tag);
       await logout();
       completer.complete(null);

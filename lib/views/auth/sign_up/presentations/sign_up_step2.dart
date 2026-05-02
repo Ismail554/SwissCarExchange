@@ -42,7 +42,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<RegisterProvider>();
-      _pageController = PageController(initialPage: provider.selectedRole.index);
+      _pageController = PageController(
+        initialPage: provider.selectedRole.index,
+      );
       for (final c in _allControllers(provider)) {
         c.addListener(_validate);
       }
@@ -193,81 +195,93 @@ class _SignUpStep2State extends State<SignUpStep2> {
                   }
 
                   return SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildStepHeader(provider),
-                    SizedBox(height: 10.h),
-                    _buildProgressBar(),
-                    SizedBox(height: 28.h),
-
-                    // ── Role toggle ──────────────────────
-                    _RoleToggle(
-                      selected: provider.selectedRole,
-                      onChanged: _switchRole,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24.w,
+                      vertical: 20.h,
                     ),
-                    SizedBox(height: 28.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildStepHeader(provider),
+                        SizedBox(height: 10.h),
+                        _buildProgressBar(),
+                        SizedBox(height: 28.h),
 
-                    // ── PageView forms ───────────────────
-                    // Intrinsic height wraps the PageView so it sizes
-                    // to the tallest child without a fixed height.
-                    _PageViewForms(
-                      pageController: _pageController,
-                      onPageChanged: _onPageChanged,
-                      individualForm: _IndividualForm(
-                        nameController: provider.nameController,
-                        addressController: provider.individualAddressController,
-                        idFile: provider.idFile,
-                        idFileName: provider.idFileName,
-                        isImage: provider.isIdImage,
-                        onPickFile: _showPickerOptions,
-                        onRemoveFile: _removeFile,
-                      ),
-                      companyForm: _CompanyForm(
-                        companyController: provider.companyController,
-                        uidController: provider.uidController,
-                        addressController: provider.companyAddressController,
-                      ),
-                    ),
+                        // ── Role toggle ──────────────────────
+                        _RoleToggle(
+                          selected: provider.selectedRole,
+                          onChanged: _switchRole,
+                        ),
+                        SizedBox(height: 28.h),
 
-                    SizedBox(height: 40.h),
-
-                    CustomButton(
-                      text: 'Continue',
-                      isActive: _isFormValid,
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => SignUpStep3(
-                              email: widget.email,
-                              password: widget.password,
-                              phone: widget.phone,
-                              role: provider.selectedRole,
-
-                              // Individual
-                              fullName: provider.nameController.text.trim(),
-                              address: provider.selectedRole == UserRole.individual
-                                  ? provider.individualAddressController.text.trim()
-                                  : provider.companyAddressController.text.trim(),
-                              idDocumentFile: provider.idFile,
-
-                              // Company
-                              company: provider.companyController.text.trim(),
-                              uid: provider.uidController.text.trim(),
-                            ),
+                        // ── PageView forms ───────────────────
+                        // Intrinsic height wraps the PageView so it sizes
+                        // to the tallest child without a fixed height.
+                        _PageViewForms(
+                          pageController: _pageController,
+                          onPageChanged: _onPageChanged,
+                          individualForm: _IndividualForm(
+                            nameController: provider.nameController,
+                            addressController:
+                                provider.individualAddressController,
+                            idFile: provider.idFile,
+                            idFileName: provider.idFileName,
+                            isImage: provider.isIdImage,
+                            onPickFile: _showPickerOptions,
+                            onRemoveFile: _removeFile,
                           ),
-                        );
-                      },
-                    ),
+                          companyForm: _CompanyForm(
+                            companyController: provider.companyController,
+                            uidController: provider.uidController,
+                            addressController:
+                                provider.companyAddressController,
+                          ),
+                        ),
 
-                    SizedBox(height: 20.h),
-                  ],
-                ),
-              );
+                        SizedBox(height: 40.h),
+
+                        CustomButton(
+                          text: 'Continue',
+                          isActive: _isFormValid,
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => SignUpStep3(
+                                  email: widget.email,
+                                  password: widget.password,
+                                  phone: widget.phone,
+                                  role: provider.selectedRole,
+
+                                  // Individual
+                                  fullName: provider.nameController.text.trim(),
+                                  address:
+                                      provider.selectedRole ==
+                                          UserRole.individual
+                                      ? provider
+                                            .individualAddressController
+                                            .text
+                                            .trim()
+                                      : provider.companyAddressController.text
+                                            .trim(),
+                                  idDocumentFile: provider.idFile,
+
+                                  // Company
+                                  company: provider.companyController.text
+                                      .trim(),
+                                  uid: provider.uidController.text.trim(),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+                        SizedBox(height: 20.h),
+                      ],
+                    ),
+                  );
                 },
               ),
             ),
@@ -306,7 +320,9 @@ class _SignUpStep2State extends State<SignUpStep2> {
           duration: const Duration(milliseconds: 200),
           child: Text(
             key: ValueKey(provider.selectedRole),
-            provider.selectedRole == UserRole.individual ? 'Individual' : 'Company',
+            provider.selectedRole == UserRole.individual
+                ? 'Individual'
+                : 'Company',
             style: TextStyle(color: Colors.white54, fontSize: 13.sp),
           ),
         ),
@@ -518,7 +534,7 @@ class _IndividualForm extends StatelessWidget {
           textInputAction: .next,
           label: 'Full Name',
           controller: nameController,
-          hintText: 'John Doe',
+          hintText: 'Enter your Full Name',
           icon: Icons.person_outline_rounded,
         ),
         SizedBox(height: 20.h),

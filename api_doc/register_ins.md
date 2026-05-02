@@ -71,7 +71,41 @@ Content-Type: application/json
   "license_url": "{public_url}"
 }
 ```
+200 OK
 
+Register response for user_type == Private
+response: {
+    "id": 6,
+    "email": "ismailshuvo54@gmail.com",
+    "phone": "+41791234567",
+    "user_type": "private",
+    "address": "Bahnhofstrasse 1, Zurich",
+    "website": "",
+    "created_at": "2026-05-02T21:19:18.606287Z",
+    "is_email_verified": false,
+    "message": "Verification code sent to your email.",
+    "photo_url": "https://your-bucket.s3.amazonaws.com/registration-docs/file.pdf",
+    "id_document_url": "https://your-bucket.s3.amazonaws.com/registration-docs/file.pdf",
+    "full_name": "Mehedi Hasan"
+}
+
+
+Register response user_type == Company :
+ response: 
+{
+    "id": 7,
+    "email": "ismailshuvo55@gmail.com",
+    "phone": "+41791234567",
+    "user_type": "company",
+    "address": "Bahnhofstrasse 1, Zurich",
+    "website": "",
+    "created_at": "2026-05-02T21:20:49.523378Z",
+    "is_email_verified": false,
+    "message": "Verification code sent to your email.",
+    "company": "Acme AG",
+    "uid": "CHE-123.477.781",
+    "license_url": "https://your-bucket.s3.amazonaws.com/registration-docs/file.pdf"
+}
 ---
 
 ## ⚠️ Quick Reminders
