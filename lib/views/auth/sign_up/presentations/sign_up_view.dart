@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:rionydo/controllers/auth/register_provider.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
@@ -15,38 +17,38 @@ class SignUpView extends StatefulWidget {
 }
 
 class _SignUpViewState extends State<SignUpView> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _phoneController = TextEditingController();
   bool _obscurePassword = true;
   bool _isFormValid = false;
 
   @override
   void initState() {
     super.initState();
-    _emailController.addListener(_validate);
-    _passwordController.addListener(_validate);
-    _phoneController.addListener(_validate);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<RegisterProvider>();
+      provider.emailController.addListener(_validate);
+      provider.passwordController.addListener(_validate);
+      provider.phoneController.addListener(_validate);
+      _validate();
+    });
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _phoneController.dispose();
+    // Note: Do not dispose provider's controllers here
+    // Removed listener removal for brevity; can be handled carefully if needed
     super.dispose();
   }
 
   void _validate() {
+    if (!mounted) return;
+    final provider = context.read<RegisterProvider>();
     final valid =
-        _emailController.text.trim().contains('@') &&
-        _passwordController.text.length >= 6 &&
-        _phoneController.text.trim().length >= 6;
+        provider.emailController.text.trim().contains('@') &&
+        provider.passwordController.text.length >= 6 &&
+        provider.phoneController.text.trim().length >= 6;
     if (_isFormValid != valid) setState(() => _isFormValid = valid);
   }
 
-  @override
-  Widget build(BuildContext context) {
     return CommonBackground(
       child: SafeArea(
         child: Column(
@@ -55,7 +57,8 @@ class _SignUpViewState extends State<SignUpView> {
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-                child: Column(
+                child: Consumer<RegisterProvider>(
+                  builder: (context, provider, _) => Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Step badge
@@ -128,7 +131,7 @@ class _SignUpViewState extends State<SignUpView> {
                     SizedBox(height: 8.h),
                     CustomTextField(
                       textInputAction: .next,
-                      controller: _emailController,
+                      controller: provider.emailController,
                       hintText: 'info@premiumauto.ch',
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: Icon(
@@ -147,7 +150,8 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     SizedBox(height: 8.h),
                     CustomTextField(
-                      controller: _passwordController,
+                      textInputAction: .next,
+                      controller: provider.passwordController,
                       hintText: '••••••••',
                       obscureText: _obscurePassword,
                       prefixIcon: Icon(
@@ -178,7 +182,8 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     SizedBox(height: 8.h),
                     CustomTextField(
-                      controller: _phoneController,
+                      textInputAction: .next,
+                      controller: provider.phoneController,
                       hintText: '+41 79 123 45 67',
                       keyboardType: TextInputType.phone,
                       prefixIcon: Icon(
@@ -195,13 +200,14 @@ class _SignUpViewState extends State<SignUpView> {
                       text: 'Continue',
                       isActive: _isFormValid,
                       onPressed: () {
+                        FocusScope.of(context).unfocus();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => SignUpStep2(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text,
-                              phone: _phoneController.text.trim(),
+                              email: provider.emailController.text.trim(),
+                              password: provider.passwordController.text,
+                              phone: provider.phoneController.text.trim(),
                             ),
                           ),
                         );
@@ -255,6 +261,7 @@ class _SignUpViewState extends State<SignUpView> {
 
                     SizedBox(height: 20.h),
                   ],
+                ),
                 ),
               ),
             ),

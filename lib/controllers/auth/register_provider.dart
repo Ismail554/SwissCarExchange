@@ -1,11 +1,12 @@
 import 'dart:io';
-import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step2.dart' show UserRole;
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
 
 /// Resolves the MIME content-type from a file extension.
@@ -27,13 +28,82 @@ class RegisterProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  // ─── Caching Form State ────────────────────────────────────────────────────
+  // Step 1
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final phoneController = TextEditingController();
+
+  // Step 2
+  UserRole selectedRole = UserRole.individual;
+  final nameController = TextEditingController();
+  final individualAddressController = TextEditingController();
+  File? idFile;
+  String? idFileName;
+  bool isIdImage = false;
+
+  final companyController = TextEditingController();
+  final uidController = TextEditingController();
+  final companyAddressController = TextEditingController();
+
+  // Step 3
+  File? photoFile;
+  String? photoFileName;
+  PlatformFile? licensePickedFile;
+
+  void setRole(UserRole role) {
+    selectedRole = role;
+    notifyListeners();
+  }
+
+  void setIdFile(File? file, String? name, bool isImage) {
+    idFile = file;
+    idFileName = name;
+    isIdImage = isImage;
+    notifyListeners();
+  }
+
+  void setPhotoFile(File? file, String? name) {
+    photoFile = file;
+    photoFileName = name;
+    notifyListeners();
+  }
+
+  void setLicenseFile(PlatformFile? file) {
+    licensePickedFile = file;
+    notifyListeners();
+  }
+
+  void clearRegistrationCache() {
+    emailController.clear();
+    passwordController.clear();
+    phoneController.clear();
+    
+    selectedRole = UserRole.individual;
+    nameController.clear();
+    individualAddressController.clear();
+    idFile = null;
+    idFileName = null;
+    isIdImage = false;
+
+    companyController.clear();
+    uidController.clear();
+    companyAddressController.clear();
+
+    photoFile = null;
+    photoFileName = null;
+    licensePickedFile = null;
+    notifyListeners();
+  }
+
+
   // ─── Step 1: Get Pre-Signed URL ────────────────────────────────────────────
   /// Returns `{presigned_url, public_url}` or null on failure.
   Future<Map<String, String>?> _getPresignedUrl({
     required String contentType,
     required String fileName,
   }) async {
-    log('▶️ Requesting presigned URL for "$fileName" (content-type: $contentType)', name: 'REGISTER');
+    debugPrint('REGISTER: ▶️ Requesting presigned URL for "$fileName" (content-type: $contentType)');
     final response = await DioManager.apiRequest(
       url: ApiService.presignedUrl,
       method: Methods.get,
@@ -46,17 +116,17 @@ class RegisterProvider extends ChangeNotifier {
 
     return response.fold(
       (error) {
-        log('❌ Presigned URL error: $error', name: 'REGISTER');
+        debugPrint('REGISTER: ❌ Presigned URL error: $error');
         return null;
       },
       (data) {
         final presigned = data['presigned_url'] as String?;
         final public = data['public_url'] as String?;
         if (presigned == null || public == null) {
-          log('❌ Invalid presigned URL response structure: $data', name: 'REGISTER');
+          debugPrint('REGISTER: ❌ Invalid presigned URL response structure: $data');
           return null;
         }
-        log('✅ Presigned URL received successfully. Public URL: $public', name: 'REGISTER');
+        debugPrint('REGISTER: ✅ Presigned URL received successfully. Public URL: $public');
         return {'presigned_url': presigned, 'public_url': public};
       },
     );
@@ -72,7 +142,7 @@ class RegisterProvider extends ChangeNotifier {
       // Must be raw binary PUT — no JSON, no multipart
       final dio = Dio();
       final fileBytes = await file.readAsBytes();
-      log('▶️ Uploading binary to S3: ${fileBytes.length} bytes (type: $contentType)', name: 'REGISTER');
+      debugPrint('REGISTER: ▶️ Uploading binary to S3: ${fileBytes.length} bytes (type: $contentType)');
       final response = await dio.put(
         presignedUrl,
         data: Stream.fromIterable([fileBytes]),
@@ -85,10 +155,10 @@ class RegisterProvider extends ChangeNotifier {
           receiveTimeout: const Duration(seconds: 60),
         ),
       );
-      log('✅ S3 upload status: ${response.statusCode}', name: 'REGISTER');
+      debugPrint('REGISTER: ✅ S3 upload status: ${response.statusCode}');
       return (response.statusCode ?? 0) == 200;
     } catch (e) {
-      log('❌ S3 upload error: $e', name: 'REGISTER');
+      debugPrint('REGISTER: ❌ S3 upload error: $e');
       return false;
     }
   }
@@ -126,7 +196,7 @@ class RegisterProvider extends ChangeNotifier {
     required File photoFile,       // profile photo
     required File idDocumentFile,  // NID / Passport
   }) async {
-    log('▶️ START registerPrivate: email=$email, phone=$phone, name=$fullName', name: 'REGISTER');
+    debugPrint('REGISTER: ▶️ START registerPrivate: email=$email, phone=$phone, name=$fullName');
     _setLoading(true);
 
     try {
@@ -140,14 +210,14 @@ class RegisterProvider extends ChangeNotifier {
       final idDocUrl = results[1];
 
       if (photoUrl == null || idDocUrl == null) {
-        log('❌ registerPrivate: One or more file uploads failed.', name: 'REGISTER');
+        debugPrint('REGISTER: ❌ registerPrivate: One or more file uploads failed.');
         if (context.mounted) {
           AppSnackBar.error(context, 'File upload failed. Please try again.');
         }
         return;
       }
 
-      log('▶️ Calling /api/auth/register/ for private user...', name: 'REGISTER');
+      debugPrint('REGISTER: ▶️ Calling /api/auth/register/ for private user...');
       final response = await DioManager.apiRequest(
         url: ApiService.register,
         method: Methods.post,
@@ -168,12 +238,13 @@ class RegisterProvider extends ChangeNotifier {
 
       response.fold(
         (error) {
-          log('❌ registerPrivate API error: $error', name: 'REGISTER');
+          debugPrint('REGISTER: ❌ registerPrivate API error: $error');
           if (context.mounted) AppSnackBar.error(context, error);
         },
         (_) {
-          log('✅ registerPrivate API success! Navigating to PendingView.', name: 'REGISTER');
+          debugPrint('REGISTER: ✅ registerPrivate API success! Navigating to PendingView.');
           if (context.mounted) {
+            clearRegistrationCache();
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const PendingView()),
@@ -183,7 +254,7 @@ class RegisterProvider extends ChangeNotifier {
         },
       );
     } catch (e) {
-      log('❌ registerPrivate error: $e', name: 'REGISTER');
+      debugPrint('REGISTER: ❌ registerPrivate error: $e');
       if (context.mounted) {
         AppSnackBar.error(context, 'An unexpected error occurred.');
       }
@@ -203,21 +274,21 @@ class RegisterProvider extends ChangeNotifier {
     required String uid,
     required File licenseFile, // trade-register / commercial license
   }) async {
-    log('▶️ START registerCompany: email=$email, phone=$phone, company=$company', name: 'REGISTER');
+    debugPrint('REGISTER: ▶️ START registerCompany: email=$email, phone=$phone, company=$company');
     _setLoading(true);
 
     try {
       final licenseUrl = await _presignAndUpload(licenseFile);
 
       if (licenseUrl == null) {
-        log('❌ registerCompany: License upload failed.', name: 'REGISTER');
+        debugPrint('REGISTER: ❌ registerCompany: License upload failed.');
         if (context.mounted) {
           AppSnackBar.error(context, 'File upload failed. Please try again.');
         }
         return;
       }
 
-      log('▶️ Calling /api/auth/register/ for company user...', name: 'REGISTER');
+      debugPrint('REGISTER: ▶️ Calling /api/auth/register/ for company user...');
       final response = await DioManager.apiRequest(
         url: ApiService.register,
         method: Methods.post,
@@ -238,12 +309,13 @@ class RegisterProvider extends ChangeNotifier {
 
       response.fold(
         (error) {
-          log('❌ registerCompany API error: $error', name: 'REGISTER');
+          debugPrint('REGISTER: ❌ registerCompany API error: $error');
           if (context.mounted) AppSnackBar.error(context, error);
         },
         (_) {
-          log('✅ registerCompany API success! Navigating to PendingView.', name: 'REGISTER');
+          debugPrint('REGISTER: ✅ registerCompany API success! Navigating to PendingView.');
           if (context.mounted) {
+            clearRegistrationCache();
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const PendingView()),
@@ -253,7 +325,7 @@ class RegisterProvider extends ChangeNotifier {
         },
       );
     } catch (e) {
-      log('❌ registerCompany error: $e', name: 'REGISTER');
+      debugPrint('REGISTER: ❌ registerCompany error: $e');
       if (context.mounted) {
         AppSnackBar.error(context, 'An unexpected error occurred.');
       }

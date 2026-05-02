@@ -41,6 +41,10 @@ class ErrorHandler {
   }
 
   static String _parseErrorMap(Map<String, dynamic> data, int status) {
+    // We already have 'import 'dart:developer';' at the top of other files?
+    // Let's use print instead if dart:developer is not imported here, or just print it.
+    print('API_ERROR_MAP (status $status): $data');
+
     // Special error code handling
     final errorCodes = data['error_code'];
     if (errorCodes is List && errorCodes.isNotEmpty) {
@@ -49,13 +53,27 @@ class ErrorHandler {
       }
     }
 
-    // Try flat message fields
-    final msg = _flatMessage(data) ??
+    // Try validation fields first, then flat message fields
+    final msg = _validationMessage(data) ??
         _nestedErrorMessage(data) ??
-        _validationMessage(data) ??
-        _nonFieldErrors(data);
+        _flatMessage(data) ??
+        _nonFieldErrors(data) ??
+        _fallbackValidationMessage(data);
 
     return msg ?? 'This email is already registered ($status).';
+  }
+
+  static String? _fallbackValidationMessage(Map<String, dynamic> data) {
+    // If there are no standard message keys, maybe the data itself is the validation map
+    // e.g. {"email": ["Email already exists"]}
+    final keys = data.keys.where((k) => k != 'status' && k != 'error_code').toList();
+    if (keys.isNotEmpty) {
+      final firstKey = keys.first;
+      final val = data[firstKey];
+      if (val is List && val.isNotEmpty) return '$firstKey: ${val.first}';
+      if (val is String) return '$firstKey: $val';
+    }
+    return null;
   }
 
   static String? _flatMessage(Map<String, dynamic> data) =>

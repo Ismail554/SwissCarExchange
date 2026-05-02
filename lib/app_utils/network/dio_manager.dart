@@ -152,6 +152,9 @@ class DioManager {
 
       return left(ErrorHandler.fromResponse(response));
     } on DioException catch (e) {
+      if (e.response != null) {
+        log('RAW API ERROR RESPONSE: ${e.response?.data}', name: 'API_RAW');
+      }
       return left(ErrorHandler.fromDio(e));
     } catch (e, stack) {
       log('⚠️ Unexpected: $e', stackTrace: stack, name: 'API');

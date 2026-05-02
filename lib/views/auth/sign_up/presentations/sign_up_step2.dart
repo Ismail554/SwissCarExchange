@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/controllers/auth/register_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
@@ -29,20 +31,7 @@ class SignUpStep2 extends StatefulWidget {
 
 class _SignUpStep2State extends State<SignUpStep2> {
   // ── Tab / Role ─────────────────────────────────────────
-  final _pageController = PageController();
-  UserRole _selectedRole = UserRole.individual;
-
-  // ── Individual fields ──────────────────────────────────
-  final _nameController = TextEditingController();
-  final _individualAddressController = TextEditingController();
-  File? _idFile;
-  String? _idFileName;
-  bool _isImage = false;
-
-  // ── Company fields ─────────────────────────────────────
-  final _companyController = TextEditingController();
-  final _uidController = TextEditingController();
-  final _companyAddressController = TextEditingController();
+  late PageController _pageController;
 
   bool _isFormValid = false;
   final _imagePicker = ImagePicker();
@@ -51,46 +40,59 @@ class _SignUpStep2State extends State<SignUpStep2> {
   @override
   void initState() {
     super.initState();
-    for (final c in _allControllers) {
-      c.addListener(_validate);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<RegisterProvider>();
+      _pageController = PageController(initialPage: provider.selectedRole.index);
+      for (final c in _allControllers(provider)) {
+        c.addListener(_validate);
+      }
+      // Ensure the provider notifies changes when it changes files so that validate can run.
+      provider.addListener(_validate);
+      setState(() {});
+      _validate();
+    });
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
-    for (final c in _allControllers) {
-      c.dispose();
+    final provider = context.read<RegisterProvider>();
+    provider.removeListener(_validate);
+    for (final c in _allControllers(provider)) {
+      c.removeListener(_validate);
     }
+    _pageController.dispose();
     super.dispose();
   }
 
-  List<TextEditingController> get _allControllers => [
-    _nameController,
-    _individualAddressController,
-    _companyController,
-    _uidController,
-    _companyAddressController,
+  List<TextEditingController> _allControllers(RegisterProvider provider) => [
+    provider.nameController,
+    provider.individualAddressController,
+    provider.companyController,
+    provider.uidController,
+    provider.companyAddressController,
   ];
 
   // ── Validation ─────────────────────────────────────────
   void _validate() {
-    final valid = _selectedRole == UserRole.individual
-        ? _nameController.text.trim().isNotEmpty &&
-              _individualAddressController.text.trim().isNotEmpty &&
-              _idFile != null
-        : _companyController.text.trim().isNotEmpty &&
-              _uidController.text.trim().isNotEmpty &&
-              _companyAddressController.text.trim().isNotEmpty;
+    if (!mounted) return;
+    final provider = context.read<RegisterProvider>();
+    final valid = provider.selectedRole == UserRole.individual
+        ? provider.nameController.text.trim().isNotEmpty &&
+              provider.individualAddressController.text.trim().isNotEmpty &&
+              provider.idFile != null
+        : provider.companyController.text.trim().isNotEmpty &&
+              provider.uidController.text.trim().isNotEmpty &&
+              provider.companyAddressController.text.trim().isNotEmpty;
 
     if (_isFormValid != valid) setState(() => _isFormValid = valid);
   }
 
   // ── Tab switching ──────────────────────────────────────
   void _switchRole(UserRole role) {
-    if (_selectedRole == role) return;
+    final provider = context.read<RegisterProvider>();
+    if (provider.selectedRole == role) return;
+    provider.setRole(role);
     setState(() {
-      _selectedRole = role;
       _isFormValid = false;
     });
     _pageController.animateToPage(
@@ -102,10 +104,11 @@ class _SignUpStep2State extends State<SignUpStep2> {
   }
 
   void _onPageChanged(int index) {
+    final provider = context.read<RegisterProvider>();
     final role = UserRole.values[index];
-    if (_selectedRole != role) {
+    if (provider.selectedRole != role) {
+      provider.setRole(role);
       setState(() {
-        _selectedRole = role;
         _isFormValid = false;
       });
       _validate();
@@ -151,26 +154,19 @@ class _SignUpStep2State extends State<SignUpStep2> {
   }
 
   void _setFile(File file, String name, {required bool isImage}) {
-    setState(() {
-      _idFile = file;
-      _idFileName = name;
-      _isImage = isImage;
-    });
+    context.read<RegisterProvider>().setIdFile(file, name, isImage);
     _validate();
   }
 
   void _removeFile() {
-    setState(() {
-      _idFile = null;
-      _idFileName = null;
-      _isImage = false;
-    });
+    context.read<RegisterProvider>().setIdFile(null, null, false);
     _validate();
   }
 
   // ── Build ──────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    final teal = AppColors.sceTeal;
     return CommonBackground(
       child: SafeArea(
         child: Column(
@@ -186,19 +182,29 @@ class _SignUpStep2State extends State<SignUpStep2> {
             ),
 
             Expanded(
-              child: SingleChildScrollView(
+              child: Consumer<RegisterProvider>(
+                builder: (context, provider, _) {
+                  if (!mounted) return const SizedBox.shrink();
+                  // Check if pageController is initialized
+                  try {
+                    _pageController.hasClients;
+                  } catch (e) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildStepHeader(),
+                    _buildStepHeader(provider),
                     SizedBox(height: 10.h),
                     _buildProgressBar(),
                     SizedBox(height: 28.h),
 
                     // ── Role toggle ──────────────────────
                     _RoleToggle(
-                      selected: _selectedRole,
+                      selected: provider.selectedRole,
                       onChanged: _switchRole,
                     ),
                     SizedBox(height: 28.h),
@@ -210,18 +216,18 @@ class _SignUpStep2State extends State<SignUpStep2> {
                       pageController: _pageController,
                       onPageChanged: _onPageChanged,
                       individualForm: _IndividualForm(
-                        nameController: _nameController,
-                        addressController: _individualAddressController,
-                        idFile: _idFile,
-                        idFileName: _idFileName,
-                        isImage: _isImage,
+                        nameController: provider.nameController,
+                        addressController: provider.individualAddressController,
+                        idFile: provider.idFile,
+                        idFileName: provider.idFileName,
+                        isImage: provider.isIdImage,
                         onPickFile: _showPickerOptions,
                         onRemoveFile: _removeFile,
                       ),
                       companyForm: _CompanyForm(
-                        companyController: _companyController,
-                        uidController: _uidController,
-                        addressController: _companyAddressController,
+                        companyController: provider.companyController,
+                        uidController: provider.uidController,
+                        addressController: provider.companyAddressController,
                       ),
                     ),
 
@@ -230,31 +236,39 @@ class _SignUpStep2State extends State<SignUpStep2> {
                     CustomButton(
                       text: 'Continue',
                       isActive: _isFormValid,
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => SignUpStep3(
-                            email: widget.email,
-                            password: widget.password,
-                            phone: widget.phone,
-                            role: _selectedRole,
-                            // Individual
-                            fullName: _nameController.text.trim(),
-                            address: _selectedRole == UserRole.individual
-                                ? _individualAddressController.text.trim()
-                                : _companyAddressController.text.trim(),
-                            idDocumentFile: _idFile,
-                            // Company
-                            company: _companyController.text.trim(),
-                            uid: _uidController.text.trim(),
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SignUpStep3(
+                              email: widget.email,
+                              password: widget.password,
+                              phone: widget.phone,
+                              role: provider.selectedRole,
+
+                              // Individual
+                              fullName: provider.nameController.text.trim(),
+                              address: provider.selectedRole == UserRole.individual
+                                  ? provider.individualAddressController.text.trim()
+                                  : provider.companyAddressController.text.trim(),
+                              idDocumentFile: provider.idFile,
+
+                              // Company
+                              company: provider.companyController.text.trim(),
+                              uid: provider.uidController.text.trim(),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
 
                     SizedBox(height: 20.h),
                   ],
                 ),
+              );
+                },
               ),
             ),
           ],
@@ -263,7 +277,7 @@ class _SignUpStep2State extends State<SignUpStep2> {
     );
   }
 
-  Widget _buildStepHeader() {
+  Widget _buildStepHeader(RegisterProvider provider) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -291,8 +305,8 @@ class _SignUpStep2State extends State<SignUpStep2> {
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: Text(
-            key: ValueKey(_selectedRole),
-            _selectedRole == UserRole.individual ? 'Individual' : 'Company',
+            key: ValueKey(provider.selectedRole),
+            provider.selectedRole == UserRole.individual ? 'Individual' : 'Company',
             style: TextStyle(color: Colors.white54, fontSize: 13.sp),
           ),
         ),
@@ -501,6 +515,7 @@ class _IndividualForm extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _LabeledField(
+          textInputAction: .next,
           label: 'Full Name',
           controller: nameController,
           hintText: 'John Doe',
@@ -520,6 +535,7 @@ class _IndividualForm extends StatelessWidget {
         SizedBox(height: 20.h),
 
         _LabeledField(
+          textInputAction: .done,
           label: 'Address',
           controller: addressController,
           hintText: 'Street, ZIP, City',
@@ -584,12 +600,14 @@ class _LabeledField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final IconData icon;
+  final TextInputAction textInputAction;
 
   const _LabeledField({
     required this.label,
     required this.controller,
     required this.hintText,
     required this.icon,
+    this.textInputAction = TextInputAction.next,
   });
 
   @override
@@ -600,6 +618,7 @@ class _LabeledField extends StatelessWidget {
         _FieldLabel(label),
         SizedBox(height: 8.h),
         CustomTextField(
+          textInputAction: textInputAction,
           controller: controller,
           hintText: hintText,
           prefixIcon: Icon(icon, color: AppColors.sceGreyA0, size: 20),
