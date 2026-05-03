@@ -7,6 +7,7 @@ import 'package:rionydo/models/auth/login_response.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
+import 'package:rionydo/views/auth/forgot_password/successful_view.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
 import 'package:rionydo/views/bidding/presentations/bids_view.dart';
@@ -14,7 +15,7 @@ import 'package:rionydo/views/profile/presentations/profile_view.dart';
 import 'package:rionydo/views/main_navigation/bottom_nav.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/views/auth/login/login_views.dart';
-
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
 class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -37,7 +38,7 @@ class AuthProvider extends ChangeNotifier {
     );
 
     response.fold(
-      (error) {
+      (error) async {
         _isLoading = false;
         notifyListeners();
         debugPrint('LOGIN: ❌ Unverified Email: $error');
@@ -45,12 +46,16 @@ class AuthProvider extends ChangeNotifier {
           final msg = error.substring('UNVERIFIED_EMAIL:'.length);
           AppSnackBar.error(context, msg);
           if (context.mounted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OtpVerifyView(email: email.trim()),
-              ),
-            );
+            // Automatically resend OTP so the user has a fresh code
+            await resendOtp(context, email: email.trim());
+            if (context.mounted) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OtpVerifyView(email: email.trim()),
+                ),
+              );
+            }
           }
         } else {
           AppSnackBar.error(context, error);
@@ -62,6 +67,29 @@ class AuthProvider extends ChangeNotifier {
         debugPrint('LOGIN: ✅ API response: $data');
         
         final loginData = LoginResponse.fromJson(data);
+
+        if (loginData.approvalStatus == 'suspended') {
+          if (context.mounted) {
+            AppSnackBar.error(context, "Try login with different account");
+          }
+          return;
+        }
+
+        if (loginData.approvalStatus == 'pending') {
+          await SecureStorageHelper.saveAccessToken(loginData.access);
+          await SecureStorageHelper.saveRefreshToken(loginData.refresh);
+          await SecureStorageHelper.saveUserType(loginData.userType);
+          
+          if (context.mounted) {
+            context.read<GlobalState>().userRole = loginData.userType;
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const PendingView()),
+              (route) => false,
+            );
+          }
+          return;
+        }
 
         if (loginData.isTwoFactorRequired) {
           if (context.mounted) {
@@ -99,6 +127,85 @@ class AuthProvider extends ChangeNotifier {
         }
       },
     );
+  }
+
+  Future<bool> resendOtp(BuildContext context, {required String email}) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final payload = {'email': email.trim()};
+    debugPrint('AUTH: ▶️ Calling resendOtp API with payload: $payload');
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.resendOtp,
+      method: Methods.post,
+      body: payload,
+      skipAuth: true,
+    );
+
+    bool success = false;
+    response.fold(
+      (error) {
+        debugPrint('AUTH: ❌ resendOtp API error: $error');
+        AppSnackBar.error(context, error);
+      },
+      (data) {
+        debugPrint('AUTH: ✅ resendOtp API success! Response: $data');
+        AppSnackBar.success(context, 'OTP has been resent to your email');
+        success = true;
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
+
+  Future<void> verifyOtp(BuildContext context, {required String email, required String otp}) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final payload = {
+      'email': email.trim(),
+      'code': otp,
+    };
+    debugPrint('AUTH: ▶️ Calling verifyOtp API with payload: $payload');
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.verifyOtp,
+      method: Methods.post,
+      body: payload,
+      skipAuth: true,
+    );
+
+    response.fold(
+      (error) {
+        debugPrint('AUTH: ❌ verifyOtp API error: $error');
+        AppSnackBar.error(context, error);
+      },
+      (data) {
+        debugPrint('AUTH: ✅ verifyOtp API success! Response: $data');
+        if (context.mounted) {
+          final message = data['message']?.toString();
+          if (message != null && message.isNotEmpty) {
+            AppSnackBar.success(context, message);
+          } else {
+            AppSnackBar.success(context, "Email verified successfully.");
+          }
+          
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginViews(),
+            ),
+            (route) => false,
+          );
+        }
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
   }
 
   Future<void> logout(BuildContext context) async {

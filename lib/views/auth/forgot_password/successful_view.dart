@@ -4,12 +4,55 @@ import 'package:lottie/lottie.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
-import 'package:rionydo/core/widgets/custom_button.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/views/auth/login/login_views.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
 
+class SuccessfulView extends StatefulWidget {
+  final String approvalStatus;
+  
+  const SuccessfulView({super.key, required this.approvalStatus});
 
-class SuccessfulView extends StatelessWidget {
-  const SuccessfulView({super.key});
+  @override
+  State<SuccessfulView> createState() => _SuccessfulViewState();
+}
+
+class _SuccessfulViewState extends State<SuccessfulView> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      
+      final status = widget.approvalStatus;
+      if (status == 'pending') {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const PendingView()),
+          (route) => false,
+        );
+      } else if (status == 'approved') {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginViews()),
+          (route) => false,
+        );
+      } else if (status == 'suspended') {
+        AppSnackBar.error(context, "Try login with different account");
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginViews()),
+          (route) => false,
+        );
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginViews()),
+          (route) => false,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +85,18 @@ class SuccessfulView extends StatelessWidget {
               //   ),
               // ),
               AppSpacing.h24,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: CustomButton(
-                  text: 'Continue',
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PendingView()),
-                    );
-                  },
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 24.w),
+              //   child: CustomButton(
+              //     text: 'Continue',
+              //     onPressed: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(builder: (context) => PendingView()),
+              //       );
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),

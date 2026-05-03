@@ -9,6 +9,7 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_outlined_btn.dart';
 import 'package:rionydo/views/auth/login/login_views.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
+import 'package:rionydo/views/profile/widgets/logout_button.dart';
 
 class PendingView extends StatelessWidget {
   const PendingView({super.key});
@@ -65,18 +66,20 @@ class PendingView extends StatelessWidget {
             Spacer(),
 
             Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: WidgetOutlinedBtn(
-                title: 'Logout',
-                icon: Icons.logout,
-                themeColor: Colors.red,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginViews()),
-                  );
-                },
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 16.w),
+              child: const LogoutButton(),
+              // WidgetOutlinedBtn(
+              //   title: 'Logout',
+              //   icon: Icons.logout,
+              //   themeColor: Colors.red,
+              //   onPressed: () {
+
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) => LoginViews()),
+              //     );
+              //   },
+              // ),
             ),
           ],
         ),

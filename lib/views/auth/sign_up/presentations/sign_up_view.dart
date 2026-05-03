@@ -61,209 +61,218 @@ class _SignUpViewState extends State<SignUpView> {
                 padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
                 child: Consumer<RegisterProvider>(
                   builder: (context, provider, _) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Step badge
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 8.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.sceRegistrationGoldBg,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: AppColors.sceRegistrationGold.withOpacity(
-                              0.4,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Step badge
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 8.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.sceRegistrationGoldBg,
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                              color: AppColors.sceRegistrationGold.withOpacity(
+                                0.4,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            '1. REGISTRATION',
+                            style: TextStyle(
+                              color: AppColors.sceRegistrationGold,
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
                             ),
                           ),
                         ),
-                        child: Text(
-                          '1. REGISTRATION',
-                          style: TextStyle(
-                            color: AppColors.sceRegistrationGold,
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.2,
-                          ),
+                      ),
+
+                      SizedBox(height: 32.h),
+
+                      // Logo
+                      Center(
+                        child: Image.asset(IconAssets.app_logo, height: 80.h),
+                      ),
+
+                      SizedBox(height: 36.h),
+
+                      // Dealer Registration Title
+                      // Text(
+                      //   'DEALER',
+                      //   textAlign: TextAlign.center,
+                      //   style: TextStyle(
+                      //     color: Colors.white,
+                      //     fontSize: 28.sp,
+                      //     fontWeight: FontWeight.w800,
+                      //     letterSpacing: 2,
+                      //   ),
+                      // ),
+                      Text(
+                        'REGISTRATION',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.sceTeal,
+                          fontSize: 28.sp,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 2,
                         ),
                       ),
-                    ),
 
-                    SizedBox(height: 32.h),
+                      SizedBox(height: 36.h),
 
-                    // Logo
-                    Center(
-                      child: Image.asset(IconAssets.app_logo, height: 80.h),
-                    ),
-
-                    SizedBox(height: 36.h),
-
-                    // Dealer Registration Title
-                    // Text(
-                    //   'DEALER',
-                    //   textAlign: TextAlign.center,
-                    //   style: TextStyle(
-                    //     color: Colors.white,
-                    //     fontSize: 28.sp,
-                    //     fontWeight: FontWeight.w800,
-                    //     letterSpacing: 2,
-                    //   ),
-                    // ),
-                    Text(
-                      'REGISTRATION',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.sceTeal,
-                        fontSize: 28.sp,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 2,
-                      ),
-                    ),
-
-                    SizedBox(height: 36.h),
-
-                    // E-Mail Label
-                    Text(
-                      'E-Mail',
-                      style: TextStyle(color: Colors.white70, fontSize: 13.sp),
-                    ),
-                    SizedBox(height: 8.h),
-                    CustomTextField(
-                      textInputAction: .next,
-                      controller: provider.emailController,
-                      hintText: 'info@premiumauto.ch',
-                      keyboardType: TextInputType.emailAddress,
-                      prefixIcon: Icon(
-                        Icons.email_outlined,
-                        color: AppColors.sceGreyA0,
-                        size: 20,
-                      ),
-                    ),
-
-                    SizedBox(height: 20.h),
-
-                    // Password Label
-                    Text(
-                      'Password',
-                      style: TextStyle(color: Colors.white70, fontSize: 13.sp),
-                    ),
-                    SizedBox(height: 8.h),
-                    CustomTextField(
-                      textInputAction: .next,
-                      controller: provider.passwordController,
-                      hintText: '••••••••',
-                      obscureText: _obscurePassword,
-                      prefixIcon: Icon(
-                        Icons.lock_outline,
-                        color: AppColors.sceGreyA0,
-                        size: 20,
-                      ),
-                      suffixIcon: GestureDetector(
-                        onTap: () => setState(
-                          () => _obscurePassword = !_obscurePassword,
+                      // E-Mail Label
+                      Text(
+                        'E-Mail',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 13.sp,
                         ),
-                        child: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
+                      ),
+                      SizedBox(height: 8.h),
+                      CustomTextField(
+                        textInputAction: .next,
+                        controller: provider.emailController,
+                        hintText: 'Your email address',
+                        keyboardType: TextInputType.emailAddress,
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
                           color: AppColors.sceGreyA0,
                           size: 20,
                         ),
                       ),
-                    ),
 
-                    SizedBox(height: 20.h),
+                      SizedBox(height: 20.h),
 
-                    // Phone Label
-                    Text(
-                      'Phone',
-                      style: TextStyle(color: Colors.white70, fontSize: 13.sp),
-                    ),
-                    SizedBox(height: 8.h),
-                    CustomTextField(
-                      textInputAction: .next,
-                      controller: provider.phoneController,
-                      hintText: '+41 79 123 45 67',
-                      keyboardType: TextInputType.phone,
-                      prefixIcon: Icon(
-                        Icons.phone_outlined,
-                        color: AppColors.sceGreyA0,
-                        size: 20.sp,
+                      // Password Label
+                      Text(
+                        'Password',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 13.sp,
+                        ),
                       ),
-                    ),
-
-                    SizedBox(height: 32.h),
-
-                    // Continue Button
-                    CustomButton(
-                      text: 'Continue',
-                      isActive: _isFormValid,
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => SignUpStep2(
-                              email: provider.emailController.text.trim(),
-                              password: provider.passwordController.text,
-                              phone: provider.phoneController.text.trim(),
-                            ),
+                      SizedBox(height: 8.h),
+                      CustomTextField(
+                        textInputAction: .next,
+                        controller: provider.passwordController,
+                        hintText: 'Type a Strong Password',
+                        obscureText: _obscurePassword,
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: AppColors.sceGreyA0,
+                          size: 20,
+                        ),
+                        suffixIcon: GestureDetector(
+                          onTap: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
                           ),
-                        );
-                      },
-                    ),
-
-                    SizedBox(height: 20.h),
-
-                    // Already registered?
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Already registered?  ',
-                          style: TextStyle(
-                            color: Colors.white54,
-                            fontSize: 13.sp,
+                          child: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            color: AppColors.sceGreyA0,
+                            size: 20,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Text(
-                            'Login',
+                      ),
+
+                      SizedBox(height: 20.h),
+
+                      // Phone Label
+                      Text(
+                        'Phone',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 13.sp,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      CustomTextField(
+                        textInputAction: .next,
+                        controller: provider.phoneController,
+                        hintText: '+41 79 123 45 67',
+                        keyboardType: TextInputType.phone,
+                        prefixIcon: Icon(
+                          Icons.phone_outlined,
+                          color: AppColors.sceGreyA0,
+                          size: 20.sp,
+                        ),
+                      ),
+
+                      SizedBox(height: 32.h),
+
+                      // Continue Button
+                      CustomButton(
+                        text: 'Continue',
+                        isActive: _isFormValid,
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SignUpStep2(
+                                email: provider.emailController.text.trim(),
+                                password: provider.passwordController.text,
+                                phone: provider.phoneController.text.trim(),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      SizedBox(height: 20.h),
+
+                      // Already registered?
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Already registered?  ',
                             style: TextStyle(
-                              color: AppColors.sceTeal,
+                              color: Colors.white54,
                               fontSize: 13.sp,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Text(
+                              'Login',
+                              style: TextStyle(
+                                color: AppColors.sceTeal,
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
 
-                    SizedBox(height: 28.h),
+                      SizedBox(height: 28.h),
 
-                    // Security Badges
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _SecurityBadge(
-                          icon: Icons.shield_outlined,
-                          label: 'Secure Connection',
-                        ),
-                        SizedBox(width: 12.w),
-                        _SecurityBadge(
-                          icon: Icons.lock_outline,
-                          label: 'SSL Encrypted',
-                        ),
-                      ],
-                    ),
+                      // Security Badges
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _SecurityBadge(
+                            icon: Icons.shield_outlined,
+                            label: 'Secure Connection',
+                          ),
+                          SizedBox(width: 12.w),
+                          _SecurityBadge(
+                            icon: Icons.lock_outline,
+                            label: 'SSL Encrypted',
+                          ),
+                        ],
+                      ),
 
-                    SizedBox(height: 20.h),
-                  ],
-                ),
+                      SizedBox(height: 20.h),
+                    ],
+                  ),
                 ),
               ),
             ),

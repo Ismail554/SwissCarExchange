@@ -6,9 +6,9 @@ import 'package:pinput/pinput.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-import 'package:rionydo/views/auth/forgot_password/successful_view.dart';
+import 'package:provider/provider.dart';
+import 'package:rionydo/controllers/auth/auth_provider.dart';
 
 class OtpVerifyView extends StatefulWidget {
   final String email;
@@ -26,6 +26,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
   static const int _countdownStart = 60;
   int _secondsLeft = _countdownStart;
   bool _canResend = false;
+  bool _isResending = false;
   Timer? _timer;
 
   @override
@@ -65,11 +66,17 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
     });
   }
 
-  void _resendOtp() {
-    if (!_canResend) return;
-    // TODO: call actual API to resend OTP
-    AppSnackBar.success(context, 'OTP has been sent to your email');
-    _startTimer();
+  Future<void> _resendOtp() async {
+    if (!_canResend || _isResending) return;
+    
+    setState(() => _isResending = true);
+    final success = await context.read<AuthProvider>().resendOtp(context, email: widget.email);
+    if (mounted) {
+      setState(() => _isResending = false);
+      if (success) {
+        _startTimer();
+      }
+    }
   }
 
   @override
@@ -206,28 +213,37 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                         ),
                         SizedBox(height: 8.h),
                         GestureDetector(
-                          onTap: _canResend ? _resendOtp : null,
+                          onTap: (_canResend && !_isResending) ? _resendOtp : null,
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
-                            child: _canResend
-                                ? Text(
-                                    'Resend Code',
-                                    key: const ValueKey('resend'),
-                                    style: TextStyle(
+                            child: _isResending
+                                ? SizedBox(
+                                    height: 16.h,
+                                    width: 16.h,
+                                    child: const CircularProgressIndicator(
+                                      strokeWidth: 2,
                                       color: AppColors.sceTeal,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w600,
                                     ),
                                   )
-                                : Text(
-                                    'Resend in ${_secondsLeft}s',
-                                    key: const ValueKey('countdown'),
-                                    style: TextStyle(
-                                      color: AppColors.sceGreyA0,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                                : _canResend
+                                    ? Text(
+                                        'Resend Code',
+                                        key: const ValueKey('resend'),
+                                        style: TextStyle(
+                                          color: AppColors.sceTeal,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      )
+                                    : Text(
+                                        'Resend in ${_secondsLeft}s',
+                                        key: const ValueKey('countdown'),
+                                        style: TextStyle(
+                                          color: AppColors.sceGreyA0,
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
                           ),
                         ),
                       ],
@@ -239,12 +255,12 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                     CustomButton(
                       text: 'Verify Code',
                       isActive: _isOtpValid,
+                      isLoading: context.watch<AuthProvider>().isLoading,
                       onPressed: () {
-                        Navigator.push(
+                        context.read<AuthProvider>().verifyOtp(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const SuccessfulView(),
-                          ),
+                          email: widget.email,
+                          otp: _otpController.text,
                         );
                       },
                     ),
