@@ -223,4 +223,46 @@ class AuthProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<bool> checkApprovalStatus(BuildContext context) async {
+    final response = await DioManager.apiRequest(
+      url: ApiService.authStatus,
+      method: Methods.get,
+    );
+
+    bool shouldCancelTimer = false;
+
+    response.fold(
+      (error) {
+        debugPrint("AUTH: ❌ Status Check Error: $error");
+      },
+      (data) {
+        if (data is Map<String, dynamic>) {
+          if (data['approval_status'] == 'approved') {
+            shouldCancelTimer = true;
+            if (context.mounted) {
+              AppSnackBar.success(context, "Your account has been approved! Please login.");
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginViews()),
+                (route) => false,
+              );
+            }
+          } else if (data['approval_status'] == 'suspended') {
+            shouldCancelTimer = true;
+            if (context.mounted) {
+              AppSnackBar.error(context, "Your account has been suspended.");
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginViews()),
+                (route) => false,
+              );
+            }
+          }
+        }
+      },
+    );
+
+    return shouldCancelTimer;
+  }
 }

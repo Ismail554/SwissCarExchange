@@ -1,18 +1,48 @@
 import 'dart:ui';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:rionydo/controllers/auth/auth_provider.dart';
 import 'package:rionydo/app_utils/constants/app_padding.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
-import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
-import 'package:rionydo/core/widgets/widget_outlined_btn.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
 import 'package:rionydo/views/profile/widgets/logout_button.dart';
 
-class PendingView extends StatelessWidget {
+class PendingView extends StatefulWidget {
   const PendingView({super.key});
+
+  @override
+  State<PendingView> createState() => _PendingViewState();
+}
+
+class _PendingViewState extends State<PendingView> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startStatusCheck();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startStatusCheck() {
+    // Check every 30 seconds
+    _timer = Timer.periodic(const Duration(seconds: 30), (timer) async {
+      if (!mounted) return;
+      final shouldCancel = await context.read<AuthProvider>().checkApprovalStatus(context);
+      if (shouldCancel) {
+        _timer?.cancel();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +53,7 @@ class PendingView extends StatelessWidget {
           children: [
             AppSpacing.h24,
             // --- Section 1: Logo with Circular Ring ---
-            WidgetCommonTopLogocard(
+            const WidgetCommonTopLogocard(
               title: "Verification In Progress",
               subtitle: "Your dealer credentials are being reviewed",
             ),
@@ -45,7 +75,7 @@ class PendingView extends StatelessWidget {
                       color: Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        width: 1.5,
+                        width: 1.5.w,
                         color: Colors.white.withOpacity(0.1),
                       ),
                     ),
@@ -63,7 +93,7 @@ class PendingView extends StatelessWidget {
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 16.w),
