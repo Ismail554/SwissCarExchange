@@ -26,7 +26,7 @@ class StatsGrid extends StatelessWidget {
               SizedBox(height: 12.h),
               StatCard(
                 label: 'AUCTIONS WON',
-                value: stats.auctionsWon,
+                value: stats.auctionsWon.toString(),
                 valueColor: AppColors.white,
               ),
             ],
@@ -73,7 +73,7 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: double.maxFinite,
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: AppColors.sceChartBg,

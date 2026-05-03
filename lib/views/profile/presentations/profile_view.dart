@@ -5,10 +5,11 @@ import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
+import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
-
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/profile/widgets/profile_header_card.dart';
+import 'package:rionydo/views/bidding/widgets/bids_models.dart';
 import 'package:rionydo/views/profile/widgets/my_bids_tile.dart';
 import 'package:rionydo/views/profile/widgets/dealer_rating_card.dart';
 import 'package:rionydo/views/profile/widgets/upgrade_premium_card.dart';
@@ -26,8 +27,18 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   @override
+  void initState() {
+    super.initState();
+    // Fetch profile data on first load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProfileProvider>().fetchProfile();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final bool isPremium = context.watch<GlobalState>().isPremium;
+    final profileProvider = context.watch<UserProfileProvider>();
 
     return CommonBackground(
       child: SafeArea(
@@ -66,7 +77,11 @@ class _ProfileViewState extends State<ProfileView> {
                 ],
               ),
               AppSpacing.h24,
-              ProfileHeaderCard(isPremium: isPremium),
+              ProfileHeaderCard(
+                isPremium: isPremium,
+                stats: kStatsData['1Y']!,
+                profile: profileProvider.userProfile,
+              ),
               AppSpacing.h16,
               const MyBidsTile(),
               AppSpacing.h24,
@@ -80,7 +95,7 @@ class _ProfileViewState extends State<ProfileView> {
               AppSpacing.h24,
               const ProfileSectionTitle('ACCOUNT INFORMATION'),
               AppSpacing.h12,
-              const AccountInfoCard(),
+              AccountInfoCard(profile: profileProvider.userProfile),
               AppSpacing.h24,
               const ProfileSectionTitle('SETTINGS'),
               AppSpacing.h12,

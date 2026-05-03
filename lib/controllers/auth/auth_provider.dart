@@ -7,7 +7,6 @@ import 'package:rionydo/models/auth/login_response.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
-import 'package:rionydo/views/auth/forgot_password/successful_view.dart';
 import 'package:rionydo/views/home/presentation/home_view.dart';
 import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
 import 'package:rionydo/views/bidding/presentations/bids_view.dart';
@@ -16,6 +15,8 @@ import 'package:rionydo/views/main_navigation/bottom_nav.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/views/auth/login/login_views.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/before_subs_view.dart';
+
 class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -41,7 +42,7 @@ class AuthProvider extends ChangeNotifier {
       (error) async {
         _isLoading = false;
         notifyListeners();
-        debugPrint('LOGIN: ❌ Unverified Email: $error');
+        debugPrint('LOGIN: ❌ Error: $error');
         if (error.startsWith('UNVERIFIED_EMAIL:')) {
           final msg = error.substring('UNVERIFIED_EMAIL:'.length);
           AppSnackBar.error(context, msg);
@@ -68,20 +69,25 @@ class AuthProvider extends ChangeNotifier {
         
         final loginData = LoginResponse.fromJson(data);
 
+        // --- 1. Suspended account ---
         if (loginData.approvalStatus == 'suspended') {
           if (context.mounted) {
-            AppSnackBar.error(context, "Try login with different account");
+            AppSnackBar.error(
+              context,
+              "Your account is suspended. Contact your owner.\nOr try with another account.",
+            );
           }
           return;
         }
 
+        // --- 2. Pending approval ---
         if (loginData.approvalStatus == 'pending') {
           await SecureStorageHelper.saveAccessToken(loginData.access);
           await SecureStorageHelper.saveRefreshToken(loginData.refresh);
           await SecureStorageHelper.saveUserType(loginData.userType);
           
           if (context.mounted) {
-            context.read<GlobalState>().userRole = loginData.userType;
+            context.read<GlobalState>().setUserTypeFromString(loginData.userType);
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const PendingView()),
@@ -91,8 +97,12 @@ class AuthProvider extends ChangeNotifier {
           return;
         }
 
+        // --- 3. Two-Factor Authentication required ---
         if (loginData.isTwoFactorRequired) {
           if (context.mounted) {
+            if (loginData.message != null && loginData.message!.isNotEmpty) {
+              AppSnackBar.success(context, loginData.message!);
+            }
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -100,35 +110,133 @@ class AuthProvider extends ChangeNotifier {
               ),
             );
           }
-        } else {
-          await SecureStorageHelper.saveAccessToken(loginData.access);
-          await SecureStorageHelper.saveRefreshToken(loginData.refresh);
-          await SecureStorageHelper.saveUserType(loginData.userType);
-          
-          if (context.mounted) {
-            context.read<GlobalState>().userRole = loginData.userType;
-            context.read<GlobalState>().isPremium = true;
-            
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const MainNavigationShell(
-                  pages: [
-                    HomeView(),
-                    AuctionsView(),
-                    BidsView(),
-                    ProfileView(),
-                  ],
-                ),
-              ),
-              (route) => false,
-            );
-          }
+          return;
         }
+
+        // --- 4. Approved — save tokens & check subscription ---
+        await SecureStorageHelper.saveAccessToken(loginData.access);
+        await SecureStorageHelper.saveRefreshToken(loginData.refresh);
+        await SecureStorageHelper.saveUserType(loginData.userType);
+        
+        if (!context.mounted) return;
+
+        context.read<GlobalState>().setUserTypeFromString(loginData.userType);
+
+        // Check subscription status
+        final hasSub = loginData.subscription?.hasSubscription ?? false;
+        if (!hasSub) {
+          // No subscription → navigate to subscription gate
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const BeforeSubsView()),
+            (route) => false,
+          );
+          return;
+        }
+
+        // Has subscription → set premium based on plan & go to main app
+        final plan = loginData.subscription?.plan ?? '';
+        context.read<GlobalState>().isPremium = (plan == 'premium');
+        
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainNavigationShell(
+              pages: [
+                HomeView(),
+                AuctionsView(),
+                BidsView(),
+                ProfileView(),
+              ],
+            ),
+          ),
+          (route) => false,
+        );
       },
     );
   }
 
+  // ----------------------------------------------------------------
+  // 2FA VERIFY — POST /api/auth/login/two-factor/verify/
+  // ----------------------------------------------------------------
+  Future<void> verify2fa(
+    BuildContext context, {
+    required String email,
+    required String twoFactorToken,
+    required String code,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final payload = {
+      'email': email.trim(),
+      'two_factor_token': twoFactorToken,
+      'code': code,
+    };
+    debugPrint('AUTH: ▶️ Calling verify2fa API with payload: $payload');
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.verify2fa,
+      method: Methods.post,
+      body: payload,
+      skipAuth: true,
+    );
+
+    response.fold(
+      (error) {
+        debugPrint('AUTH: ❌ verify2fa error: $error');
+        AppSnackBar.error(context, error);
+      },
+      (data) async {
+        debugPrint('AUTH: ✅ verify2fa success: $data');
+        final loginData = LoginResponse.fromJson(data);
+
+        await SecureStorageHelper.saveAccessToken(loginData.access);
+        await SecureStorageHelper.saveRefreshToken(loginData.refresh);
+        await SecureStorageHelper.saveUserType(loginData.userType);
+
+        if (!context.mounted) return;
+
+        context.read<GlobalState>().setUserTypeFromString(loginData.userType);
+
+        // Check subscription after 2FA
+        final hasSub = loginData.subscription?.hasSubscription ?? false;
+        if (!hasSub) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const BeforeSubsView()),
+            (route) => false,
+          );
+          return;
+        }
+
+        final plan = loginData.subscription?.plan ?? '';
+        context.read<GlobalState>().isPremium = (plan == 'premium');
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainNavigationShell(
+              pages: [
+                HomeView(),
+                AuctionsView(),
+                BidsView(),
+                ProfileView(),
+              ],
+            ),
+          ),
+          (route) => false,
+        );
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  // ----------------------------------------------------------------
+  // RESEND OTP
+  // ----------------------------------------------------------------
   Future<bool> resendOtp(BuildContext context, {required String email}) async {
     _isLoading = true;
     notifyListeners();
@@ -161,6 +269,9 @@ class AuthProvider extends ChangeNotifier {
     return success;
   }
 
+  // ----------------------------------------------------------------
+  // VERIFY OTP (email verification)
+  // ----------------------------------------------------------------
   Future<void> verifyOtp(BuildContext context, {required String email, required String otp}) async {
     _isLoading = true;
     notifyListeners();
@@ -208,6 +319,9 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ----------------------------------------------------------------
+  // LOGOUT
+  // ----------------------------------------------------------------
   Future<void> logout(BuildContext context) async {
     // 1. Clear session and tokens
     await DioManager.logout();
@@ -224,6 +338,9 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ----------------------------------------------------------------
+  // APPROVAL STATUS CHECK (polling from PendingView)
+  // ----------------------------------------------------------------
   Future<bool> checkApprovalStatus(BuildContext context) async {
     final response = await DioManager.apiRequest(
       url: ApiService.authStatus,
@@ -264,5 +381,42 @@ class AuthProvider extends ChangeNotifier {
     );
 
     return shouldCancelTimer;
+  }
+
+  // ----------------------------------------------------------------
+  // SUBSCRIPTION STATUS CHECK (polling from BeforeSubsView)
+  // ----------------------------------------------------------------
+  Future<bool> checkSubscriptionStatus(BuildContext context) async {
+    final response = await DioManager.apiRequest(
+      url: ApiService.subscriptionStatus,
+      method: Methods.get,
+    );
+
+    bool subscriptionActive = false;
+
+    response.fold(
+      (error) {
+        debugPrint("AUTH: ❌ Subscription Check Error: $error");
+      },
+      (data) {
+        if (data is Map<String, dynamic>) {
+          final hasSub = data['has_subscription'] as bool? ?? false;
+          final status = data['status'] as String? ?? '';
+          if (hasSub && status == 'active') {
+            subscriptionActive = true;
+            if (context.mounted) {
+              AppSnackBar.success(context, "Subscription activated! Now login again.");
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginViews()),
+                (route) => false,
+              );
+            }
+          }
+        }
+      },
+    );
+
+    return subscriptionActive;
   }
 }

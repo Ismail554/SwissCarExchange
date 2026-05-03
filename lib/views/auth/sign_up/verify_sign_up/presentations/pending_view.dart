@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 import 'package:rionydo/app_utils/constants/app_padding.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
@@ -161,8 +162,8 @@ class _PendingViewState extends State<PendingView> {
         Row(
           children: [
             Container(
-              width: 8,
-              height: 8,
+              width: 8.w,
+              height: 8.h,
               decoration: const BoxDecoration(
                 color: AppColors.scePendingGreen,
                 shape: BoxShape.circle,
@@ -171,14 +172,10 @@ class _PendingViewState extends State<PendingView> {
                 ],
               ),
             ),
-            const SizedBox(width: 10),
+           SizedBox(width: 10.w),
             Text(
               status,
-              style: const TextStyle(
-                color: AppColors.scePendingGreen,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
+              style: FontManager.bodyMedium(color: AppColors.scePendingGreen),
             ),
           ],
         ),

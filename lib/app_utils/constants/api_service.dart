@@ -8,8 +8,17 @@ class ApiService {
   static String verifyOtp = "$baseUrl/api/auth/verify-email/"; // body: {"code": "994405", "email": ""}
   static String authStatus = "$baseUrl/api/auth/status/"; // validate with access token // response : {"approval_status": "approved"} or {"approval_status": "pending"} or {"approval_status": "suspended"}
   
+  // 2FA
+  static String verify2fa = "$baseUrl/api/auth/login/two-factor/verify/"; // body: {"email": "", "two_factor_token": "", "code": ""}
 
   // Presigned URL — append ?content_type=...&file_name=... dynamically
   static String presignedUrl = "$baseUrl/api/auth/register/presigned-url/";
 
+  // Profile
+  static String userProfile = "$baseUrl/api/users/me/";
+
+  // Subscriptions
+  static String subscriptionStatus = "$baseUrl/api/subscriptions/me/";
+  static String subscriptionPlans = "$baseUrl/api/subscriptions/plans/";
+  static String subscriptionCheckout = "$baseUrl/api/subscriptions/checkout/";
 }
