@@ -1,24 +1,26 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiService {
-  static String baseUrl = "https://doleritic-goutily-shila.ngrok-free.dev";
+  static String get baseUrl => dotenv.env['BASE_URL'] ?? "https://doleritic-goutily-shila.ngrok-free.dev";
 
   //Auth
-  static String register = "$baseUrl/api/auth/register/";
-  static String login = "$baseUrl/api/auth/login/";
-  static String resendOtp = "$baseUrl/api/auth/resend-verification-code/"; // body: {"email": ""}
-  static String verifyOtp = "$baseUrl/api/auth/verify-email/"; // body: {"code": "994405", "email": ""}
-  static String authStatus = "$baseUrl/api/auth/status/"; // validate with access token // response : {"approval_status": "approved"} or {"approval_status": "pending"} or {"approval_status": "suspended"}
+  static String get register => "$baseUrl/api/auth/register/";
+  static String get login => "$baseUrl/api/auth/login/";
+  static String get resendOtp => "$baseUrl/api/auth/resend-verification-code/"; // body: {"email": ""}
+  static String get verifyOtp => "$baseUrl/api/auth/verify-email/"; // body: {"code": "994405", "email": ""}
+  static String get authStatus => "$baseUrl/api/auth/status/"; // validate with access token // response : {"approval_status": "approved"} or {"approval_status": "pending"} or {"approval_status": "suspended"}
   
   // 2FA
-  static String verify2fa = "$baseUrl/api/auth/login/two-factor/verify/"; // body: {"email": "", "two_factor_token": "", "code": ""}
+  static String get verify2fa => "$baseUrl/api/auth/login/two-factor/verify/"; // body: {"email": "", "two_factor_token": "", "code": ""}
 
   // Presigned URL — append ?content_type=...&file_name=... dynamically
-  static String presignedUrl = "$baseUrl/api/auth/register/presigned-url/";
+  static String get presignedUrl => "$baseUrl/api/auth/register/presigned-url/";
 
   // Profile
-  static String userProfile = "$baseUrl/api/users/me/";
+  static String get userProfile => "$baseUrl/api/users/me/";
 
   // Subscriptions
-  static String subscriptionStatus = "$baseUrl/api/subscriptions/me/";
-  static String subscriptionPlans = "$baseUrl/api/subscriptions/plans/";
-  static String subscriptionCheckout = "$baseUrl/api/subscriptions/checkout/";
+  static String get subscriptionStatus => "$baseUrl/api/subscriptions/me/";
+  static String get subscriptionPlans => "$baseUrl/api/subscriptions/plans/";
+  static String get subscriptionCheckout => "$baseUrl/api/subscriptions/checkout/";
 }
