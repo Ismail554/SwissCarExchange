@@ -59,13 +59,29 @@ class ErrorHandler {
     }
 
     // Try validation fields first, then flat message fields
-    final msg = _validationMessage(data) ??
+    final msg = _extraFieldsMessage(data) ??
+        _validationMessage(data) ??
         _nestedErrorMessage(data) ??
         _flatMessage(data) ??
         _nonFieldErrors(data) ??
         _fallbackValidationMessage(data);
 
     return msg ?? 'This email is already registered ($status).';
+  }
+
+  static String? _extraFieldsMessage(Map<String, dynamic> data) {
+    final extra = data['extra'];
+    if (extra is Map<String, dynamic>) {
+      final fields = extra['fields'];
+      if (fields is Map<String, dynamic>) {
+        final firstValue = fields.values.isNotEmpty ? fields.values.first : null;
+        if (firstValue is List && firstValue.isNotEmpty) {
+          return firstValue.first.toString();
+        }
+        if (firstValue is String) return firstValue;
+      }
+    }
+    return null;
   }
 
   static String? _fallbackValidationMessage(Map<String, dynamic> data) {
@@ -99,7 +115,8 @@ class ErrorHandler {
   static String? _validationMessage(Map<String, dynamic> data) {
     final errors = data['errors'];
     if (errors is Map<String, dynamic>) {
-      final first = errors.values.firstOrNull;
+      final values = errors.values;
+      final first = values.isNotEmpty ? values.first : null;
       if (first is List && first.isNotEmpty) return first.first.toString();
       if (first is String) return first;
     }

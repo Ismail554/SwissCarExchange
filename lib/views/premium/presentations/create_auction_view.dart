@@ -15,6 +15,7 @@ import '../widgets/vehicle_info_fields.dart';
 import '../widgets/media_selection_section.dart';
 import '../widgets/pricing_duration_section.dart';
 import 'package:rionydo/controllers/auctions/create_auctions_provider.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
 
 class CreateAuction extends StatefulWidget {
   const CreateAuction({super.key});
@@ -116,7 +117,7 @@ class _CreateAuctionState extends State<CreateAuction> {
 
   Future<void> _pickImageFromCamera() async {
     if (_imageFiles.length >= _maxImages) {
-      _showLimitSnackbar("Maximum $_maxImages images allowed");
+      AppSnackBar.error(context, "Maximum $_maxImages images allowed");
       return;
     }
     final XFile? photo = await _imagePicker.pickImage(
@@ -129,7 +130,7 @@ class _CreateAuctionState extends State<CreateAuction> {
   Future<void> _pickImagesFromGallery() async {
     final remaining = _maxImages - _imageFiles.length;
     if (remaining <= 0) {
-      _showLimitSnackbar("Maximum $_maxImages images allowed");
+      AppSnackBar.error(context, "Maximum $_maxImages images allowed");
       return;
     }
     final List<XFile> photos = await _imagePicker.pickMultiImage(
@@ -191,7 +192,8 @@ class _CreateAuctionState extends State<CreateAuction> {
     if (video != null) {
       final file = File(video.path);
       if (file.lengthSync() / (1024 * 1024) > _maxVideoSizeMB) {
-        _showLimitSnackbar("Video too large. Max ${_maxVideoSizeMB}MB.");
+        if (!mounted) return;
+        AppSnackBar.error(context, "Video too large. Max ${_maxVideoSizeMB}MB.");
         return;
       }
       setState(() => _videoFile = file);
@@ -222,18 +224,8 @@ class _CreateAuctionState extends State<CreateAuction> {
     }
   }
 
-  void _showLimitSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: FontManager.bodySmall(color: Colors.white),
-        ),
-        backgroundColor: AppColors.errorRed,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
+  // _showLimitSnackbar replaced by AppSnackBar
+
 
   void _showDurationSheet() {
     final durations = ["3 Days", "5 Days", "7 Days", "10 Days", "14 Days"];
@@ -282,11 +274,13 @@ class _CreateAuctionState extends State<CreateAuction> {
   void _onPublish() async {
     if (_formKey.currentState?.validate() ?? false) {
       if (_imageFiles.isEmpty) {
-        _showLimitSnackbar("Please add at least one image.");
+        if (!mounted) return;
+        AppSnackBar.error(context, "Please add at least one image.");
         return;
       }
       if (_selectedDuration.isEmpty) {
-        _showLimitSnackbar("Please select auction duration.");
+        if (!mounted) return;
+        AppSnackBar.error(context, "Please select auction duration.");
         return;
       }
 
@@ -382,9 +376,10 @@ class _CreateAuctionState extends State<CreateAuction> {
               Consumer<CreateAuctionProvider>(
                 builder: (context, provider, child) {
                   return CustomButton(
-                    text: "🔒  Publish Auction",
+                    text: "Publish Auction",
                     onPressed: _onPublish,
                     isLoading: provider.isLoading,
+                    loadingText: "..uploading",
                   );
                 },
               ),

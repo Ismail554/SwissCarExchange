@@ -11,6 +11,7 @@ class CustomButton extends StatelessWidget {
   final bool isActive;
   final bool isDanger;
   final IconData? icon;
+  final String? loadingText;
 
   const CustomButton({
     super.key,
@@ -21,6 +22,7 @@ class CustomButton extends StatelessWidget {
     this.isActive = true,
     this.isDanger = false,
     this.icon,
+    this.loadingText,
   });
 
   @override
@@ -73,14 +75,33 @@ class CustomButton extends StatelessWidget {
           onTap: (isLoading || !isActive) ? null : onPressed,
           child: Center(
             child: isLoading
-                ? SizedBox(
-                    height: 24.h,
-                    width: 24.w,
-                    child: const CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
+                ? (loadingText != null
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 16.h,
+                            width: 16.w,
+                            child: const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Text(
+                            loadingText!,
+                            style: FontManager.buttonText(color: AppColors.white),
+                          ),
+                        ],
+                      )
+                    : SizedBox(
+                        height: 24.h,
+                        width: 24.w,
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      ))
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

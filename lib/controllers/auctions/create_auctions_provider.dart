@@ -4,6 +4,7 @@ import 'package:rionydo/app_helper/s3_upload_helper.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
 
 class CreateAuctionProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -51,7 +52,7 @@ class CreateAuctionProvider extends ChangeNotifier {
 
       if (imageUrls.isEmpty) {
         if (context.mounted) {
-          _showError(context, "Failed to upload images.");
+          AppSnackBar.error(context, "Failed to upload images.");
         }
         _setLoading(false);
         return false;
@@ -106,19 +107,14 @@ class CreateAuctionProvider extends ChangeNotifier {
       return response.fold(
         (error) {
           if (context.mounted) {
-            _showError(context, error);
+            AppSnackBar.error(context, error);
           }
           _setLoading(false);
           return false;
         },
         (data) {
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Auction created successfully!"),
-                backgroundColor: Colors.green,
-              ),
-            );
+            AppSnackBar.success(context, "Auction created successfully!");
           }
           _setLoading(false);
           return true;
@@ -126,19 +122,12 @@ class CreateAuctionProvider extends ChangeNotifier {
       );
     } catch (e) {
       if (context.mounted) {
-        _showError(context, "An unexpected error occurred: $e");
+        AppSnackBar.error(context, "An unexpected error occurred: $e");
       }
       _setLoading(false);
       return false;
     }
   }
 
-  void _showError(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
+  // _showError is now redundant, removed.
 }
