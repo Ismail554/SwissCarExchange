@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rionydo/models/profile/user_profile_response.dart';
+import 'package:rionydo/app_helper/secure_storage_helper.dart';
+import 'package:rionydo/models/subscription/subscription_plan.dart';
 
 class GlobalState extends ChangeNotifier {
   /// Simple global flag to track premium status throughout the app.
@@ -33,4 +35,18 @@ class GlobalState extends ChangeNotifier {
 
   /// User info
   String userName = "Premium Auto Group AG";
+
+  /// Rehydrate state from secure storage
+  Future<void> rehydrate() async {
+    final plan = await SecureStorageHelper.getSubscriptionPlan();
+    _isPremium = (plan == SubscriptionPlanId.premium);
+
+    final type = await SecureStorageHelper.getUserType();
+    if (type != null) {
+      setUserTypeFromString(type);
+    }
+
+    debugPrint('GLOBAL_STATE: ♻️ Rehydrated. isPremium: $_isPremium, userType: $_userType');
+    notifyListeners();
+  }
 }

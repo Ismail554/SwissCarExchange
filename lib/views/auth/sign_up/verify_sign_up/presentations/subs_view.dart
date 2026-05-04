@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rionydo/models/subscription/subscription_plan.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
@@ -56,7 +57,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
 
     // Filter plans: private → only "basic", company → all plans
     final visiblePlans = subProvider.plans.where((p) {
-      if (userType == UserType.private) return p.plan == 'basic';
+      if (userType == UserType.private) return p.plan == SubscriptionPlanId.basic;
       return true; // company sees all
     }).toList();
 
@@ -112,7 +113,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
               // Plans list
               if (!subProvider.isLoading && subProvider.errorMessage == null)
                 ...visiblePlans.map((plan) {
-                  final isPremiumPlan = plan.plan == 'premium';
+                  final isPremiumPlan = plan.plan == SubscriptionPlanId.premium;
                   return Padding(
                     padding: EdgeInsets.only(bottom: 24.h),
                     child: WidgetPremiumCard(

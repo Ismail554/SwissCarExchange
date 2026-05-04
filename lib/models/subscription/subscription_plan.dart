@@ -26,3 +26,8 @@ class SubscriptionPlan {
   /// Formatted display price, e.g. "CHF 150.00"
   String get displayPrice => '${currency.toUpperCase()} $price';
 }
+
+abstract final class SubscriptionPlanId {
+  static const basic = 'basic';
+  static const premium = 'premium';
+}

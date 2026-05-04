@@ -3,6 +3,9 @@ import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/models/profile/user_profile_response.dart';
+import 'package:rionydo/app_utils/constants/global_state.dart';
+import 'package:rionydo/models/subscription/subscription_plan.dart';
+import 'package:rionydo/app_helper/secure_storage_helper.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   UserProfileResponse? _userProfile;
@@ -33,7 +36,7 @@ class UserProfileProvider extends ChangeNotifier {
     };
   }
 
-  Future<void> fetchProfile() async {
+  Future<void> fetchProfile({GlobalState? globalState}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -42,6 +45,7 @@ class UserProfileProvider extends ChangeNotifier {
       final response = await DioManager.apiRequest(
         url: ApiService.userProfile,
         method: Methods.get,
+        skipAuth: false,
       );
 
       response.fold(
@@ -51,7 +55,16 @@ class UserProfileProvider extends ChangeNotifier {
         },
         (data) {
           debugPrint('PROFILE: ✅ fetchProfile success');
-          _userProfile = UserProfileResponse.fromJson(data);
+          final profile = UserProfileResponse.fromJson(data);
+          _userProfile = profile;
+
+          if (globalState != null) {
+            final plan = profile.subscription.plan ?? SubscriptionPlanId.basic;
+            globalState.isPremium = (plan == SubscriptionPlanId.premium);
+            globalState.setUserTypeFromString(profile.userType.name);
+            SecureStorageHelper.saveSubscriptionPlan(plan);
+            SecureStorageHelper.saveUserType(profile.userType.name);
+          }
         },
       );
     } catch (e) {

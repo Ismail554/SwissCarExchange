@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
+import 'package:rionydo/app_utils/network/token_manager.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/models/auth/login_response.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
@@ -16,19 +17,21 @@ import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/views/auth/login/login_views.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/before_subs_view.dart';
+import 'package:rionydo/models/subscription/subscription_plan.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Future<void> login(BuildContext context, {required String email, required String password}) async {
+  Future<void> login(
+    BuildContext context, {
+    required String email,
+    required String password,
+  }) async {
     _isLoading = true;
     notifyListeners();
 
-    final payload = {
-      'email': email.trim(),
-      'password': password,
-    };
+    final payload = {'email': email.trim(), 'password': password};
     debugPrint('LOGIN: ▶️ Calling login API with payload: $payload');
 
     final response = await DioManager.apiRequest(
@@ -66,7 +69,8 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         debugPrint('LOGIN: ✅ API response: $data');
-        
+        print("Login response: $data");
+
         final loginData = LoginResponse.fromJson(data);
 
         // --- 1. Suspended account ---
@@ -85,9 +89,12 @@ class AuthProvider extends ChangeNotifier {
           await SecureStorageHelper.saveAccessToken(loginData.access);
           await SecureStorageHelper.saveRefreshToken(loginData.refresh);
           await SecureStorageHelper.saveUserType(loginData.userType);
-          
+          TokenManager.setCache(loginData.access);
+
           if (context.mounted) {
-            context.read<GlobalState>().setUserTypeFromString(loginData.userType);
+            context.read<GlobalState>().setUserTypeFromString(
+              loginData.userType,
+            );
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const PendingView()),
@@ -117,7 +124,8 @@ class AuthProvider extends ChangeNotifier {
         await SecureStorageHelper.saveAccessToken(loginData.access);
         await SecureStorageHelper.saveRefreshToken(loginData.refresh);
         await SecureStorageHelper.saveUserType(loginData.userType);
-        
+        TokenManager.setCache(loginData.access);
+
         if (!context.mounted) return;
 
         context.read<GlobalState>().setUserTypeFromString(loginData.userType);
@@ -135,19 +143,16 @@ class AuthProvider extends ChangeNotifier {
         }
 
         // Has subscription → set premium based on plan & go to main app
-        final plan = loginData.subscription?.plan ?? '';
-        context.read<GlobalState>().isPremium = (plan == 'premium');
-        
+        final plan = loginData.subscription?.plan ?? SubscriptionPlanId.basic;
+        context.read<GlobalState>().isPremium =
+            (plan == SubscriptionPlanId.premium);
+        await SecureStorageHelper.saveSubscriptionPlan(plan);
+
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => const MainNavigationShell(
-              pages: [
-                HomeView(),
-                AuctionsView(),
-                BidsView(),
-                ProfileView(),
-              ],
+              pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
             ),
           ),
           (route) => false,
@@ -194,6 +199,7 @@ class AuthProvider extends ChangeNotifier {
         await SecureStorageHelper.saveAccessToken(loginData.access);
         await SecureStorageHelper.saveRefreshToken(loginData.refresh);
         await SecureStorageHelper.saveUserType(loginData.userType);
+        TokenManager.setCache(loginData.access);
 
         if (!context.mounted) return;
 
@@ -210,19 +216,16 @@ class AuthProvider extends ChangeNotifier {
           return;
         }
 
-        final plan = loginData.subscription?.plan ?? '';
-        context.read<GlobalState>().isPremium = (plan == 'premium');
+        final plan = loginData.subscription?.plan ?? SubscriptionPlanId.basic;
+        context.read<GlobalState>().isPremium =
+            (plan == SubscriptionPlanId.premium);
+        await SecureStorageHelper.saveSubscriptionPlan(plan);
 
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) => const MainNavigationShell(
-              pages: [
-                HomeView(),
-                AuctionsView(),
-                BidsView(),
-                ProfileView(),
-              ],
+              pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
             ),
           ),
           (route) => false,
@@ -272,14 +275,15 @@ class AuthProvider extends ChangeNotifier {
   // ----------------------------------------------------------------
   // VERIFY OTP (email verification)
   // ----------------------------------------------------------------
-  Future<void> verifyOtp(BuildContext context, {required String email, required String otp}) async {
+  Future<void> verifyOtp(
+    BuildContext context, {
+    required String email,
+    required String otp,
+  }) async {
     _isLoading = true;
     notifyListeners();
 
-    final payload = {
-      'email': email.trim(),
-      'code': otp,
-    };
+    final payload = {'email': email.trim(), 'code': otp};
     debugPrint('AUTH: ▶️ Calling verifyOtp API with payload: $payload');
 
     final response = await DioManager.apiRequest(
@@ -303,12 +307,10 @@ class AuthProvider extends ChangeNotifier {
           } else {
             AppSnackBar.success(context, "Email verified successfully.");
           }
-          
+
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(
-              builder: (context) => const LoginViews(),
-            ),
+            MaterialPageRoute(builder: (context) => const LoginViews()),
             (route) => false,
           );
         }
@@ -358,7 +360,10 @@ class AuthProvider extends ChangeNotifier {
           if (data['approval_status'] == 'approved') {
             shouldCancelTimer = true;
             if (context.mounted) {
-              AppSnackBar.success(context, "Your account has been approved! Please login.");
+              AppSnackBar.success(
+                context,
+                "Your account has been approved! Please login.",
+              );
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginViews()),
@@ -405,7 +410,10 @@ class AuthProvider extends ChangeNotifier {
           if (hasSub && status == 'active') {
             subscriptionActive = true;
             if (context.mounted) {
-              AppSnackBar.success(context, "Subscription activated! Now login again.");
+              AppSnackBar.success(
+                context,
+                "Subscription activated! Now login again.",
+              );
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginViews()),

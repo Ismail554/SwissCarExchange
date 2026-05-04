@@ -3,6 +3,11 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+/// Reference function for consistent logging
+void appLog(String message, {String tag = 'APP'}) {
+  log(message, name: tag);
+}
+
 /// Centralized request/response/error logging.
 class NetworkLogger {
   NetworkLogger._();
@@ -12,11 +17,11 @@ class NetworkLogger {
         ? '?${Uri(queryParameters: options.queryParameters).query}'
         : '';
 
-    log('➡️ [${options.method}] ${options.uri}$query', name: 'REQUEST');
+    appLog('➡️ [${options.method}] ${options.uri}$query', tag: 'REQUEST');
 
     final headers = Map<String, dynamic>.from(options.headers);
     if (headers.containsKey('Authorization')) headers['Authorization'] = 'Bearer ***';
-    log('📋 Headers: ${jsonEncode(headers)}', name: 'REQUEST');
+    appLog('📋 Headers: ${jsonEncode(headers)}', tag: 'REQUEST');
 
     _logBody(options);
 
@@ -42,8 +47,8 @@ class NetworkLogger {
 
   static void response(Response response) {
     final body = jsonEncode(response.data);
-    log('✅ [${response.statusCode}] ${response.requestOptions.uri}', name: 'RESPONSE');
-    log('📥 Body: $body', name: 'RESPONSE');
+    appLog('✅ [${response.statusCode}] ${response.requestOptions.uri}', tag: 'RESPONSE');
+    appLog('📥 Body: $body', tag: 'RESPONSE');
 
     debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     debugPrint('✅ [${response.statusCode}] ${response.requestOptions.uri}');
@@ -53,8 +58,8 @@ class NetworkLogger {
 
   static void error(DioException e) {
     final status = e.response?.statusCode ?? 'NO STATUS';
-    log('❌ [$status] ${e.requestOptions.uri}', name: 'ERROR');
-    log(e.message ?? 'Unknown', name: 'ERROR');
+    appLog('❌ [$status] ${e.requestOptions.uri}', tag: 'ERROR');
+    appLog(e.message ?? 'Unknown', tag: 'ERROR');
 
     debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     debugPrint('❌ [$status] ${e.requestOptions.uri}');
@@ -71,22 +76,22 @@ class NetworkLogger {
   static void _logBody(RequestOptions options) {
     if (options.data == null) {
       if (options.queryParameters.isNotEmpty) {
-        log('📤 Query: ${jsonEncode(options.queryParameters)}', name: 'REQUEST');
+        appLog('📤 Query: ${jsonEncode(options.queryParameters)}', tag: 'REQUEST');
       }
       return;
     }
 
     if (options.data is FormData) {
       final fd = options.data as FormData;
-      log(
+      appLog(
         '📦 FormData: ${jsonEncode({
           'fields': {for (var e in fd.fields) e.key: e.value},
           'files': [for (var e in fd.files) {'field': e.key, 'filename': e.value.filename}],
         })}',
-        name: 'REQUEST',
+        tag: 'REQUEST',
       );
     } else {
-      log('📤 Body: ${jsonEncode(options.data)}', name: 'REQUEST');
+      appLog('📤 Body: ${jsonEncode(options.data)}', tag: 'REQUEST');
     }
   }
-}
+}

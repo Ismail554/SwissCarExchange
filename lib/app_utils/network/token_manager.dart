@@ -37,7 +37,7 @@ class TokenManager {
     final stored = await SecureStorageHelper.getAccessToken();
     if (stored != null && stored.isNotEmpty) {
       log('🟢 Using stored token', name: _tag);
-      _setCache(stored);
+      setCache(stored);
       return stored;
     }
 
@@ -49,7 +49,7 @@ class TokenManager {
       _cachedAt != null &&
       DateTime.now().difference(_cachedAt!).inMinutes < _cacheValidMinutes;
 
-  static void _setCache(String token) {
+  static void setCache(String token) {
     _cachedToken = token;
     _cachedAt = DateTime.now();
   }
@@ -72,11 +72,11 @@ class TokenManager {
 
       log('🔄 Refreshing access token...', name: _tag);
       final payload = {'refresh': refreshToken};
-      debugPrint('TOKEN: ▶️ Calling /auth/token/refresh/ with payload: $payload');
+      debugPrint('TOKEN: ▶️ Calling ${ApiService.refreshToken} with payload: $payload');
 
-      final dio = Dio(BaseOptions(baseUrl: ApiService.baseUrl));
+      final dio = Dio(); // Dio handles absolute URLs automatically
       final response = await dio.post(
-        '/auth/token/refresh/',
+        ApiService.refreshToken,
         data: payload,
       );
 
@@ -86,7 +86,7 @@ class TokenManager {
         final newRefresh = response.data['refresh'] as String?;
 
         if (newAccess != null && newAccess.isNotEmpty) {
-          _setCache(newAccess);
+          setCache(newAccess);
           await SecureStorageHelper.saveAccessToken(newAccess);
 
           if (newRefresh != null && newRefresh.isNotEmpty) {

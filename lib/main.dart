@@ -5,15 +5,22 @@ import 'package:rionydo/app.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 import 'package:rionydo/controllers/auth/register_provider.dart';
+import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/controllers/subscription_provider.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  DioManager.init();
+
+  final globalState = GlobalState();
+  await globalState.rehydrate();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => GlobalState()),
+        ChangeNotifierProvider.value(value: globalState),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => RegisterProvider()),
         ChangeNotifierProvider(create: (_) => UserProfileProvider()),

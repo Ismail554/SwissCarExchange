@@ -6,6 +6,7 @@ class ApiService {
   //Auth
   static String get register => "$baseUrl/api/auth/register/";
   static String get login => "$baseUrl/api/auth/login/";
+  static String get refreshToken => "$baseUrl/api/auth/token/refresh/"; // body: {"refresh": ""}
   static String get resendOtp => "$baseUrl/api/auth/resend-verification-code/"; // body: {"email": ""}
   static String get verifyOtp => "$baseUrl/api/auth/verify-email/"; // body: {"code": "994405", "email": ""}
   static String get authStatus => "$baseUrl/api/auth/status/"; // validate with access token // response : {"approval_status": "approved"} or {"approval_status": "pending"} or {"approval_status": "suspended"}

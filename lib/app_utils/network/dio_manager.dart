@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -9,7 +8,6 @@ import 'either.dart';
 import 'enums.dart';
 import 'error_handler.dart';
 import 'network_logger.dart';
-
 
 // Isolate-safe JSON deep clone
 dynamic _processJson(dynamic data) => jsonDecode(jsonEncode(data));
@@ -88,9 +86,11 @@ class DioManager {
 
     final token = await TokenManager.getValidToken();
     if (token != null && token.isNotEmpty) {
-      options.headers['Authorization'] = 'Bearer $token';
+      options.headers['Authorization'] = 'Bearer $token'; // Changed back to Bearer since JWT didn't work. We will log the exact header.
+      print('AUTH HEADER ATTACHED: Bearer ${token.substring(0, 15)}...');
     } else {
-      log('⚠️ No token, proceeding unauthenticated', name: 'AUTH');
+      print('AUTH HEADER ATTACHED: NONE');
+      appLog('⚠️ No token, proceeding unauthenticated', tag: 'AUTH');
     }
   }
 
@@ -99,7 +99,7 @@ class DioManager {
       final uuid = await SecureStorageHelper.getUuid();
       options.headers['X-Device-ID'] = uuid;
     } catch (e) {
-      log('⚠️ UUID header failed: $e', name: 'HEADER');
+      appLog('⚠️ UUID header failed: $e', tag: 'HEADER');
     }
   }
 
@@ -114,10 +114,10 @@ class DioManager {
         ..headers['Authorization'] = 'Bearer $newToken'
         ..extra['retry'] = true;
       final response = await _dio.fetch(opts);
-      log('🔁 Retry succeeded', name: 'RETRY');
+      appLog('🔁 Retry succeeded', tag: 'RETRY');
       return response;
     } catch (e) {
-      log('❌ Retry failed: $e', name: 'RETRY');
+      appLog('❌ Retry failed: $e', tag: 'RETRY');
       return null;
     }
   }
@@ -153,11 +153,11 @@ class DioManager {
       return left(ErrorHandler.fromResponse(response));
     } on DioException catch (e) {
       if (e.response != null) {
-        log('RAW API ERROR RESPONSE: ${e.response?.data}', name: 'API_RAW');
+        appLog('RAW API ERROR RESPONSE: ${e.response?.data}', tag: 'API_RAW');
       }
       return left(ErrorHandler.fromDio(e));
-    } catch (e, stack) {
-      log('⚠️ Unexpected: $e', stackTrace: stack, name: 'API');
+    } catch (e) {
+      appLog('⚠️ Unexpected: $e', tag: 'API');
       return left('Unexpected error occurred. Please try again.');
     }
   }
@@ -184,7 +184,7 @@ class DioManager {
 
       if (response.statusCode == successCode || response.statusCode == 200) {
         final parsed = await compute(_processJson, response.data);
-        log('✅ Upload success [$url]', name: 'UPLOAD');
+        appLog('✅ Upload success [$url]', tag: 'UPLOAD');
         return right(parsed);
       }
 
@@ -206,7 +206,12 @@ class DioManager {
     Options? options,
   }) {
     return switch (method) {
-      Methods.get => _dio.get(url, queryParameters: queryParameters, data: body, options: options),
+      Methods.get => _dio.get(
+        url,
+        queryParameters: queryParameters,
+        data: body,
+        options: options,
+      ),
       Methods.post => _dio.post(url, data: body, options: options),
       Methods.put => _dio.put(url, data: body, options: options),
       Methods.patch => _dio.patch(url, data: body, options: options),
@@ -225,12 +230,19 @@ class DioManager {
       (key, value) => formData.fields.add(MapEntry(key, value.toString())),
     );
 
-    if (filePath != null && filePath.isNotEmpty && File(filePath).existsSync()) {
-      formData.files.add(MapEntry(
-        fileFieldName,
-        await MultipartFile.fromFile(filePath, filename: filePath.split('/').last),
-      ));
-      log('📸 Attached file: $filePath', name: 'UPLOAD');
+    if (filePath != null &&
+        filePath.isNotEmpty &&
+        File(filePath).existsSync()) {
+      formData.files.add(
+        MapEntry(
+          fileFieldName,
+          await MultipartFile.fromFile(
+            filePath,
+            filename: filePath.split('/').last,
+          ),
+        ),
+      );
+      appLog('📸 Attached file: $filePath', tag: 'UPLOAD');
     }
 
     return formData;
@@ -239,6 +251,6 @@ class DioManager {
 
   static Future<void> logout() async {
     await TokenManager.logout();
-    log('🚪 User logged out, session cleared', name: 'AUTH');
+    appLog('🚪 User logged out, session cleared', tag: 'AUTH');
   }
 }

@@ -49,70 +49,69 @@ class _PendingViewState extends State<PendingView> {
   Widget build(BuildContext context) {
     return CommonBackground(
       child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AppSpacing.h24,
-            // --- Section 1: Logo with Circular Ring ---
-            const WidgetCommonTopLogocard(
-              title: "Verification In Progress",
-              subtitle: "Your dealer credentials are being reviewed",
-            ),
-
-            // --- Section 2: Frosted Glass Status Widget ---
-            Padding(
-              padding: AppPadding.h24v12,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24.r),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                  child: Container(
-                    width: double.maxFinite,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 18.h,
-                      vertical: 16.w,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        width: 1.5.w,
-                        color: Colors.white.withOpacity(0.1),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AppSpacing.h24,
+                      // --- Section 1: Logo with Circular Ring ---
+                      const WidgetCommonTopLogocard(
+                        title: "Verification In Progress",
+                        subtitle: "Your dealer credentials are being reviewed",
                       ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildDataRow("Company", "Weber Auto AG"),
-                        _buildDivider(),
-                        _buildDataRow("Submitted", "05 Mar 2026"),
-                        _buildDivider(),
-                        _buildStatusRow("Status", "Under Review"),
-                      ],
-                    ),
+
+                      // --- Section 2: Frosted Glass Status Widget ---
+                      Padding(
+                        padding: AppPadding.h24v12,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24.r),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                            child: Container(
+                              width: double.maxFinite,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 18.h,
+                                vertical: 16.w,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.05),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  width: 1.5.w,
+                                  color: Colors.white.withValues(alpha: 0.1),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildDataRow("Company", "Weber Auto AG"),
+                                  _buildDivider(),
+                                  _buildDataRow("Submitted", "05 Mar 2026"),
+                                  _buildDivider(),
+                                  _buildStatusRow("Status", "Under Review"),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 16.w),
+                        child: const LogoutButton(),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-            const Spacer(),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 16.w),
-              child: const LogoutButton(),
-              // WidgetOutlinedBtn(
-              //   title: 'Logout',
-              //   icon: Icons.logout,
-              //   themeColor: Colors.red,
-              //   onPressed: () {
-
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (context) => LoginViews()),
-              //     );
-              //   },
-              // ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

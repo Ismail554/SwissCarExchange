@@ -54,6 +54,7 @@ class SecureStorageHelper {
     await _storage.delete(key: _refreshTokenKey);
     await _storage.delete(key: _userTypeKey);
     await _storage.delete(key: _userKey);
+    await _storage.delete(key: _subscriptionPlanKey);
   }
 
   /// Clear access token only
@@ -105,6 +106,7 @@ class SecureStorageHelper {
 
   // User object key
   static const String _userKey = 'user_data';
+  static const String _subscriptionPlanKey = 'subscription_plan';
 
   /// Save user object safely
   static Future<void> saveUser(String userJson) async {
@@ -119,6 +121,16 @@ class SecureStorageHelper {
   /// Clear user object
   static Future<void> clearUser() async {
     await _storage.delete(key: _userKey);
+  }
+
+  /// Save subscription plan
+  static Future<void> saveSubscriptionPlan(String plan) async {
+    await _storage.write(key: _subscriptionPlanKey, value: plan);
+  }
+
+  /// Get subscription plan
+  static Future<String?> getSubscriptionPlan() async {
+    return await _storage.read(key: _subscriptionPlanKey);
   }
 
   // Notification toggle key

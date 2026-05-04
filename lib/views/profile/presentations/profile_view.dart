@@ -31,7 +31,9 @@ class _ProfileViewState extends State<ProfileView> {
     super.initState();
     // Fetch profile data on first load
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserProfileProvider>().fetchProfile();
+      context.read<UserProfileProvider>().fetchProfile(
+            globalState: context.read<GlobalState>(),
+          );
     });
   }
 
