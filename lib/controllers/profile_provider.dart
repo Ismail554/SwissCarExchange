@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:rionydo/app_helper/s3_upload_helper.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
@@ -34,6 +36,24 @@ class UserProfileProvider extends ChangeNotifier {
       PrivateUserProfile() => p.photoUrl,
       CompanyUserProfile() => '',
     };
+  }
+
+  bool _isSaving = false;
+  bool get isSaving => _isSaving;
+
+  String? _saveError;
+  String? get saveError => _saveError;
+
+  // ─── Pending photo (private user edit) ────────────────────────────────────
+  File? _pendingPhotoFile;
+  String? _pendingPhotoFileName;
+  File? get pendingPhotoFile => _pendingPhotoFile;
+  String? get pendingPhotoFileName => _pendingPhotoFileName;
+
+  void setPhotoFile(File? file, String? name) {
+    _pendingPhotoFile = file;
+    _pendingPhotoFileName = name;
+    notifyListeners();
   }
 
   Future<void> fetchProfile({GlobalState? globalState}) async {
@@ -74,5 +94,71 @@ class UserProfileProvider extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<bool> updateProfile(Map<String, dynamic> body) async {
+    _isSaving = true;
+    _saveError = null;
+    notifyListeners();
+
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.updateProfile,
+        method: Methods.patch,
+        body: body,
+      );
+
+      return response.fold(
+        (error) {
+          debugPrint('PROFILE: ❌ updateProfile error: $error');
+          _saveError = error;
+          _isSaving = false;
+          notifyListeners();
+          return false;
+        },
+        (data) {
+          debugPrint('PROFILE: ✅ updateProfile success');
+          final profile = UserProfileResponse.fromJson(data);
+          _userProfile = profile;
+          _isSaving = false;
+          notifyListeners();
+          return true;
+        },
+      );
+    } catch (e) {
+      debugPrint('PROFILE: ❌ Unexpected update error: $e');
+      _saveError = 'Failed to update profile. Please try again.';
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Uploads [photoFile] to S3, merges the returned public URL into [body]
+  /// as `photo_url`, then calls [updateProfile]. Returns true on full success.
+  Future<bool> uploadPhotoAndUpdate(
+    File photoFile,
+    Map<String, dynamic> body,
+  ) async {
+    _isSaving = true;
+    _saveError = null;
+    notifyListeners();
+
+    debugPrint('PROFILE: ▶️ Uploading photo before profile update...');
+    final photoUrl = await S3UploadHelper.presignAndUpload(photoFile);
+
+    if (photoUrl == null) {
+      debugPrint('PROFILE: ❌ Photo upload failed, aborting profile update');
+      _saveError = 'Photo upload failed. Please try again.';
+      _isSaving = false;
+      notifyListeners();
+      return false;
+    }
+
+    debugPrint('PROFILE: ✅ Photo uploaded: $photoUrl');
+    // Reset saving flag — updateProfile will set it again
+    _isSaving = false;
+
+    return updateProfile({...body, 'photo_url': photoUrl});
   }
 }

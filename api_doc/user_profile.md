@@ -81,3 +81,31 @@ Merged response with company commented out:
   "license_url": "https://your-bucket.s3.amazonaws.com/registration-docs/file.pdf"
 	[no profile photo ] -->
 }
+
+## PATCH Edit profie
+ ### email is read-only for both.
+
+### for user_type "company"
+```json
+{
+    "company" :"",
+ "uid": "CHE-143.477.781",
+  "phone": "+41791234567",
+  "address": "Bahnhofstrasse 1, Zurich",
+  "website" : ""
+}
+```
+
+
+
+### for user_type "private"
+```json
+{
+"full_name": "",
+  "phone": "+41791234567",
+  "address": "Bahnhofstrasse 1, Zurich",
+ "photo_url": ""
+
+}
+```
+

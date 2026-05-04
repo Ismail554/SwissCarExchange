@@ -1,29 +1,16 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:rionydo/app_utils/constants/api_service.dart';
+import 'package:rionydo/app_helper/s3_upload_helper.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
+import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step2.dart' show UserRole;
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
 import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
 
-/// Resolves the MIME content-type from a file extension.
-String _mimeTypeFor(String filePath) {
-  final ext = filePath.split('.').last.toLowerCase();
-  switch (ext) {
-    case 'pdf':
-      return 'application/pdf';
-    case 'jpg':
-    case 'jpeg':
-      return 'image/jpeg';
-    case 'png':
-    default:
-      return 'image/png';
-  }
-}
+
 
 class RegisterProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -98,93 +85,9 @@ class RegisterProvider extends ChangeNotifier {
   }
 
 
-  // ─── Step 1: Get Pre-Signed URL ────────────────────────────────────────────
-  /// Returns `{presigned_url, public_url}` or null on failure.
-  Future<Map<String, String>?> _getPresignedUrl({
-    required String contentType,
-    required String fileName,
-  }) async {
-    debugPrint('REGISTER: ▶️ Requesting presigned URL for "$fileName" (content-type: $contentType)');
-    final response = await DioManager.apiRequest(
-      url: ApiService.presignedUrl,
-      method: Methods.get,
-      queryParameters: {
-        'content_type': contentType,
-        'file_name': fileName,
-      },
-      skipAuth: true,
-    );
-
-    return response.fold(
-      (error) {
-        debugPrint('REGISTER: ❌ Presigned URL error: $error');
-        return null;
-      },
-      (data) {
-        final presigned = data['presigned_url'] as String?;
-        final public = data['public_url'] as String?;
-        if (presigned == null || public == null) {
-          debugPrint('REGISTER: ❌ Invalid presigned URL response structure: $data');
-          return null;
-        }
-        debugPrint('REGISTER: ✅ Presigned URL received successfully. Public URL: $public');
-        return {'presigned_url': presigned, 'public_url': public};
-      },
-    );
-  }
-
-  // ─── Step 2: Upload File to S3 (raw binary PUT) ────────────────────────────
-  Future<bool> _uploadToS3({
-    required String presignedUrl,
-    required File file,
-    required String contentType,
-  }) async {
-    try {
-      // Must be raw binary PUT — no JSON, no multipart
-      final dio = Dio();
-      final fileBytes = await file.readAsBytes();
-      debugPrint('REGISTER: ▶️ Uploading binary to S3: ${fileBytes.length} bytes (type: $contentType)');
-      final response = await dio.put(
-        presignedUrl,
-        data: Stream.fromIterable([fileBytes]),
-        options: Options(
-          headers: {
-            'Content-Type': contentType,
-            'Content-Length': fileBytes.length,
-          },
-          sendTimeout: const Duration(seconds: 60),
-          receiveTimeout: const Duration(seconds: 60),
-        ),
-      );
-      debugPrint('REGISTER: ✅ S3 upload status: ${response.statusCode}');
-      return (response.statusCode ?? 0) == 200;
-    } catch (e) {
-      debugPrint('REGISTER: ❌ S3 upload error: $e');
-      return false;
-    }
-  }
-
-  // ─── Helper: Upload a single file through presign → S3 ────────────────────
-  /// Returns the `public_url` for use in registration, or null on failure.
-  Future<String?> _presignAndUpload(File file) async {
-    final fileName = file.path.split(RegExp(r'[/\\]')).last;
-    final contentType = _mimeTypeFor(file.path);
-
-    final urls = await _getPresignedUrl(
-      contentType: contentType,
-      fileName: fileName,
-    );
-    if (urls == null) return null;
-
-    final uploaded = await _uploadToS3(
-      presignedUrl: urls['presigned_url']!,
-      file: file,
-      contentType: contentType,
-    );
-    if (!uploaded) return null;
-
-    return urls['public_url'];
-  }
+  // ─── Upload via shared S3UploadHelper ─────────────────────────────────────
+  Future<String?> _presignAndUpload(File file) =>
+      S3UploadHelper.presignAndUpload(file, skipAuth: true);
 
   // ─── Register: Private (Individual) user ───────────────────────────────────
   Future<void> registerPrivate({

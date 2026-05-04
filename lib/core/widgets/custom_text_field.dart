@@ -12,6 +12,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final TextInputAction? textInputAction;
+  final bool enabled;
   final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
@@ -22,13 +23,16 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.controller,
     this.keyboardType = TextInputType.text,
-    this.validator, this.textInputAction, this.inputFormatters,
+    this.validator,
+    this.textInputAction,
+    this.inputFormatters,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-
+      enabled: enabled,
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,

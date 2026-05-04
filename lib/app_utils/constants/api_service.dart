@@ -19,6 +19,7 @@ class ApiService {
 
   // Profile
   static String get userProfile => "$baseUrl/api/users/me/";
+  static String get updateProfile => "$baseUrl/api/users/me/update/"; //PATCH
 
   // Subscriptions
   static String get subscriptionStatus => "$baseUrl/api/subscriptions/me/";
