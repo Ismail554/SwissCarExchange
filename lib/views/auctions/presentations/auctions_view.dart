@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
-import 'package:rionydo/app_utils/utils/assets_manager.dart';
-import 'package:rionydo/views/auctions/presentations/auction_details.dart';
+import 'package:provider/provider.dart';
+import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
+import 'package:rionydo/models/auctions/my_auctions_response.dart';
 
 class AuctionsView extends StatefulWidget {
   const AuctionsView({super.key});
@@ -16,7 +18,48 @@ class AuctionsView extends StatefulWidget {
 
 class _AuctionsViewState extends State<AuctionsView> {
   int _selectedFilterIndex = 0;
-  final List<String> _filters = ["All", "Ending Soon", "Watched", "Upcoming"];
+  final List<String> _filters = [
+    "All",
+    "Active",
+    "Upcoming",
+    "Sold",
+    "Unsold",
+    "Withdrawn",
+    "Payment Expired",
+    "Shipping Expired",
+    "Removed",
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MyAuctionsProvider>().fetchAuctions();
+    });
+  }
+
+  String _mapFilterToStatus(String filter) {
+    switch (filter) {
+      case "Active":
+        return "active";
+      case "Upcoming":
+        return "upcoming";
+      case "Sold":
+        return "sold";
+      case "Unsold":
+        return "unsold";
+      case "Withdrawn":
+        return "withdrawn";
+      case "Payment Expired":
+        return "payment_expired";
+      case "Shipping Expired":
+        return "shipping_expired";
+      case "Removed":
+        return "removed";
+      default:
+        return "all";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +98,9 @@ class _AuctionsViewState extends State<AuctionsView> {
                         setState(() {
                           _selectedFilterIndex = index;
                         });
+                        context.read<MyAuctionsProvider>().fetchAuctions(
+                          statusFilter: _mapFilterToStatus(_filters[index]),
+                        );
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
@@ -98,27 +144,74 @@ class _AuctionsViewState extends State<AuctionsView> {
                 }),
               ),
             ),
-            SizedBox(height: 24.h),
-            Text(
-              "4 Auctions found",
-              style: FontManager.bodyMedium(color: AppColors.textHint),
-            ),
-            SizedBox(height: 16.h),
-            // Grid View
-            Expanded(
-              child: GridView.builder(
-                padding: EdgeInsets.only(bottom: 20.h),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16.w,
-                  mainAxisSpacing: 16.h,
-                  childAspectRatio: 0.58,
-                ),
-                itemCount: 4,
-                itemBuilder: (context, index) {
-                  return _buildAuctionCard(index);
-                },
-              ),
+            Consumer<MyAuctionsProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.sceTeal,
+                      ),
+                    ),
+                  );
+                }
+
+                if (provider.errorMessage != null) {
+                  return Expanded(
+                    child: Center(
+                      child: Text(
+                        provider.errorMessage!,
+                        style: FontManager.bodyMedium(
+                          color: AppColors.errorRed,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                final auctions = provider.auctions;
+
+                return Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppSpacing.h10,
+                      Text(
+                        "${auctions.length} Auctions found",
+                        style: FontManager.bodyMedium(
+                          color: AppColors.textHint,
+                        ),
+                      ),
+                      AppSpacing.h10,
+                      Expanded(
+                        child: auctions.isEmpty
+                            ? Center(
+                                child: Text(
+                                  "No auctions found",
+                                  style: FontManager.bodyMedium(
+                                    color: AppColors.textHint,
+                                  ),
+                                ),
+                              )
+                            : GridView.builder(
+                                padding: EdgeInsets.only(bottom: 20.h),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 16.w,
+                                      mainAxisSpacing: 16.h,
+                                      childAspectRatio: 0.58,
+                                    ),
+                                itemCount: auctions.length,
+                                itemBuilder: (context, index) {
+                                  return _buildAuctionCard(auctions[index]);
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -126,51 +219,13 @@ class _AuctionsViewState extends State<AuctionsView> {
     );
   }
 
-  Widget _buildAuctionCard(int index) {
-    // Dummy titles and prices based on the provided images
-    final List<Map<String, dynamic>> dummyData = [
-      {
-        "title": "BMW M5 2023",
-        "year": "2023",
-        "currentBid": "35,700",
-        "timeRemaining": "2h 12m",
-        "isLive": false,
-        "image": ImageAssets.car1,
-      },
-      {
-        "title": "Audi RS6 2022",
-        "year": "2022",
-        "currentBid": "28,400",
-        "timeRemaining": "-1h -38m",
-        "isLive": true,
-        "image": ImageAssets.car2,
-      },
-      {
-        "title": "Porsche 911 Turbo",
-        "year": "2023",
-        "currentBid": "47,900",
-        "timeRemaining": "0h 47m",
-        "isLive": false,
-        "image": ImageAssets.car3,
-      },
-      {
-        "title": "Mercedes-Benz",
-        "year": "2023",
-        "currentBid": "42,300",
-        "timeRemaining": "3h 57m",
-        "isLive": false,
-        "image": ImageAssets.car4,
-      },
-    ];
-
-    final data = dummyData[index];
-
+  Widget _buildAuctionCard(AuctionItem auction) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AuctionDetails(data: data)),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => AuctionDetails(data: auction)),
+        // );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -192,14 +247,22 @@ class _AuctionsViewState extends State<AuctionsView> {
                         top: Radius.circular(16.r),
                       ),
                       color: Colors.white.withOpacity(0.1),
-                      image: DecorationImage(
-                        image: AssetImage(data['image']),
-                        fit: BoxFit.cover,
-                      ),
+                      image: auction.images.isNotEmpty
+                          ? DecorationImage(
+                              image: NetworkImage(auction.images.first.url),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                     ),
                     width: double.infinity,
+                    child: auction.images.isEmpty
+                        ? const Icon(
+                            Icons.directions_car,
+                            color: AppColors.textHint,
+                          )
+                        : null,
                   ),
-                  if (data['isLive'] == true)
+                  if (auction.status == "active")
                     Positioned(
                       top: 8.h,
                       right: 8.w,
@@ -207,7 +270,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                         width: 10.w,
                         height: 10.w,
                         decoration: const BoxDecoration(
-                          color: Colors.redAccent,
+                          color: Colors.greenAccent,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -219,7 +282,7 @@ class _AuctionsViewState extends State<AuctionsView> {
             Expanded(
               flex: 5,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 18.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,7 +291,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          data['title'],
+                          auction.title,
                           style: FontManager.bodyMedium(
                             color: Colors.white,
                           ).copyWith(fontWeight: FontWeight.bold),
@@ -237,7 +300,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          data['year'],
+                          auction.vehicleBrand,
                           style: FontManager.bodySmall(
                             color: AppColors.textHint,
                           ),
@@ -255,14 +318,14 @@ class _AuctionsViewState extends State<AuctionsView> {
                         ),
                         SizedBox(height: 2.h),
                         Text(
-                          data['currentBid'],
-                          style: FontManager.heading2(
+                          "CHF ${auction.currentHighestBid ?? auction.reservePrice}",
+                          style: FontManager.bodyMedium(
                             color: AppColors.sceTeal,
                           ).copyWith(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          data['timeRemaining'],
+                          _getTimeRemaining(auction.createdAt),
                           style: FontManager.bodySmall(
                             color: AppColors.textHint,
                           ),
@@ -277,5 +340,22 @@ class _AuctionsViewState extends State<AuctionsView> {
         ),
       ),
     );
+  }
+
+  String _getTimeRemaining(DateTime endsAt) {
+    final now = DateTime.now();
+    final difference = endsAt.difference(now);
+
+    if (difference.isNegative) {
+      return "Ended";
+    }
+
+    if (difference.inDays > 0) {
+      return "${difference.inDays}d ${difference.inHours % 24}h remaining";
+    } else if (difference.inHours > 0) {
+      return "${difference.inHours}h ${difference.inMinutes % 60}m remaining";
+    } else {
+      return "${difference.inMinutes}m remaining";
+    }
   }
 }

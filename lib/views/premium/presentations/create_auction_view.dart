@@ -379,7 +379,7 @@ class _CreateAuctionState extends State<CreateAuction> {
                     text: "Publish Auction",
                     onPressed: _onPublish,
                     isLoading: provider.isLoading,
-                    loadingText: "..uploading",
+                    loadingText: "...uploading",
                   );
                 },
               ),

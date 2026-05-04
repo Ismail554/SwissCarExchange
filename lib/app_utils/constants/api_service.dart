@@ -29,4 +29,7 @@ class ApiService {
   // Auctions
   static String get createAuction => "$baseUrl/api/auctions/create/";
   static String get auctionPresignedUrl => "$baseUrl/api/auctions/upload/presigned-url/"; //allowed "content_type": [ "application/pdf", "image/jpeg", "image/png", "image/webp", "video/mp4", "video/quicktime", "video/webm" ]
+  static String editAuction(String auctionId) => "$baseUrl/api/auctions/$auctionId/update/"; //PUT
+  static String get myAuctions => "$baseUrl/api/auctions/";
+  static String auctionDetail(String auctionId) => "$baseUrl/api/auctions/$auctionId/";
 }

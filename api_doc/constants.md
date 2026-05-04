@@ -35,6 +35,7 @@ AuctionStatus {
   WITHDRAWN = 'withdrawn',
   PAYMENT_EXPIRED = 'payment_expired',
   SHIPPING_EXPIRED = 'shipping_expired',
+  REMOVED = 'removed',
 }
 
 TransactionStatus {
