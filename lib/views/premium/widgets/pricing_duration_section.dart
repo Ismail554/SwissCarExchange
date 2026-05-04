@@ -34,10 +34,7 @@ class PricingDurationSection extends StatelessWidget {
           style: FontManager.bodySmall(color: AppColors.sceGreyA0),
         ),
         SizedBox(height: 8.h),
-        _buildPriceField(
-          controller: reservePriceController,
-          hint: "CHF",
-        ),
+        _buildPriceField(controller: reservePriceController, hint: "CHF"),
         SizedBox(height: 16.h),
 
         // Buy Now Price
@@ -48,7 +45,17 @@ class PricingDurationSection extends StatelessWidget {
         SizedBox(height: 8.h),
         _buildPriceField(
           controller: buyNowPriceController,
-          hint: "CHF",
+          hint: "Buy Now Price",
+          validator: (value) {
+            if (value == null || value.isEmpty) return null; // Optional
+            final buyPrice = double.tryParse(value) ?? 0;
+            final reservePrice =
+                double.tryParse(reservePriceController.text) ?? 0;
+            if (buyPrice < reservePrice) {
+              return "Must be ≥ Reserve Price";
+            }
+            return null;
+          },
         ),
         SizedBox(height: 16.h),
 
@@ -66,12 +73,13 @@ class PricingDurationSection extends StatelessWidget {
   Widget _buildPriceField({
     required TextEditingController controller,
     required String hint,
+    String? Function(String?)? validator,
   }) {
     return CustomTextField(
       hintText: hint,
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      textInputAction: TextInputAction.done,
+      textInputAction: TextInputAction.next,
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
       ],
@@ -82,12 +90,13 @@ class PricingDurationSection extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "\$",
+              "CHF",
               style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
             ),
           ],
         ),
       ),
+      validator: validator,
     );
   }
 

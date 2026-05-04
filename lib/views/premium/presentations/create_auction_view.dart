@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
@@ -13,6 +14,7 @@ import '../widgets/create_auction_helpers.dart';
 import '../widgets/vehicle_info_fields.dart';
 import '../widgets/media_selection_section.dart';
 import '../widgets/pricing_duration_section.dart';
+import 'package:rionydo/controllers/auctions/create_auctions_provider.dart';
 
 class CreateAuction extends StatefulWidget {
   const CreateAuction({super.key});
@@ -36,6 +38,8 @@ class _CreateAuctionState extends State<CreateAuction> {
   final _descriptionController = TextEditingController();
   final _reservePriceController = TextEditingController();
   final _buyNowPriceController = TextEditingController();
+  final _fuelTypeController = TextEditingController();
+  final _locationController = TextEditingController();
 
   // State
   final List<File> _imageFiles = [];
@@ -58,6 +62,8 @@ class _CreateAuctionState extends State<CreateAuction> {
     _descriptionController.dispose();
     _reservePriceController.dispose();
     _buyNowPriceController.dispose();
+    _fuelTypeController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -273,14 +279,48 @@ class _CreateAuctionState extends State<CreateAuction> {
     );
   }
 
-  void _onPublish() {
+  void _onPublish() async {
     if (_formKey.currentState?.validate() ?? false) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text("Publishing..."),
-          backgroundColor: AppColors.sceTeal,
-        ),
+      if (_imageFiles.isEmpty) {
+        _showLimitSnackbar("Please add at least one image.");
+        return;
+      }
+      if (_selectedDuration.isEmpty) {
+        _showLimitSnackbar("Please select auction duration.");
+        return;
+      }
+
+      final provider = Provider.of<CreateAuctionProvider>(context, listen: false);
+
+      // Calculate dates
+      final startsAt = DateTime.now().toUtc();
+      final days = int.tryParse(_selectedDuration.split(' ')[0]) ?? 3;
+      final endsAt = startsAt.add(Duration(days: days));
+
+      final success = await provider.createAuction(
+        context: context,
+        title: _titleController.text,
+        description: _descriptionController.text,
+        brand: _brandController.text,
+        model: _modelController.text,
+        category: _carCategoryController.text.toLowerCase().replaceAll(' ', '_'),
+        year: int.tryParse(_yearController.text) ?? 0,
+        mileage: int.tryParse(_mileageController.text) ?? 0,
+        vin: _vinController.text,
+        fuelType: _fuelTypeController.text,
+        location: _locationController.text,
+        reservePrice: _reservePriceController.text,
+        buyNowPrice: _buyNowPriceController.text,
+        startsAt: startsAt.toIso8601String(),
+        endsAt: endsAt.toIso8601String(),
+        images: _imageFiles,
+        video: _videoFile,
+        document: _documentFiles.isNotEmpty ? _documentFiles.first : null,
       );
+
+      if (success && mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -313,6 +353,8 @@ class _CreateAuctionState extends State<CreateAuction> {
                 vinController: _vinController,
                 carCategoryController: _carCategoryController,
                 descriptionController: _descriptionController,
+                fuelTypeController: _fuelTypeController,
+                locationController: _locationController,
               ),
               SizedBox(height: 28.h),
               MediaSelectionSection(
@@ -337,7 +379,15 @@ class _CreateAuctionState extends State<CreateAuction> {
                 onSelectDuration: _showDurationSheet,
               ),
               SizedBox(height: 32.h),
-              CustomButton(text: "🔒  Publish Auction", onPressed: _onPublish),
+              Consumer<CreateAuctionProvider>(
+                builder: (context, provider, child) {
+                  return CustomButton(
+                    text: "🔒  Publish Auction",
+                    onPressed: _onPublish,
+                    isLoading: provider.isLoading,
+                  );
+                },
+              ),
               SizedBox(height: 32.h),
             ],
           ),

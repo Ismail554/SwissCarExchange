@@ -14,6 +14,8 @@ class VehicleInfoFields extends StatelessWidget {
   final TextEditingController vinController;
   final TextEditingController carCategoryController;
   final TextEditingController descriptionController;
+  final TextEditingController fuelTypeController;
+  final TextEditingController locationController;
 
   const VehicleInfoFields({
     super.key,
@@ -25,6 +27,8 @@ class VehicleInfoFields extends StatelessWidget {
     required this.vinController,
     required this.carCategoryController,
     required this.descriptionController,
+    required this.fuelTypeController,
+    required this.locationController,
   });
 
   @override
@@ -36,7 +40,13 @@ class VehicleInfoFields extends StatelessWidget {
         SizedBox(height: 12.h),
 
         // Auction Title
-        CustomTextField(hintText: "Auction Title", controller: titleController),
+        CustomTextField(
+          validationMinLength: 3,
+          validationMaxLength: 30,
+          textInputAction: TextInputAction.next,
+          hintText: "Auction Title",
+          controller: titleController,
+        ),
         SizedBox(height: 12.h),
 
         // Brand & Model row
@@ -84,15 +94,33 @@ class VehicleInfoFields extends StatelessWidget {
         // VIN Number
         CustomTextField(hintText: "VIN Number", controller: vinController),
         SizedBox(height: 12.h),
+
+        // Fuel Type & Location row
+        Row(
+          children: [
+            Expanded(
+              child: CustomTextField(
+                textInputAction: TextInputAction.next,
+                hintText: "Fuel Type",
+                controller: fuelTypeController,
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: CustomTextField(
+                textInputAction: TextInputAction.next,
+                hintText: "Location",
+                controller: locationController,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12.h),
         // Car Category
         CustomDropdownField(
+          textInputAction: TextInputAction.next,
           hintText: "Car Category",
-          items: const [
-            "Sports Car",
-            "Luxury Sedans",
-            "SUVs",
-            "Classical",
-          ],
+          items: const ["Sports Car", "SUV", "Luxury Sedan", "Classic Car"],
           value: carCategoryController.text.isNotEmpty
               ? carCategoryController.text
               : null,
@@ -104,6 +132,7 @@ class VehicleInfoFields extends StatelessWidget {
 
         // Description (multiline)
         TextFormField(
+          textInputAction: TextInputAction.newline,
           controller: descriptionController,
           maxLines: 4,
           style: const TextStyle(color: Colors.white, fontSize: 14),

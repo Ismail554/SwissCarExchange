@@ -10,6 +10,7 @@ class CustomDropdownField extends StatefulWidget {
   final void Function(String?)? onChanged;
   final String? Function(String?)? validator;
   final IconData? prefixIcon;
+  final TextInputAction? textInputAction;
 
   const CustomDropdownField({
     super.key,
@@ -20,6 +21,7 @@ class CustomDropdownField extends StatefulWidget {
     this.onChanged,
     this.validator,
     this.prefixIcon,
+    this.textInputAction,
   });
 
   @override
@@ -112,6 +114,7 @@ class _CustomDropdownFieldState extends State<CustomDropdownField>
                     children: [
                       // Gold dot for selected item
                       AnimatedContainer(
+                        
                         duration: const Duration(milliseconds: 150),
                         width: isSelected ? 6.w : 0,
                         height: 6.h,

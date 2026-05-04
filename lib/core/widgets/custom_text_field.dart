@@ -14,6 +14,8 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final bool enabled;
   final List<TextInputFormatter>? inputFormatters;
+  final int? validationMinLength;
+  final int? validationMaxLength;
 
   const CustomTextField({
     super.key,
@@ -27,6 +29,8 @@ class CustomTextField extends StatelessWidget {
     this.textInputAction,
     this.inputFormatters,
     this.enabled = true,
+    this.validationMinLength,
+    this.validationMaxLength,
   });
 
   @override
@@ -36,7 +40,18 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
-      validator: validator,
+      validator: validator ?? (value) {
+        if (value == null || value.isEmpty) {
+          return "Please enter $hintText";
+        }
+        if (validationMinLength != null && value.length < validationMinLength!) {
+          return "$hintText must be at least $validationMinLength characters long";
+        }
+        if (validationMaxLength != null && value.length > validationMaxLength!) {
+          return "$hintText must be at most $validationMaxLength characters long";
+        }
+        return null;
+      },
       textInputAction: textInputAction,
       inputFormatters: inputFormatters,
       style: TextStyle(color: Colors.white, fontSize: 14.sp),

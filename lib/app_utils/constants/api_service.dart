@@ -25,4 +25,8 @@ class ApiService {
   static String get subscriptionStatus => "$baseUrl/api/subscriptions/me/";
   static String get subscriptionPlans => "$baseUrl/api/subscriptions/plans/";
   static String get subscriptionCheckout => "$baseUrl/api/subscriptions/checkout/";
+
+  // Auctions
+  static String get createAuction => "$baseUrl/api/auctions/create/";
+  static String get auctionPresignedUrl => "$baseUrl/api/auctions/upload/presigned-url/"; //allowed "content_type": [ "application/pdf", "image/jpeg", "image/png", "image/webp", "video/mp4", "video/quicktime", "video/webm" ]
 }

@@ -28,11 +28,12 @@ class S3UploadHelper {
   static Future<Map<String, String>?> getPresignedUrl({
     required String contentType,
     required String fileName,
+    String? presignedEndpoint,
     bool skipAuth = false,
   }) async {
     debugPrint('S3: ▶️ Requesting presigned URL for "$fileName" ($contentType)');
     final response = await DioManager.apiRequest(
-      url: ApiService.presignedUrl,
+      url: presignedEndpoint ?? ApiService.presignedUrl,
       method: Methods.get,
       queryParameters: {'content_type': contentType, 'file_name': fileName},
       skipAuth: skipAuth,
@@ -90,6 +91,7 @@ class S3UploadHelper {
   /// Returns the `public_url` for use in payloads, or null on failure.
   static Future<String?> presignAndUpload(
     File file, {
+    String? presignedEndpoint,
     bool skipAuth = false,
   }) async {
     final fileName = file.path.split(RegExp(r'[/\\]')).last;
@@ -98,6 +100,7 @@ class S3UploadHelper {
     final urls = await getPresignedUrl(
       contentType: contentType,
       fileName: fileName,
+      presignedEndpoint: presignedEndpoint,
       skipAuth: skipAuth,
     );
     if (urls == null) return null;
