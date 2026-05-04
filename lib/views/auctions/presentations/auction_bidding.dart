@@ -6,9 +6,20 @@ import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 
+import 'package:rionydo/views/auctions/widgets/auction_countdown.dart';
+import 'package:rionydo/models/auctions/my_auctions_response.dart';
+import 'package:rionydo/models/auctions/auctions_detail_response.dart';
+import 'package:rionydo/models/auctions/auction_image.dart';
+
 class AuctionBidding extends StatefulWidget {
-  final Map<String, dynamic> data;
-  const AuctionBidding({super.key, required this.data});
+  final AuctionItem initialData;
+  final AuctionDetailResponse? detailData;
+
+  const AuctionBidding({
+    super.key,
+    required this.initialData,
+    this.detailData,
+  });
 
   @override
   State<AuctionBidding> createState() => _AuctionBiddingState();
@@ -23,9 +34,11 @@ class _AuctionBiddingState extends State<AuctionBidding> {
   @override
   void initState() {
     super.initState();
-    _currentBid = int.parse(
-      widget.data['currentBid'].replaceAll(RegExp(r'[^0-9]'), ''),
-    );
+    final bidStr = widget.detailData?.currentHighestBid ??
+        widget.initialData.currentHighestBid ??
+        widget.initialData.reservePrice;
+
+    _currentBid = int.parse(bidStr.replaceAll(RegExp(r'[^0-9]'), ''));
     _userBid = _currentBid + _minIncrement;
   }
 
@@ -94,10 +107,16 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
                     ),
-                    child: Image.network(
-                      "https://images.unsplash.com/photo-1620314764415-195d63e1c2a7?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                      fit: BoxFit.cover,
-                    ),
+                    child: () {
+                      final images =
+                          widget.detailData?.images ?? widget.initialData.images;
+                      return Image.network(
+                        images.isNotEmpty
+                            ? images.first.url
+                            : "https://images.unsplash.com/photo-1620314764415-195d63e1c2a7",
+                        fit: BoxFit.cover,
+                      );
+                    }(),
                   ),
                   if (_isAutoBidEnabled)
                     Positioned(
@@ -144,7 +163,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                 children: [
                   // Title and Lot Info
                   Text(
-                    widget.data['title'],
+                    widget.detailData?.title ?? widget.initialData.title,
                     style: FontManager.heading2(color: Colors.white),
                   ),
                   SizedBox(height: 2.h),
@@ -171,7 +190,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                         style: FontManager.heading2(color: Colors.white),
                       ),
                       Text(
-                        widget.data['currentBid'],
+                        widget.detailData?.currentHighestBid ??
+                            widget.initialData.currentHighestBid ??
+                            widget.initialData.reservePrice,
                         style: FontManager.heading1(
                           color: AppColors.sceTeal,
                         ).copyWith(fontSize: 32.sp),
@@ -188,30 +209,8 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     ).copyWith(letterSpacing: 0.5),
                   ),
                   SizedBox(height: 8.h),
-                  Row(
-                    children: [
-                      _buildTimeBox("00", "DAYS"),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w),
-                        child: Text(
-                          ":",
-                          style: FontManager.heading3(
-                            color: AppColors.textHint,
-                          ),
-                        ),
-                      ),
-                      _buildTimeBox("03", "HRS"),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w),
-                        child: Text(
-                          ":",
-                          style: FontManager.heading3(
-                            color: AppColors.textHint,
-                          ),
-                        ),
-                      ),
-                      _buildTimeBox("34", "MIN"),
-                    ],
+                  AuctionCountdown(
+                    endTime: widget.detailData?.endsAt ?? widget.initialData.endsAt,
                   ),
                   SizedBox(height: 24.h),
 
@@ -490,34 +489,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
     );
   }
 
-  Widget _buildTimeBox(String value, String label) {
-    return Container(
-      width: 65.w,
-      padding: EdgeInsets.symmetric(vertical: 12.h),
-      decoration: BoxDecoration(
-        color: AppColors.sceCardBg,
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: FontManager.heading3(
-              color: Colors.white,
-            ).copyWith(fontSize: 22.sp),
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            label,
-            style: FontManager.labelSmall(
-              color: AppColors.textHint,
-            ).copyWith(fontSize: 10.sp),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildBidTile(
     String name,

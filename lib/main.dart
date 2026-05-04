@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:rionydo/app.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
+import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/controllers/auctions/create_auctions_provider.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
@@ -29,6 +30,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
         ChangeNotifierProvider(create: (_) => CreateAuctionProvider()),
         ChangeNotifierProvider(create: (_) => MyAuctionsProvider()),
+        ChangeNotifierProvider(create: (_) => AuctionsDetailProvider())
       ],
       child: const MyApp(),
     ),

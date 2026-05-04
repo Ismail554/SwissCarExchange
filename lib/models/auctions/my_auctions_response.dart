@@ -1,3 +1,5 @@
+import 'auction_image.dart';
+
 // ------------------------------------------------------------------
 // MY AUCTION RESPONSE (Paginated Wrapper)
 // ------------------------------------------------------------------
@@ -59,7 +61,8 @@ class AuctionItem {
   final String? currentHighestBid; 
   final String reservePrice;
   final String status;
-  final DateTime createdAt; // Handled dynamically from ends_at
+  final DateTime createdAt;
+  final DateTime? endsAt;
   final int totalBidders;
   final List<AuctionImage> images;
 
@@ -72,6 +75,7 @@ class AuctionItem {
     required this.reservePrice,
     required this.status,
     required this.createdAt,
+    this.endsAt,
     required this.totalBidders,
     required this.images,
   });
@@ -82,13 +86,15 @@ class AuctionItem {
       title: json['title'] as String? ?? '',
       vehicleBrand: json['vehicle_brand'] as String? ?? '',
       sellerName: json['seller_name'] as String? ?? '',
-      // current_highest_bid can legitimately be null before any bids are placed
-      currentHighestBid: json['current_highest_bid']?.toString(), 
+      currentHighestBid: json['current_highest_bid']?.toString(),
       reservePrice: json['reserve_price'] as String? ?? '0.00',
       status: json['status'] as String? ?? 'unknown',
-      createdAt: json['ends_at'] != null
-          ? DateTime.tryParse(json['ends_at'] as String) ?? DateTime.now()
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'] as String) ?? DateTime.now()
           : DateTime.now(),
+      endsAt: json['ends_at'] != null
+          ? DateTime.tryParse(json['ends_at'] as String)
+          : null,
       totalBidders: json['total_bidders'] as int? ?? 0,
       images: (json['images'] as List<dynamic>?)
               ?.map((e) => AuctionImage.fromJson(e as Map<String, dynamic>))
@@ -105,7 +111,8 @@ class AuctionItem {
         'current_highest_bid': currentHighestBid,
         'reserve_price': reservePrice,
         'status': status,
-        'ends_at': createdAt.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
+        'ends_at': endsAt?.toIso8601String(),
         'total_bidders': totalBidders,
         'images': images.map((e) => e.toJson()).toList(),
       };
@@ -137,37 +144,4 @@ class AuctionItem {
   }
 }
 
-// ------------------------------------------------------------------
-// AUCTION IMAGE
-// ------------------------------------------------------------------
-class AuctionImage {
-  final String url;
-  final int position;
 
-  const AuctionImage({
-    required this.url,
-    required this.position,
-  });
-
-  factory AuctionImage.fromJson(Map<String, dynamic> json) {
-    return AuctionImage(
-      url: json['url'] as String? ?? '',
-      position: json['position'] as int? ?? 0,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'url': url,
-        'position': position,
-      };
-
-  AuctionImage copyWith({
-    String? url,
-    int? position,
-  }) {
-    return AuctionImage(
-      url: url ?? this.url,
-      position: position ?? this.position,
-    );
-  }
-}

@@ -8,6 +8,7 @@ import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
+import 'package:rionydo/views/auctions/presentations/auction_details.dart';
 
 class AuctionsView extends StatefulWidget {
   const AuctionsView({super.key});
@@ -222,10 +223,10 @@ class _AuctionsViewState extends State<AuctionsView> {
   Widget _buildAuctionCard(AuctionItem auction) {
     return GestureDetector(
       onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => AuctionDetails(data: auction)),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AuctionDetails(data: auction)),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -254,7 +255,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                             )
                           : null,
                     ),
-                    width: double.infinity,
+                    width: double.maxFinite,
                     child: auction.images.isEmpty
                         ? const Icon(
                             Icons.directions_car,

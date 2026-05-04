@@ -4,8 +4,10 @@ import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/models/auctions/auction_image.dart';
 import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
 import 'package:rionydo/views/auctions/presentations/auction_details.dart';
+import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import '../widgets/auction_management_card.dart';
 
 class AuctionManagement extends StatefulWidget {
@@ -150,12 +152,23 @@ class _AuctionManagementState extends State<AuctionManagement> {
               context,
               MaterialPageRoute(
                 builder: (_) => AuctionDetails(
-                  data: {
-                    'image': "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
-                    'title': "Porsche 911 GT3 2022",
-                    'currentBid': "185,000",
-                    'year': "2022",
-                  },
+                  data: AuctionItem(
+                    id: 1,
+                    title: "Porsche 911 GT3 2022",
+                    vehicleBrand: "Porsche",
+                    sellerName: "Premium Dealer",
+                    currentHighestBid: "185,000",
+                    reservePrice: "180,000",
+                    status: "ACTIVE",
+                    createdAt: DateTime.now(),
+                    totalBidders: 12,
+                    images: [
+                      const AuctionImage(
+                        url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
+                        position: 0,
+                      )
+                    ],
+                  ),
                 ),
               ),
             );
@@ -180,12 +193,23 @@ class _AuctionManagementState extends State<AuctionManagement> {
               context,
               MaterialPageRoute(
                 builder: (_) => AuctionDetails(
-                  data: {
-                    'image': "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
-                    'title': "Mercedes-AMG GT 2021",
-                    'currentBid': "95,000",
-                    'year': "2021",
-                  },
+                  data: AuctionItem(
+                    id: 2,
+                    title: "Mercedes-AMG GT 2021",
+                    vehicleBrand: "Mercedes",
+                    sellerName: "Premium Dealer",
+                    currentHighestBid: "95,000",
+                    reservePrice: "90,000",
+                    status: "ACTIVE",
+                    createdAt: DateTime.now(),
+                    totalBidders: 8,
+                    images: [
+                      const AuctionImage(
+                        url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
+                        position: 0,
+                      )
+                    ],
+                  ),
                 ),
               ),
             );
@@ -218,12 +242,23 @@ class _AuctionManagementState extends State<AuctionManagement> {
               context,
               MaterialPageRoute(
                 builder: (_) => AuctionDetails(
-                  data: {
-                    'image': "https://images.unsplash.com/photo-1542281286-9e0a16bb7366",
-                    'title': "Audi R8 V10 Plus 2018",
-                    'currentBid': "125,000",
-                    'year': "2018",
-                  },
+                  data: AuctionItem(
+                    id: 3,
+                    title: "Audi R8 V10 Plus 2018",
+                    vehicleBrand: "Audi",
+                    sellerName: "Premium Dealer",
+                    currentHighestBid: "125,000",
+                    reservePrice: "120,000",
+                    status: "COMPLETED",
+                    createdAt: DateTime.now(),
+                    totalBidders: 28,
+                    images: [
+                      const AuctionImage(
+                        url: "https://images.unsplash.com/photo-1542281286-9e0a16bb7366",
+                        position: 0,
+                      )
+                    ],
+                  ),
                 ),
               ),
             );

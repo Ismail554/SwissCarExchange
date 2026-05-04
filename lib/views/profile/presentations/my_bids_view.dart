@@ -4,6 +4,8 @@ import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/models/auctions/my_auctions_response.dart';
+import 'package:rionydo/models/auctions/auction_image.dart';
 import 'package:rionydo/views/auctions/presentations/auction_bidding.dart';
 import 'package:rionydo/views/profile/widgets/my_bid_card.dart';
 
@@ -133,12 +135,24 @@ class _MyBidsViewState extends State<MyBidsView>
               context,
               MaterialPageRoute(
                 builder: (context) => AuctionBidding(
-                  data: {
-                    'image':
-                        "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=2070&auto=format&fit=crop",
-                    'title': "BMW M4 Competition",
-                    'currentBid': "82,000",
-                  },
+                  initialData: AuctionItem(
+                    id: 0,
+                    title: "BMW M4 Competition",
+                    vehicleBrand: "BMW",
+                    sellerName: "Premium Dealer",
+                    currentHighestBid: "82000",
+                    reservePrice: "75000",
+                    status: "active",
+                    createdAt: DateTime.now(),
+                    endsAt: DateTime.now().add(const Duration(hours: 5, minutes: 42)),
+                    totalBidders: 8,
+                    images: [
+                      const AuctionImage(
+                        url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=2070&auto=format&fit=crop",
+                        position: 0,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
