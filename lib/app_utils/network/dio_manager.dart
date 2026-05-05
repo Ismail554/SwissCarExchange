@@ -106,7 +106,7 @@ class DioManager {
   static Future<Response?> _retryWithRefreshedToken(
     RequestOptions original,
   ) async {
-    final newToken = await TokenManager.getValidToken();
+    final newToken = await TokenManager.getValidToken(forceRefresh: true);
     if (newToken == null) return null;
 
     try {

@@ -32,4 +32,15 @@ class ApiService {
   static String editAuction(String auctionId) => "$baseUrl/api/auctions/$auctionId/update/"; //PUT
   static String get myAuctions => "$baseUrl/api/auctions/";
   static String auctionDetail(String auctionId) => "$baseUrl/api/auctions/$auctionId/";
+
+  // Review & Wishlist
+  static String createWishlist(String auctionId) => "$baseUrl/api/auctions/$auctionId/watchlist/";
+  static String get myWishlists => "$baseUrl/api/auctions/watchlist/";
+
+  // Bid
+  static String placeBid(String auctionId) => "$baseUrl/api/auctions/$auctionId/bid/"; // POST body: { "amount": "12000" }
+  static String bidHistory(String auctionId) => "$baseUrl/api/auctions/$auctionId/bid/history/"; // GET
+  static String autoBidCreate(String auctionId) => "$baseUrl/api/auctions/$auctionId/auto-bid/"; // POST body: { "max_amount": "12000" }
+  static String autoBidDelete(String auctionId) => "$baseUrl/api/auctions/$auctionId/auto-bid/delete/"; // DELETE
+  static String bidStatus(String auctionId) => "$baseUrl/api/auctions/$auctionId/auto-bid/status"; // GET
 }

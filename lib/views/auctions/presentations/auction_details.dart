@@ -12,6 +12,7 @@ import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/models/auctions/auctions_detail_response.dart';
 import 'package:rionydo/models/auctions/auction_image.dart';
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
 
 class AuctionDetails extends StatefulWidget {
   final AuctionItem data;
@@ -83,7 +84,25 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                                   : Colors.white,
                               size: 20,
                             ),
-                            onPressed: () {},
+                            onPressed: () async {
+                              final provider =
+                                  context.read<AuctionsDetailProvider>();
+                              final isCurrentlyWatchlisted =
+                                  detail?.isWatchlisted ?? false;
+
+                              final success = await provider.toggleWatchlist(
+                                widget.data.id.toString(),
+                              );
+
+                              if (success && context.mounted) {
+                                AppSnackBar.success(
+                                  context,
+                                  isCurrentlyWatchlisted
+                                      ? "Removed from watchlist"
+                                      : "Added to watchlist",
+                                );
+                              }
+                            },
                           ),
                         ),
                       ),
@@ -222,24 +241,22 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                           // Current Bid Container
                           _buildBidSection(detail, widget.data),
 
-                          SizedBox(height: 24.h),
+                          SizedBox(height: 12.h),
                           Text(
-                            "Fahrzeugdaten",
+                            "Vehicle data",
                             style: FontManager.heading3(color: Colors.white),
                           ),
-                          SizedBox(height: 16.h),
 
                           // Grid with Shimmer support
                           isLoading
                               ? _buildShimmerGrid()
                               : _buildVehicleDataGrid(detail),
 
-                          SizedBox(height: 24.h),
                           Text(
-                            "Beschreibung",
+                            "Description",
                             style: FontManager.heading3(color: Colors.white),
                           ),
-                          SizedBox(height: 16.h),
+                          SizedBox(height: 4.h),
 
                           // Description with Shimmer support
                           isLoading
@@ -327,28 +344,28 @@ class _AuctionDetailsState extends State<AuctionDetails> {
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12.h,
-      crossAxisSpacing: 12.w,
+      mainAxisSpacing: 8.h,
+      crossAxisSpacing: 8.w,
       childAspectRatio: 2.2,
       children: [
         _buildDataCard(
           Icons.calendar_today_outlined,
-          "Baujahr",
+          "Year",
           detail.vehicleYear.toString(),
         ),
         _buildDataCard(
           Icons.speed_outlined,
-          "Kilometerstand",
+          "Mileage",
           "${detail.vehicleMileage} km",
         ),
         _buildDataCard(
           Icons.local_gas_station_outlined,
-          "Kraftstoff",
+          "Fuel",
           detail.vehicleFuelType,
         ),
         _buildDataCard(
           Icons.location_on_outlined,
-          "Standort",
+          "Location",
           detail.vehicleLocation,
         ),
       ],
@@ -357,7 +374,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
 
   Widget _buildDescriptionCard(String? description) {
     return Container(
-      width: double.infinity,
+      width: double.maxFinite,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
@@ -375,7 +392,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
 
   Widget _buildDataCard(IconData icon, String subtitle, String value) {
     return Container(
-      padding: EdgeInsets.all(12.w),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(12.r),

@@ -201,7 +201,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                                       crossAxisCount: 2,
                                       crossAxisSpacing: 16.w,
                                       mainAxisSpacing: 16.h,
-                                      childAspectRatio: 0.58,
+                                      childAspectRatio: 0.54,
                                     ),
                                 itemCount: auctions.length,
                                 itemBuilder: (context, index) {
@@ -225,7 +225,9 @@ class _AuctionsViewState extends State<AuctionsView> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AuctionDetails(data: auction)),
+          MaterialPageRoute(
+            builder: (context) => AuctionDetails(data: auction),
+          ),
         );
       },
       child: Container(
@@ -283,7 +285,7 @@ class _AuctionsViewState extends State<AuctionsView> {
             Expanded(
               flex: 5,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

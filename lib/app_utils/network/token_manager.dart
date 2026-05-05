@@ -28,14 +28,14 @@ class TokenManager {
     clear();
   }
 
-  static Future<String?> getValidToken() async {
-    if (_isCacheValid()) {
+  static Future<String?> getValidToken({bool forceRefresh = false}) async {
+    if (!forceRefresh && _isCacheValid()) {
       log('🟢 Using cached token', name: _tag);
       return _cachedToken;
     }
 
     final stored = await SecureStorageHelper.getAccessToken();
-    if (stored != null && stored.isNotEmpty) {
+    if (!forceRefresh && stored != null && stored.isNotEmpty) {
       log('🟢 Using stored token', name: _tag);
       setCache(stored);
       return stored;
