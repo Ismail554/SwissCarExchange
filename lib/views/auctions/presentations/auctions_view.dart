@@ -404,7 +404,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                                 ),
                                 SizedBox(width: 3.w),
                                 Text(
-                                  _getTimeRemaining(auction.createdAt),
+                                  _getTimeRemaining(auction.endsAt),
                                   style: FontManager.bodySmall(
                                     color: AppColors.textHint,
                                   ).copyWith(fontSize: 10.sp),
@@ -451,7 +451,10 @@ class _AuctionsViewState extends State<AuctionsView> {
     );
   }
 
-  String _getTimeRemaining(DateTime endsAt) {
+  String _getTimeRemaining(DateTime? endsAt) {
+    if (endsAt == null) {
+      return "Ended";
+    }
     final now = DateTime.now();
     final difference = endsAt.difference(now);
 

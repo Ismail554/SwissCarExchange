@@ -141,7 +141,7 @@ class _HomeViewState extends State<HomeView> {
                 const PremiumDealerCard(),
                 AppSpacing.h20,
 
-                // ── Search Button ───────────────────────────────────────
+                // // ── Search Button ───────────────────────────────────────
                 // CustomButton(
                 //   text: 'SEARCH VEHICLE',
                 //   onPressed: () {},
@@ -169,8 +169,11 @@ class _HomeViewState extends State<HomeView> {
                         child: Center(
                           child: Column(
                             children: [
-                              Icon(Icons.error_outline,
-                                  color: AppColors.errorRed, size: 32.sp),
+                              Icon(
+                                Icons.error_outline,
+                                color: AppColors.errorRed,
+                                size: 32.sp,
+                              ),
                               SizedBox(height: 8.h),
                               Text(
                                 provider.errorMessage!,
@@ -212,10 +215,12 @@ class _HomeViewState extends State<HomeView> {
                         if (liveAuctions.isEmpty)
                           _buildEmptyState('No live auctions right now')
                         else
-                          ...liveAuctions.map((auction) => Padding(
-                                padding: EdgeInsets.only(bottom: 20.h),
-                                child: _buildAuctionCard(auction, isLive: true),
-                              )),
+                          ...liveAuctions.map(
+                            (auction) => Padding(
+                              padding: EdgeInsets.only(bottom: 20.h),
+                              child: _buildAuctionCard(auction, isLive: true),
+                            ),
+                          ),
                         AppSpacing.h32,
 
                         // ── Upcoming Auctions Section ────────────────────
@@ -224,11 +229,12 @@ class _HomeViewState extends State<HomeView> {
                         if (upcomingAuctions.isEmpty)
                           _buildEmptyState('No upcoming auctions')
                         else
-                          ...upcomingAuctions.map((auction) => Padding(
-                                padding: EdgeInsets.only(bottom: 20.h),
-                                child:
-                                    _buildAuctionCard(auction, isLive: false),
-                              )),
+                          ...upcomingAuctions.map(
+                            (auction) => Padding(
+                              padding: EdgeInsets.only(bottom: 20.h),
+                              child: _buildAuctionCard(auction, isLive: false),
+                            ),
+                          ),
                       ],
                     );
                   },
@@ -269,8 +275,9 @@ class _HomeViewState extends State<HomeView> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(20.r)),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20.r),
+                  ),
                   child: imageUrl.isNotEmpty
                       ? Image.network(
                           imageUrl,
@@ -304,8 +311,10 @@ class _HomeViewState extends State<HomeView> {
                   top: 12.h,
                   right: 12.w,
                   child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black54,
                       borderRadius: BorderRadius.circular(8.r),
@@ -405,7 +414,8 @@ class _HomeViewState extends State<HomeView> {
                       color: AppColors.sceTealStatBg,
                       borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(
-                          color: AppColors.sceTeal.withOpacity(0.3)),
+                        color: AppColors.sceTeal.withOpacity(0.3),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -421,17 +431,20 @@ class _HomeViewState extends State<HomeView> {
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           textBaseline: TextBaseline.alphabetic,
                           children: [
-                            Text("CHF ",
-                                style: FontManager.heading2(
-                                    color: Colors.white)),
+                            Text(
+                              "CHF ",
+                              style: FontManager.heading2(color: Colors.white),
+                            ),
                             Expanded(
                               child: Text(
                                 displayBid,
-                                style: FontManager.heading2(
-                                  color: AppColors.sceTeal,
-                                ).copyWith(
-                                    fontSize: 24.sp,
-                                    fontWeight: FontWeight.w800),
+                                style:
+                                    FontManager.heading2(
+                                      color: AppColors.sceTeal,
+                                    ).copyWith(
+                                      fontSize: 24.sp,
+                                      fontWeight: FontWeight.w800,
+                                    ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -496,8 +509,7 @@ class _HomeViewState extends State<HomeView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              AuctionDetails(data: auction),
+                          builder: (context) => AuctionDetails(data: auction),
                         ),
                       );
                     },

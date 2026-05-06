@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "934681436680",
+    "project_id": "swisscarexchange",
+    "storage_bucket": "swisscarexchange.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:934681436680:android:3854ed66767331838c67bd",
+        "android_client_info": {
+          "package_name": "com.swisscarexchange.rionaydo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAfkNttS7oDkpQrFTyD_qXTYSxGQEerso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
