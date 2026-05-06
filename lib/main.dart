@@ -30,7 +30,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
         ChangeNotifierProvider(create: (_) => CreateAuctionProvider()),
         ChangeNotifierProvider(create: (_) => MyAuctionsProvider()),
-        ChangeNotifierProvider(create: (_) => AuctionsDetailProvider())
+        ChangeNotifierProvider(create: (_) => AuctionsDetailProvider()),
+        
       ],
       child: const MyApp(),
     ),

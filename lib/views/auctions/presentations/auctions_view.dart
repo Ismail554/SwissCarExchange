@@ -22,7 +22,6 @@ class _AuctionsViewState extends State<AuctionsView> {
   final List<String> _filters = [
     "All",
     "Active",
-    "Upcoming",
     "Sold",
     "Unsold",
     "Withdrawn",
@@ -43,8 +42,6 @@ class _AuctionsViewState extends State<AuctionsView> {
     switch (filter) {
       case "Active":
         return "active";
-      case "Upcoming":
-        return "upcoming";
       case "Sold":
         return "sold";
       case "Unsold":
@@ -236,60 +233,99 @@ class _AuctionsViewState extends State<AuctionsView> {
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
+        clipBehavior: Clip
+            .hardEdge, // Prevents image from bleeding outside rounded corners
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Section
+            // ── Image Section ──────────────────────────────────────────
             Expanded(
               flex: 4,
               child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(16.r),
+                  // Image / placeholder
+                  auction.images.isNotEmpty
+                      ? Image.network(
+                          auction.images.first.url,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              _buildImagePlaceholder(),
+                          loadingBuilder: (_, child, progress) =>
+                              progress == null
+                              ? child
+                              : _buildImagePlaceholder(loading: true),
+                        )
+                      : _buildImagePlaceholder(),
+
+                  // Subtle gradient overlay for readability
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.25),
+                          ],
+                        ),
                       ),
-                      color: Colors.white.withOpacity(0.1),
-                      image: auction.images.isNotEmpty
-                          ? DecorationImage(
-                              image: NetworkImage(auction.images.first.url),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
                     ),
-                    width: double.maxFinite,
-                    child: auction.images.isEmpty
-                        ? const Icon(
-                            Icons.directions_car,
-                            color: AppColors.textHint,
-                          )
-                        : null,
                   ),
+
+                  // Status badge (top-left, more accessible than a bare dot)
                   if (auction.status == "active")
                     Positioned(
                       top: 8.h,
-                      right: 8.w,
+                      left: 8.w,
                       child: Container(
-                        width: 10.w,
-                        height: 10.w,
-                        decoration: const BoxDecoration(
-                          color: Colors.greenAccent,
-                          shape: BoxShape.circle,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.85),
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6.w,
+                              height: 6.h,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              "Live",
+                              style: FontManager.bodySmall(color: Colors.white)
+                                  .copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10.sp,
+                                  ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                 ],
               ),
             ),
-            // Details Section
+
+            // ── Details Section ────────────────────────────────────────
             Expanded(
-              flex: 5,
+              flex: 4,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // ── Title + Brand ──────────────────────────────────
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -301,36 +337,82 @@ class _AuctionsViewState extends State<AuctionsView> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4.h),
+                        SizedBox(height: 2.h),
                         Text(
                           auction.vehicleBrand,
                           style: FontManager.bodySmall(
                             color: AppColors.textHint,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
+
+                    // ── Bid + Time ─────────────────────────────────────
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Divider(
+                          color: Colors.white.withOpacity(0.07),
+                          height: 1,
+                          thickness: 1,
+                        ),
+                        SizedBox(height: 8.h),
+
+                        // Label row
                         Text(
                           "Current Bid",
                           style: FontManager.bodySmall(
                             color: AppColors.textHint,
-                          ),
+                          ).copyWith(fontSize: 10.sp),
                         ),
                         SizedBox(height: 2.h),
+
+                        // Price on its own full-width row — never truncated
                         Text(
                           "CHF ${auction.currentHighestBid ?? auction.reservePrice}",
                           style: FontManager.bodyMedium(
                             color: AppColors.sceTeal,
                           ).copyWith(fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow
+                              .ellipsis, // fallback for extreme values
                         ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          _getTimeRemaining(auction.createdAt),
-                          style: FontManager.bodySmall(
-                            color: AppColors.textHint,
+
+                        SizedBox(height: 6.h),
+
+                        // Time chip — sits below, full width available
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6.w,
+                              vertical: 3.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.07),
+                              borderRadius: BorderRadius.circular(6.r),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.access_time_rounded,
+                                  size: 10.sp,
+                                  color: AppColors.textHint,
+                                ),
+                                SizedBox(width: 3.w),
+                                Text(
+                                  _getTimeRemaining(auction.createdAt),
+                                  style: FontManager.bodySmall(
+                                    color: AppColors.textHint,
+                                  ).copyWith(fontSize: 10.sp),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -341,6 +423,30 @@ class _AuctionsViewState extends State<AuctionsView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+
+  Widget _buildImagePlaceholder({bool loading = false}) {
+    return Container(
+      color: Colors.white.withOpacity(0.07),
+      child: Center(
+        child: loading
+            ? SizedBox(
+                width: 20.w,
+                height: 20.h,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.sceTeal.withOpacity(0.6),
+                ),
+              )
+            : Icon(
+                Icons.directions_car_outlined,
+                color: AppColors.textHint.withOpacity(0.4),
+                size: 32.sp,
+              ),
       ),
     );
   }
