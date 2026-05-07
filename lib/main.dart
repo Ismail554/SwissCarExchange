@@ -14,6 +14,8 @@ import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/controllers/subscription_provider.dart';
 import 'package:rionydo/firebase_options.dart';
 
+import 'package:rionydo/app_utils/firebase_service.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -22,6 +24,9 @@ Future<void> main() async {
 
   final globalState = GlobalState();
   await globalState.rehydrate();
+  
+  // Fire and forget FCM initialization to avoid blocking runApp
+  FirebaseService.initFirebaseMessaging();
 
   runApp(
     MultiProvider(

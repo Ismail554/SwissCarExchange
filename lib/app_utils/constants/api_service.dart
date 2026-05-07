@@ -43,4 +43,7 @@ class ApiService {
   static String autoBidCreate(String auctionId) => "$baseUrl/api/auctions/$auctionId/auto-bid/"; // POST body: { "max_amount": "12000" }
   static String autoBidDelete(String auctionId) => "$baseUrl/api/auctions/$auctionId/auto-bid/delete/"; // DELETE
   static String bidStatus(String auctionId) => "$baseUrl/api/auctions/$auctionId/auto-bid/status"; // GET
+
+  // Device Register
+  static String get registerDevice => "$baseUrl/api/notifications/devices/register/"; // POST body: { "token": "...", "device_type": "..." }
 }
