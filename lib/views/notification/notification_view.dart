@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rionydo/services/firebase_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
@@ -46,6 +47,7 @@ class _NotificationViewState extends State<NotificationView> {
   @override
   void initState() {
     super.initState();
+    FirebaseService.initFirebaseMessaging();
     _notifications = [
       _NotificationItem(
         type: NotificationType.auctionWon,

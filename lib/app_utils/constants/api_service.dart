@@ -46,4 +46,7 @@ class ApiService {
 
   // Device Register
   static String get registerDevice => "$baseUrl/api/notifications/devices/register/"; // POST body: { "token": "...", "device_type": "..." }
+  static String get unregisterDevice => "$baseUrl/api/notifications/devices/remove/"; // POST body: {   "token": "" }
+  static String get notificationPreferences => "$baseUrl/api/notifications/preferences/"; // GET // response: { "new_auction_enabled": true, "auction_updates_enabled": true, "admin_messages_enabled": true }
+  static String get updateNotificationPreferences => "$baseUrl/api/notifications/preferences/update/"; // PUT // body: { "new_auction_enabled": true, "auction_updates_enabled": true, "admin_messages_enabled": true }
 }

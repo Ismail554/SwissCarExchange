@@ -50,4 +50,23 @@ class FirebaseService {
       debugPrint("FCM Error: $e");
     }
   }
+
+  static Future<void> unregisterFirebaseMessaging() async {
+    if (kIsWeb) return;
+    try {
+      String? token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        await DioManager.apiRequest(
+          url: ApiService.unregisterDevice,
+          method: Methods.post,
+          body: {
+            "token": token,
+          },
+        );
+        debugPrint("FCM token unregistered");
+      }
+    } catch (e) {
+      debugPrint("FCM Unregister Error: \$e");
+    }
+  }
 }

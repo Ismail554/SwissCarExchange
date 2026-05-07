@@ -14,7 +14,7 @@ import 'package:rionydo/models/bid/bid_history_response.dart';
 import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
-import 'package:rionydo/app_utils/socket_service.dart';
+import 'package:rionydo/services/socket_service.dart';
 
 class AuctionBidding extends StatefulWidget {
   final AuctionItem initialData;

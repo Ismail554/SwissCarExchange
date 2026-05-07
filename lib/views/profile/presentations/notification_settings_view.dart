@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rionydo/services/firebase_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
@@ -35,13 +36,13 @@ class _NotificationSettingsViewState extends State<NotificationSettingsView> {
           children: [
             NotificationSettingTile(
               title: "New Auction",
-              subtitle: "Get notify when new classes are post",
+              subtitle: "Get notify when new auction is posted",
               value: _newAuction,
               onChanged: (val) => setState(() => _newAuction = val),
             ),
             NotificationSettingTile(
-              title: "Payment",
-              subtitle: "Get notify for Payments Related",
+              title: "Auction Update",
+              subtitle: "Get notify when auction update",
               value: _payment,
               onChanged: (val) => setState(() => _payment = val),
             ),
@@ -49,7 +50,14 @@ class _NotificationSettingsViewState extends State<NotificationSettingsView> {
               title: "General Notification",
               subtitle: "Get notify for general purpose",
               value: _general,
-              onChanged: (val) => setState(() => _general = val),
+              onChanged: (val) {
+                setState(() => _general = val);
+                if (val) {
+                  FirebaseService.initFirebaseMessaging();
+                } else {
+                  FirebaseService.unregisterFirebaseMessaging();
+                }
+              },
             ),
             NotificationSettingTile(
               title: "Admin Message",
