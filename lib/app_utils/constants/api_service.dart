@@ -49,4 +49,7 @@ class ApiService {
   static String get unregisterDevice => "$baseUrl/api/notifications/devices/remove/"; // POST body: {   "token": "" }
   static String get notificationPreferences => "$baseUrl/api/notifications/preferences/"; // GET // response: { "new_auction_enabled": true, "auction_updates_enabled": true, "admin_messages_enabled": true }
   static String get updateNotificationPreferences => "$baseUrl/api/notifications/preferences/update/"; // PUT // body: { "new_auction_enabled": true, "auction_updates_enabled": true, "admin_messages_enabled": true }
+  static String get readAllNotifications => "$baseUrl/api/notifications/read-all/"; // POST
+  static String get notificationCount => "$baseUrl/api/notifications/unread-count/"; // GET // response: { "unread_count": 1 }
+  static String get notifications => "$baseUrl/api/notifications/"; // GET 
 }
