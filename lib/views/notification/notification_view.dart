@@ -6,33 +6,10 @@ import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-
-/// Notification type determines the icon and accent color.
-enum NotificationType {
-  auctionWon,
-  outbid,
-  endingSoon,
-  bidConfirmed,
-  paymentReminder,
-}
-
-class _NotificationItem {
-  final NotificationType type;
-  final String title;
-  final String body;
-  final String timeAgo;
-  bool isUnread;
-  final bool hasViewDetails;
-
-  _NotificationItem({
-    required this.type,
-    required this.title,
-    required this.body,
-    required this.timeAgo,
-    this.isUnread = false,
-    this.hasViewDetails = false,
-  });
-}
+import 'package:rionydo/app_utils/constants/api_service.dart';
+import 'package:rionydo/app_utils/network/dio_manager.dart';
+import 'package:rionydo/app_utils/network/enums.dart';
+import 'package:rionydo/models/notification/notification_response.dart';
 
 class NotificationView extends StatefulWidget {
   const NotificationView({super.key});
@@ -42,56 +19,96 @@ class NotificationView extends StatefulWidget {
 }
 
 class _NotificationViewState extends State<NotificationView> {
-  late final List<_NotificationItem> _notifications;
+  List<NotificationItem> _notifications = [];
+  int _unreadCount = 0;
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    FirebaseService.initFirebaseMessaging();
-    _notifications = [
-      _NotificationItem(
-        type: NotificationType.auctionWon,
-        title: "Auction Won!",
-        body: "Congratulations! You won the Porsche 911 GT3 auction.",
-        timeAgo: "5 min ago",
-        isUnread: true,
-      ),
-      _NotificationItem(
-        type: NotificationType.outbid,
-        title: "You've been outbid",
-        body: "Someone placed a higher bid on Mercedes-Benz AMG GT.",
-        timeAgo: "1 hour ago",
-        isUnread: true,
-      ),
-      _NotificationItem(
-        type: NotificationType.endingSoon,
-        title: "Auction Ending Soon",
-        body: "Audi RS6 Avant auction ends in 2 hours.",
-        timeAgo: "2 hours ago",
-      ),
-      _NotificationItem(
-        type: NotificationType.bidConfirmed,
-        title: "Bid Confirmed",
-        body: "Your bid of CHF 125,000 was placed successfully.",
-        timeAgo: "5 hours ago",
-      ),
-      _NotificationItem(
-        type: NotificationType.paymentReminder,
-        title: "Payment Reminder",
-        body: "Payment for Porsche Cayenne is due in 24 hours.",
-        timeAgo: "1 day ago",
-      ),
-    ];
+    // FirebaseService.initFirebaseMessaging();
+    _fetchNotifications();
+    _fetchUnreadCount();
   }
 
-  int get _unreadCount => _notifications.where((n) => n.isUnread).length;
-
-  void _markAllRead() {
-    setState(() {
-      for (final n in _notifications) {
-        n.isUnread = false;
+  Future<void> _fetchNotifications() async {
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.notifications,
+        method: Methods.get,
+      );
+      response.fold(
+        (error) {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+              _errorMessage = "Failed to load notifications";
+            });
+          }
+        },
+        (data) {
+          if (data != null && mounted) {
+            final parsed = NotificationResponse.fromJson(data);
+            setState(() {
+              _notifications = parsed.results;
+              _isLoading = false;
+            });
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint("Error fetching notifications: $e");
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = "Something went wrong";
+        });
       }
+    }
+  }
+
+  Future<void> _fetchUnreadCount() async {
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.notificationCount,
+        method: Methods.get,
+      );
+      response.fold((error) => null, (data) {
+        if (data != null && data['unread_count'] != null) {
+          if (mounted) {
+            setState(() {
+              _unreadCount = data['unread_count'];
+            });
+          }
+        }
+      });
+    } catch (e) {
+      debugPrint("Error fetching unread count: $e");
+    }
+  }
+
+  Future<void> _markAllRead() async {
+    setState(() {
+      _unreadCount = 0;
     });
+    try {
+      await DioManager.apiRequest(
+        url: ApiService.readAllNotifications,
+        method: Methods.post,
+      );
+    } catch (e) {
+      debugPrint("Error marking all read: $e");
+    }
+  }
+
+  String _timeAgo(DateTime dt) {
+    final diff = DateTime.now().difference(dt);
+    if (diff.inSeconds < 60) return '${diff.inSeconds}s ago';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return '${(diff.inDays / 7).floor()}w ago';
   }
 
   @override
@@ -128,14 +145,77 @@ class _NotificationViewState extends State<NotificationView> {
             ),
         ],
       ),
-      child: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-        itemCount: _notifications.length,
-        separatorBuilder: (_, __) => AppSpacing.h12,
-        itemBuilder: (context, index) {
-          return _NotificationCard(item: _notifications[index]);
-        },
-      ),
+      child: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.sceTeal),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, color: AppColors.sceGrey99, size: 48.sp),
+            AppSpacing.h12,
+            Text(
+              _errorMessage!,
+              style: FontManager.bodyMedium(color: AppColors.sceGrey99),
+            ),
+            AppSpacing.h12,
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _isLoading = true;
+                  _errorMessage = null;
+                });
+                _fetchNotifications();
+              },
+              child: Text(
+                "Retry",
+                style: FontManager.bodyMedium(color: AppColors.sceTeal),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_notifications.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.notifications_off_outlined,
+              color: AppColors.sceGrey99,
+              size: 48.sp,
+            ),
+            AppSpacing.h12,
+            Text(
+              "No notifications yet",
+              style: FontManager.bodyMedium(color: AppColors.sceGrey99),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+      itemCount: _notifications.length,
+      separatorBuilder: (_, __) => AppSpacing.h12,
+      itemBuilder: (context, index) {
+        return _NotificationCard(
+          item: _notifications[index],
+          timeAgo: _timeAgo(_notifications[index].createdAt),
+        );
+      },
     );
   }
 }
@@ -143,12 +223,14 @@ class _NotificationViewState extends State<NotificationView> {
 // ─────────────────── Notification Card ───────────────────
 
 class _NotificationCard extends StatelessWidget {
-  final _NotificationItem item;
-  const _NotificationCard({required this.item});
+  final NotificationItem item;
+  final String timeAgo;
+  const _NotificationCard({required this.item, required this.timeAgo});
 
   @override
   Widget build(BuildContext context) {
-    final config = _getTypeConfig(item.type);
+    final config = _getTypeConfig(item.notificationType);
+    final bool isUnread = item.readAt == null;
 
     return Container(
       padding: EdgeInsets.all(16.w),
@@ -156,7 +238,7 @@ class _NotificationCard extends StatelessWidget {
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: item.isUnread
+          color: isUnread
               ? AppColors.sceTeal.withOpacity(0.15)
               : Colors.white.withOpacity(0.05),
         ),
@@ -191,7 +273,7 @@ class _NotificationCard extends StatelessWidget {
                         ).copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    if (item.isUnread)
+                    if (isUnread)
                       Container(
                         height: 10.w,
                         width: 10.w,
@@ -210,30 +292,11 @@ class _NotificationCard extends StatelessWidget {
                   ).copyWith(height: 1.4),
                 ),
                 AppSpacing.h8,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      item.timeAgo,
-                      style: FontManager.bodySmall(
-                        color: AppColors.sceGrey99,
-                      ).copyWith(fontSize: 11.sp),
-                    ),
-                    if (item.hasViewDetails)
-                      GestureDetector(
-                        onTap: () {
-                          // Navigate to relevant detail screen
-                        },
-                        child: Text(
-                          "View Details",
-                          style: FontManager.bodySmall(color: AppColors.sceTeal)
-                              .copyWith(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12.sp,
-                              ),
-                        ),
-                      ),
-                  ],
+                Text(
+                  timeAgo,
+                  style: FontManager.bodySmall(
+                    color: AppColors.sceGrey99,
+                  ).copyWith(fontSize: 11.sp),
                 ),
               ],
             ),
@@ -252,31 +315,51 @@ class _TypeConfig {
   const _TypeConfig({required this.icon, required this.color});
 }
 
-_TypeConfig _getTypeConfig(NotificationType type) {
-  switch (type) {
-    case NotificationType.auctionWon:
+_TypeConfig _getTypeConfig(String notificationType) {
+  switch (notificationType) {
+    case 'auction_won':
       return const _TypeConfig(
         icon: Icons.emoji_events_outlined,
         color: AppColors.sceTeal,
       );
-    case NotificationType.outbid:
+    case 'outbid':
       return const _TypeConfig(
         icon: Icons.trending_up_rounded,
         color: AppColors.errorRed,
       );
-    case NotificationType.endingSoon:
+    case 'ending_soon':
       return const _TypeConfig(
         icon: Icons.access_time_rounded,
-        color: AppColors.sceGold,
+        color: Color(0xFFD4A843),
       );
-    case NotificationType.bidConfirmed:
+    case 'bid_confirmed':
       return const _TypeConfig(
-        icon: Icons.trending_up_rounded,
+        icon: Icons.check_circle_outline,
         color: AppColors.sceTeal,
       );
-    case NotificationType.paymentReminder:
+    case 'payment_reminder':
       return const _TypeConfig(
-        icon: Icons.notifications_active_outlined,
+        icon: Icons.payment_outlined,
+        color: Color(0xFFD4A843),
+      );
+    case 'new_auction':
+      return const _TypeConfig(
+        icon: Icons.local_offer_outlined,
+        color: AppColors.sceTeal,
+      );
+    case 'auction_update':
+      return const _TypeConfig(
+        icon: Icons.update_outlined,
+        color: Color(0xFF64B5F6),
+      );
+    case 'admin_message':
+      return const _TypeConfig(
+        icon: Icons.admin_panel_settings_outlined,
+        color: AppColors.sceGrey99,
+      );
+    default:
+      return const _TypeConfig(
+        icon: Icons.notifications_none_rounded,
         color: AppColors.sceGrey99,
       );
   }

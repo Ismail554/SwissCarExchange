@@ -14,13 +14,14 @@ class NotificationSettingsView extends StatefulWidget {
   const NotificationSettingsView({super.key});
 
   @override
-  State<NotificationSettingsView> createState() => _NotificationSettingsViewState();
+  State<NotificationSettingsView> createState() =>
+      _NotificationSettingsViewState();
 }
 
 class _NotificationSettingsViewState extends State<NotificationSettingsView> {
   bool _newAuction = true;
   bool _auctionUpdate = true;
-  bool _general = false;
+  bool _general = true;
   bool _adminMessage = true;
   bool _isLoading = true;
 
@@ -37,7 +38,8 @@ class _NotificationSettingsViewState extends State<NotificationSettingsView> {
         method: Methods.get,
       );
       response.fold(
-        (error) => debugPrint("Error fetching notification preferences: \$error"),
+        (error) =>
+            debugPrint("Error fetching notification preferences: \$error"),
         (data) {
           if (data != null && data is Map<String, dynamic>) {
             setState(() {
@@ -69,7 +71,8 @@ class _NotificationSettingsViewState extends State<NotificationSettingsView> {
         },
       );
       response.fold(
-        (error) => debugPrint("Error updating notification preferences: \$error"),
+        (error) =>
+            debugPrint("Error updating notification preferences: \$error"),
         (data) => debugPrint("Notification preferences updated"),
       );
     } catch (e) {
@@ -88,7 +91,9 @@ class _NotificationSettingsViewState extends State<NotificationSettingsView> {
         ),
       ),
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.sceTeal))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.sceTeal),
+            )
           : SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
               child: Column(
