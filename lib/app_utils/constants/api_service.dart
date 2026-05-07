@@ -52,4 +52,17 @@ class ApiService {
   static String get readAllNotifications => "$baseUrl/api/notifications/read-all/"; // POST
   static String get notificationCount => "$baseUrl/api/notifications/unread-count/"; // GET // response: { "unread_count": 1 }
   static String get notifications => "$baseUrl/api/notifications/"; // GET 
+
+// Transaction 
+// non premium user
+static String get bidderStats => "$baseUrl/api/analytics/bidder-stats/"; // GET
+static String get bidderTransaction => "$baseUrl/api/analytics/bidder-transactions/"; // GET
+static String get dealerTransaction => "$baseUrl/api/analytics/dealer-transactions/"; // GET
+// 
+
+
+
+
+
+
 }

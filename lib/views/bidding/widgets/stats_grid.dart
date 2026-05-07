@@ -88,15 +88,19 @@ class StatCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: Text(
-                  value,
-                  key: ValueKey(value),
-                  style: FontManager.heading2(color: valueColor),
+              Flexible(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Text(
+                    value,
+                    key: ValueKey(value),
+                    style: FontManager.heading4(color: valueColor),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 ),
               ),
-              if (badge != null) ...[
+              if (badge != null && badge!.isNotEmpty) ...[
                 SizedBox(width: 6.w),
                 Text(
                   '⬈ $badge',

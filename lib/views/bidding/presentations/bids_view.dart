@@ -12,6 +12,10 @@ import 'package:rionydo/views/bidding/widgets/spending_chart.dart';
 import 'package:rionydo/views/bidding/widgets/stats_grid.dart';
 import 'package:rionydo/views/bidding/widgets/time_chip.dart';
 import 'package:rionydo/views/bidding/widgets/transaction_row.dart';
+import 'package:rionydo/app_utils/constants/api_service.dart';
+import 'package:rionydo/app_utils/network/dio_manager.dart';
+import 'package:rionydo/app_utils/network/enums.dart';
+import 'package:rionydo/models/transactions/analytics_response.dart';
 
 class BidsView extends StatefulWidget {
   const BidsView({super.key});
@@ -22,11 +26,76 @@ class BidsView extends StatefulWidget {
 
 class _BidsViewState extends State<BidsView> {
   String _selectedPeriod = '30D';
+  BidderStats? _bidderStats;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBidderStats();
+  }
+
+  Future<void> _fetchBidderStats() async {
+    if (!mounted) return;
+
+    try {
+      debugPrint("Calling API: ${ApiService.bidderStats}");
+      final response = await DioManager.apiRequest(
+        url: ApiService.bidderStats,
+        method: Methods.get,
+      );
+
+      response.fold(
+        (error) {
+          debugPrint("Failed to load bidder stats: $error");
+        },
+        (data) {
+          debugPrint("Response from ${ApiService.bidderStats}: $data");
+          if (data != null && mounted) {
+            setState(() {
+              _bidderStats = BidderStats.fromJson(data);
+            });
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint("Error fetching bidder stats: $e");
+    }
+  }
+
+  String _formatAvgBid(String avgBidStr) {
+    final parsed = double.tryParse(avgBidStr);
+    if (parsed != null) {
+      if (parsed >= 1000) {
+        final kValue = parsed / 1000;
+        return 'CHF ${kValue.toStringAsFixed(kValue % 1 == 0 ? 0 : 1)}k';
+      }
+      return 'CHF ${parsed.toStringAsFixed(0)}';
+    }
+    return avgBidStr;
+  }
 
   List<Transaction> get _filteredTransactions =>
       kAllTransactions.take(kPeriodTxCount[_selectedPeriod]!).toList();
 
-  PeriodStats get _stats => kStatsData[_selectedPeriod]!;
+  PeriodStats get _stats {
+    if (_bidderStats == null) {
+      return const PeriodStats(
+        winRate: '--',
+        winRateBadge: '',
+        avgBid: '--',
+        auctionsWon: '--',
+        auctionParticipate: '--',
+      );
+    }
+    return PeriodStats(
+      winRate: '${_bidderStats!.winRate.toStringAsFixed(0)}%',
+      winRateBadge: '',
+      avgBid: _formatAvgBid(_bidderStats!.avgBid),
+      auctionsWon: _bidderStats!.auctionsWon.toString(),
+      auctionParticipate: _bidderStats!.auctionsParticipated.toString(),
+    );
+  }
+
   List<double> get _chartPoints => kChartData[_selectedPeriod]!;
   List<String> get _chartLabels => kChartLabels[_selectedPeriod]!;
 
@@ -153,10 +222,7 @@ class _BidsViewState extends State<BidsView> {
           // Stats grid
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 350),
-              child: StatsGrid(key: ValueKey(_selectedPeriod), stats: _stats),
-            ),
+            child: StatsGrid(stats: _stats),
           ),
           SizedBox(height: 20.h),
 
@@ -199,7 +265,10 @@ class _BidsViewState extends State<BidsView> {
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
           if (index.isOdd) {
-            return Divider(color: AppColors.grey.withOpacity(0.15), height: 1.h);
+            return Divider(
+              color: AppColors.grey.withOpacity(0.15),
+              height: 1.h,
+            );
           }
           final tx = transactions[index ~/ 2];
           return TransactionRow(
