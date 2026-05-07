@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';
 import 'package:rionydo/views/settings/presentations/account_settings_view.dart';
 import 'package:rionydo/views/profile/presentations/notification_settings_view.dart';
 import 'package:rionydo/views/profile/presentations/payment_method_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/settings/presentations/help_support_view.dart';
 import 'package:rionydo/views/settings/presentations/privacy_settings_view.dart';
+import 'package:rionydo/views/settings/presentations/subscription_view.dart'
+    hide SubscriptionView;
 import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
 
 class SettingsCard extends StatelessWidget {
@@ -43,6 +46,19 @@ class SettingsCard extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const NotificationSettingsView(),
+                ),
+              );
+            },
+          ),
+          ProfileDivider(),
+          ProfileListTile(
+            Icons.currency_exchange_outlined,
+            'Manage Subscription',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AccountSubscriptionView(),
                 ),
               );
             },
