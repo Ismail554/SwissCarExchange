@@ -317,41 +317,50 @@ class _TypeConfig {
 
 _TypeConfig _getTypeConfig(String notificationType) {
   switch (notificationType) {
-    case 'auction_won':
-      return const _TypeConfig(
-        icon: Icons.emoji_events_outlined,
-        color: AppColors.sceTeal,
-      );
-    case 'outbid':
-      return const _TypeConfig(
-        icon: Icons.trending_up_rounded,
-        color: AppColors.errorRed,
-      );
-    case 'ending_soon':
-      return const _TypeConfig(
-        icon: Icons.access_time_rounded,
-        color: Color(0xFFD4A843),
-      );
-    case 'bid_confirmed':
-      return const _TypeConfig(
-        icon: Icons.check_circle_outline,
-        color: AppColors.sceTeal,
-      );
-    case 'payment_reminder':
-      return const _TypeConfig(
-        icon: Icons.payment_outlined,
-        color: Color(0xFFD4A843),
-      );
+    // --- Auction lifecycle ---
     case 'new_auction':
       return const _TypeConfig(
         icon: Icons.local_offer_outlined,
         color: AppColors.sceTeal,
       );
-    case 'auction_update':
+    case 'won':
       return const _TypeConfig(
-        icon: Icons.update_outlined,
+        icon: Icons.emoji_events_outlined,
+        color: AppColors.sceTeal,
+      );
+    case 'auction_completed':
+      return const _TypeConfig(
+        icon: Icons.check_circle_outline,
+        color: AppColors.sceTeal,
+      );
+    case 'auction_withdrawn':
+      return const _TypeConfig(
+        icon: Icons.cancel_outlined,
+        color: Color(0xFFD4A843),
+      );
+    // --- Bidding ---
+    case 'outbid':
+      return const _TypeConfig(
+        icon: Icons.trending_up_rounded,
+        color: AppColors.errorRed,
+      );
+    // --- Payment & Shipping ---
+    case 'payment_marked':
+      return const _TypeConfig(
+        icon: Icons.payment_outlined,
+        color: Color(0xFFD4A843),
+      );
+    case 'shipping_request':
+      return const _TypeConfig(
+        icon: Icons.local_shipping_outlined,
         color: Color(0xFF64B5F6),
       );
+    case 'shipping_done':
+      return const _TypeConfig(
+        icon: Icons.inventory_2_outlined,
+        color: AppColors.sceTeal,
+      );
+    // --- Admin ---
     case 'admin_message':
       return const _TypeConfig(
         icon: Icons.admin_panel_settings_outlined,

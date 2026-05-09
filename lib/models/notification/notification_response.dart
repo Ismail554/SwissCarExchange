@@ -73,11 +73,11 @@ class NotificationItem {
 }
 
 class NotificationData {
-  final int auctionId;
+  final int? auctionId;
   final String? newAmount;
 
   NotificationData({
-    required this.auctionId,
+    this.auctionId,
     this.newAmount,
   });
 
