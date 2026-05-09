@@ -10,9 +10,16 @@ import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 
+import 'package:rionydo/views/auth/forgot_password/reset_password_view.dart';
+
 class OtpVerifyView extends StatefulWidget {
   final String email;
-  const OtpVerifyView({super.key, required this.email});
+  final bool isForgotPassword;
+  const OtpVerifyView({
+    super.key,
+    required this.email,
+    this.isForgotPassword = false,
+  });
 
   @override
   State<OtpVerifyView> createState() => _OtpVerifyViewState();
@@ -68,9 +75,17 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
 
   Future<void> _resendOtp() async {
     if (!_canResend || _isResending) return;
-    
+
     setState(() => _isResending = true);
-    final success = await context.read<AuthProvider>().resendOtp(context, email: widget.email);
+    final success = widget.isForgotPassword
+        ? await context.read<AuthProvider>().requestPasswordReset(
+            context,
+            email: widget.email,
+          )
+        : await context.read<AuthProvider>().resendOtp(
+            context,
+            email: widget.email,
+          );
     if (mounted) {
       setState(() => _isResending = false);
       if (success) {
@@ -213,7 +228,9 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                         ),
                         SizedBox(height: 8.h),
                         GestureDetector(
-                          onTap: (_canResend && !_isResending) ? _resendOtp : null,
+                          onTap: (_canResend && !_isResending)
+                              ? _resendOtp
+                              : null,
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
                             child: _isResending
@@ -226,24 +243,24 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                                     ),
                                   )
                                 : _canResend
-                                    ? Text(
-                                        'Resend Code',
-                                        key: const ValueKey('resend'),
-                                        style: TextStyle(
-                                          color: AppColors.sceTeal,
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      )
-                                    : Text(
-                                        'Resend in ${_secondsLeft}s',
-                                        key: const ValueKey('countdown'),
-                                        style: TextStyle(
-                                          color: AppColors.sceGreyA0,
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
+                                ? Text(
+                                    'Resend Code',
+                                    key: const ValueKey('resend'),
+                                    style: TextStyle(
+                                      color: AppColors.sceTeal,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  )
+                                : Text(
+                                    'Resend in ${_secondsLeft}s',
+                                    key: const ValueKey('countdown'),
+                                    style: TextStyle(
+                                      color: AppColors.sceGreyA0,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                           ),
                         ),
                       ],
@@ -256,12 +273,33 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                       text: 'Verify Code',
                       isActive: _isOtpValid,
                       isLoading: context.watch<AuthProvider>().isLoading,
-                      onPressed: () {
-                        context.read<AuthProvider>().verifyOtp(
-                          context,
-                          email: widget.email,
-                          otp: _otpController.text,
-                        );
+                      onPressed: () async {
+                        if (widget.isForgotPassword) {
+                          final token = await context
+                              .read<AuthProvider>()
+                              .verifyResetCode(
+                                context,
+                                email: widget.email,
+                                code: _otpController.text.trim(),
+                              );
+                          if (token != null && context.mounted) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResetPasswordView(
+                                  email: widget.email,
+                                  resetToken: token,
+                                ),
+                              ),
+                            );
+                          }
+                        } else {
+                          context.read<AuthProvider>().verifyOtp(
+                            context,
+                            email: widget.email,
+                            otp: _otpController.text,
+                          );
+                        }
                       },
                     ),
                   ],

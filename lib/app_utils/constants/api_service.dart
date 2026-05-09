@@ -11,6 +11,11 @@ class ApiService {
   static String get verifyOtp => "$baseUrl/api/auth/verify-email/"; // body: {"code": "994405", "email": ""}
   static String get authStatus => "$baseUrl/api/auth/status/"; // validate with access token // response : {"approval_status": "approved"} or {"approval_status": "pending"} or {"approval_status": "suspended"}
   
+  // Forgot Password
+  static String get forgotPassword => "$baseUrl/api/auth/reset-password/request/"; // body: {"email": ""}
+  static String get verifyResetPasswordCode => "$baseUrl/api/auth/reset-password/verify/"; // body: {"email": "", "code": ""}
+  static String get resetPassword => "$baseUrl/api/auth/reset-password/reset/"; // body: {"email": "", "new_password": "", "password_reset_token": ""}
+  
   // 2FA
   static String get verify2fa => "$baseUrl/api/auth/login/two-factor/verify/"; // body: {"email": "", "two_factor_token": "", "code": ""}
 

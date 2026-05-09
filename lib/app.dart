@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/views/auth/forgot_password/reset_password_view.dart';
 import 'package:rionydo/views/splash/splash_screen.dart';
 
 class MyApp extends StatelessWidget {

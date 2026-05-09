@@ -427,4 +427,144 @@ class AuthProvider extends ChangeNotifier {
 
     return subscriptionActive;
   }
+
+  // ----------------------------------------------------------------
+  // REQUEST PASSWORD RESET (Forgot Password Step 1)
+  // ----------------------------------------------------------------
+  Future<bool> requestPasswordReset(
+    BuildContext context, {
+    required String email,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final payload = {'email': email.trim()};
+    debugPrint(
+      'AUTH: ▶️ Calling requestPasswordReset API with payload: $payload',
+    );
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.forgotPassword,
+      method: Methods.post,
+      body: payload,
+      skipAuth: true,
+    );
+
+    bool success = false;
+    response.fold(
+      (error) {
+        debugPrint('AUTH: ❌ requestPasswordReset API error: $error');
+        AppSnackBar.error(context, error);
+      },
+      (data) {
+        debugPrint('AUTH: ✅ requestPasswordReset API success! Response: $data');
+        if (context.mounted) {
+          final message = data['message']?.toString();
+          AppSnackBar.success(
+            context,
+            message ?? 'A verification code has been sent to your email.',
+          );
+        }
+        success = true;
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
+
+  // ----------------------------------------------------------------
+  // VERIFY PASSWORD RESET CODE (Forgot Password Step 2)
+  // ----------------------------------------------------------------
+  Future<String?> verifyResetCode(
+    BuildContext context, {
+    required String email,
+    required String code,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final payload = {'email': email.trim(), 'code': code.trim()};
+    debugPrint(
+      'AUTH: ▶️ Calling verifyResetPasswordCode API with payload: $payload',
+    );
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.verifyResetPasswordCode,
+      method: Methods.post,
+      body: payload,
+      skipAuth: true,
+    );
+
+    String? token;
+    response.fold(
+      (error) {
+        debugPrint('AUTH: ❌ verifyResetPasswordCode API error: $error');
+        AppSnackBar.error(context, error);
+      },
+      (data) {
+        debugPrint(
+          'AUTH: ✅ verifyResetPasswordCode API success! Response: $data',
+        );
+        if (data is Map<String, dynamic>) {
+          token = data['password_reset_token']?.toString();
+        }
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return token;
+  }
+
+  // ----------------------------------------------------------------
+  // RESET PASSWORD (Forgot Password Step 3)
+  // ----------------------------------------------------------------
+  Future<bool> resetPassword(
+    BuildContext context, {
+    required String email,
+    required String newPassword,
+    required String token,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final payload = {
+      'email': email.trim(),
+      'new_password': newPassword,
+      'password_reset_token': token,
+    };
+    debugPrint('AUTH: ▶️ Calling resetPassword API with payload: $payload');
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.resetPassword,
+      method: Methods.post,
+      body: payload,
+      skipAuth: true,
+    );
+
+    bool success = false;
+    response.fold(
+      (error) {
+        debugPrint('AUTH: ❌ resetPassword API error: $error');
+        AppSnackBar.error(context, error);
+      },
+      (data) {
+        debugPrint('AUTH: ✅ resetPassword API success! Response: $data');
+        if (context.mounted) {
+          final message = data['message']?.toString();
+          AppSnackBar.success(
+            context,
+            message ?? 'Password has been reset successfully.',
+          );
+        }
+        success = true;
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
 }

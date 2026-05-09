@@ -13,7 +13,6 @@ import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/controllers/subscription_provider.dart';
 import 'package:rionydo/firebase_options.dart';
-
 import 'package:rionydo/services/firebase_service.dart';
 
 Future<void> main() async {

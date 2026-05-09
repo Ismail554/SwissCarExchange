@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:rionydo/controllers/auth/auth_provider.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
@@ -118,15 +120,23 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                     CustomButton(
                       text: 'Send Verification Code',
                       isActive: _isEmailValid,
-                      onPressed: () {
-                        // TODO: Connect to Provider logic to send code here
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                OtpVerifyView(email: _emailController.text),
-                          ),
-                        );
+                      isLoading: context.watch<AuthProvider>().isLoading,
+                      onPressed: () async {
+                        final email = _emailController.text.trim();
+                        final success = await context
+                            .read<AuthProvider>()
+                            .requestPasswordReset(context, email: email);
+                        if (success && context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OtpVerifyView(
+                                email: email,
+                                isForgotPassword: true,
+                              ),
+                            ),
+                          );
+                        }
                       },
                     ),
                   ],
