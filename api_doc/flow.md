@@ -202,12 +202,18 @@ before_subs_view.dart → subs_view.dart
 
 * Open WebView using `checkout_url`
 * On success:
-
-  * Navigate to:
-
-```
-@lib/views/auth/login/login_views.dart
-```
+  * Fetch current user profile API:
+    **GET** `{{base_url}}/api/users/me/`
+  * If `"subscription"` block contains `"has_subscription": true`:
+    * Directly navigate to the main navigation shell:
+      ```
+      @lib/views/main_navigation/bottom_nav.dart
+      ```
+  * Otherwise (or on error):
+    * Fallback redirect to:
+      ```
+      @lib/views/auth/login/login_views.dart
+      ```
 
 ---
 

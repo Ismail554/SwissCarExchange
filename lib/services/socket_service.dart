@@ -10,9 +10,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class SocketService {
   WebSocketChannel? _channel;
   ValueNotifier<bool> isConnected = ValueNotifier(false);
-  
+
   // Broadcast stream for all incoming WebSocket events
-  final StreamController<Map<String, dynamic>> _eventController = StreamController.broadcast();
+  final StreamController<Map<String, dynamic>> _eventController =
+      StreamController.broadcast();
   Stream<Map<String, dynamic>> get events => _eventController.stream;
 
   // Reconnection logic
@@ -35,7 +36,9 @@ class SocketService {
       _closeInternal();
     }
 
-    debugPrint("🔹 Connecting to WebSocket for auction $auctionId... (Attempt: ${_retryCount + 1})");
+    debugPrint(
+      "🔹 Connecting to WebSocket for auction $auctionId... (Attempt: ${_retryCount + 1})",
+    );
 
     try {
       // Get the latest valid token
@@ -48,17 +51,17 @@ class SocketService {
       // Construct the WebSocket URL. Prefer SOCKET_URL from .env if defined.
       final String? envWsUrl = dotenv.env['SOCKET_URL'];
       String wsUrl;
-      
+
       if (envWsUrl != null && envWsUrl.isNotEmpty) {
         wsUrl = '$envWsUrl/ws/auctions/$auctionId/?token=$token';
       } else {
         final String baseUrl = ApiService.baseUrl;
-        final String wsBaseUrl = baseUrl.startsWith('https') 
-            ? baseUrl.replaceFirst('https', 'wss') 
+        final String wsBaseUrl = baseUrl.startsWith('https')
+            ? baseUrl.replaceFirst('https', 'wss')
             : baseUrl.replaceFirst('http', 'ws');
         wsUrl = '$wsBaseUrl/ws/auctions/$auctionId/?token=$token';
       }
-      
+
       final uri = Uri.parse(wsUrl);
 
       _channel = IOWebSocketChannel.connect(uri);
@@ -97,12 +100,14 @@ class SocketService {
     if (_isManuallyClosed || _lastAuctionId == null) return;
 
     _reconnectTimer?.cancel();
-    
+
     _retryCount++;
     // Exponential backoff: 2s, 4s, 8s, 16s, max 30s
     int delaySeconds = (pow(2, _retryCount).toInt()).clamp(2, 30);
-    
-    debugPrint("🔄 Scheduling WebSocket reconnection in $delaySeconds seconds...");
+
+    debugPrint(
+      "🔄 Scheduling WebSocket reconnection in $delaySeconds seconds...",
+    );
     _reconnectTimer = Timer(Duration(seconds: delaySeconds), () {
       connectToAuction(_lastAuctionId!);
     });
@@ -112,8 +117,9 @@ class SocketService {
     try {
       if (message is String) {
         final data = jsonDecode(message);
-        debugPrint(
-            "📌 WebSocket Message: ${message.length > 200 ? '${message.substring(0, 200)}...' : message}");
+        print(
+          "📌 WebSocket Message: ${message.length > 200 ? '${message.substring(0, 200)}...' : message}",
+        );
 
         if (data is Map<String, dynamic>) {
           // Push event to listeners (UI or Providers)

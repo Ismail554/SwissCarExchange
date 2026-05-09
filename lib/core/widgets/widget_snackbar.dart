@@ -17,7 +17,7 @@ class AppSnackBar {
     final cfg = _config(type);
 
     ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
+      ..clearSnackBars()
       ..showSnackBar(
         SnackBar(
           duration: duration,
@@ -65,7 +65,7 @@ class AppSnackBar {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () {
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).clearSnackBars();
                       onAction();
                     },
                     child: Text(

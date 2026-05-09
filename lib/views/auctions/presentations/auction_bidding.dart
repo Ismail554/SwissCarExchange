@@ -15,6 +15,7 @@ import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:rionydo/services/socket_service.dart';
+import 'package:rionydo/views/auctions/presentations/recent_all_bids_view.dart';
 
 class AuctionBidding extends StatefulWidget {
   final AuctionItem initialData;
@@ -69,6 +70,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
   void _onSocketEvent(Map<String, dynamic> data) {
     if (!mounted) return;
 
+    // Check if the screen is currently active (not pushed under another route)
+    final bool isCurrentRoute = ModalRoute.of(context)?.isCurrent ?? false;
+
     final type = data['type'];
     final payload = data['payload'] ?? {};
 
@@ -83,7 +87,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
           isMe: false,
           increment: payload['increment']?.toString() ?? '0',
           amountAfter: newAmountStr,
-          createdAt: DateTime.tryParse(payload['created_at']?.toString() ?? '') ?? DateTime.now(),
+          createdAt:
+              DateTime.tryParse(payload['created_at']?.toString() ?? '') ??
+              DateTime.now(),
         );
         context.read<AuctionsDetailProvider>().addBidToHistory(bidItem);
 
@@ -97,24 +103,38 @@ class _AuctionBiddingState extends State<AuctionBidding> {
 
       case 'user.outbid':
         final newAmt = payload['new_amount']?.toString() ?? '';
-        AppSnackBar.warning(context, "You've been outbid! New highest: CHF $newAmt");
+        if (isCurrentRoute) {
+          AppSnackBar.warning(
+            context,
+            "You've been outbid! New highest: CHF $newAmt",
+          );
+        }
         break;
 
       case 'auction.completed':
         final status = payload['status']?.toString() ?? 'ended';
         setState(() => _isAuctionEnded = true);
-        AppSnackBar.info(context, "This auction has ended ($status).");
+        if (isCurrentRoute) {
+          AppSnackBar.info(context, "This auction has ended ($status).");
+        }
         break;
 
       case 'user.won':
         final finalAmt = payload['final_amount']?.toString() ?? '';
         setState(() => _isAuctionEnded = true);
-        AppSnackBar.success(context, "Congratulations! You won for CHF $finalAmt!");
+        if (isCurrentRoute) {
+          AppSnackBar.success(
+            context,
+            "Congratulations! You won for CHF $finalAmt!",
+          );
+        }
         break;
 
       case 'auction.withdrawn':
         setState(() => _isAuctionEnded = true);
-        AppSnackBar.error(context, "This auction has been withdrawn.");
+        if (isCurrentRoute) {
+          AppSnackBar.error(context, "This auction has been withdrawn.");
+        }
         break;
     }
   }
@@ -331,64 +351,126 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   ),
                   SizedBox(height: 24.h),
 
-                  // Recent Bids Header
-                  Row(
-                    children: [
-                      Container(
-                        width: 3.w,
-                        height: 16.h,
-                        color: AppColors.sceTeal,
-                      ),
-                      SizedBox(width: 8.w),
-                      Text(
-                        "RECENT BIDS",
-                        style: FontManager.labelMedium(
-                          color: Colors.white,
-                        ).copyWith(letterSpacing: 0.5),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
-
-                  // Recent Bids List (from API + live socket)
+                  // Recent Bids (Header & List combined in a Consumer for dynamic "See All")
                   Consumer<AuctionsDetailProvider>(
                     builder: (context, provider, _) {
-                      if (provider.isBidHistoryLoading && provider.bidHistory.isEmpty) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.h),
-                          child: const Center(
-                            child: CircularProgressIndicator(color: AppColors.sceTeal),
-                          ),
-                        );
-                      }
-                      if (provider.bidHistory.isEmpty) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.h),
-                          child: Center(
-                            child: Text(
-                              "No bids yet. Be the first!",
-                              style: FontManager.bodySmall(color: AppColors.textHint),
-                            ),
-                          ),
-                        );
-                      }
-                      final bids = provider.bidHistory.take(5).toList();
+                      final hasBids = provider.bidHistory.isNotEmpty;
+                      final showSeeAll =
+                          hasBids && provider.bidHistory.length > 4;
+
                       return Column(
-                        children: bids.map((bid) {
-                          final gradient = bid.isMe
-                              ? const LinearGradient(colors: [Colors.grey, Colors.blueGrey])
-                              : LinearGradient(colors: [
-                                  Colors.primaries[bid.bidderAlias.hashCode.abs() % Colors.primaries.length],
-                                  Colors.primaries[(bid.bidderAlias.hashCode.abs() + 3) % Colors.primaries.length],
-                                ]);
-                          final amount = _formatCurrency(_parseBid(bid.amountAfter).toInt());
-                          return _buildBidTile(
-                            bid.isMe ? "You" : bid.bidderAlias,
-                            _timeAgo(bid.createdAt),
-                            amount,
-                            gradient,
-                          );
-                        }).toList(),
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 3.w,
+                                    height: 16.h,
+                                    color: AppColors.sceTeal,
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Text(
+                                    "RECENT BIDS",
+                                    style: FontManager.labelMedium(
+                                      color: Colors.white,
+                                    ).copyWith(letterSpacing: 0.5),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12.h),
+                          if (provider.isBidHistoryLoading &&
+                              provider.bidHistory.isEmpty)
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16.h),
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.sceTeal,
+                                ),
+                              ),
+                            )
+                          else if (provider.bidHistory.isEmpty)
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16.h),
+                              child: Center(
+                                child: Text(
+                                  "No bids yet. Be the first!",
+                                  style: FontManager.bodySmall(
+                                    color: AppColors.textHint,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else
+                            Column(
+                              children: [
+                                ...provider.bidHistory.take(4).map((bid) {
+                                  final gradient = bid.isMe
+                                      ? const LinearGradient(
+                                          colors: [
+                                            Colors.grey,
+                                            Colors.blueGrey,
+                                          ],
+                                        )
+                                      : LinearGradient(
+                                          colors: [
+                                            Colors.primaries[bid
+                                                    .bidderAlias
+                                                    .hashCode
+                                                    .abs() %
+                                                Colors.primaries.length],
+                                            Colors.primaries[(bid
+                                                        .bidderAlias
+                                                        .hashCode
+                                                        .abs() +
+                                                    3) %
+                                                Colors.primaries.length],
+                                          ],
+                                        );
+                                  final amount = _formatCurrency(
+                                    _parseBid(bid.amountAfter).toInt(),
+                                  );
+                                  return _buildBidTile(
+                                    bid.isMe ? "You" : bid.bidderAlias,
+                                    _timeAgo(bid.createdAt),
+                                    amount,
+                                    gradient,
+                                  );
+                                }).toList(),
+                                if (showSeeAll) ...[
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => RecentAllBidsView(
+                                              auctionId: _auctionId,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        "View more...",
+                                        style:
+                                            FontManager.bodyMedium(
+                                              color: AppColors.sceTeal,
+                                            ).copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.5,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                        ],
                       );
                     },
                   ),
@@ -485,7 +567,8 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  final minAllowed = _currentBid + _minIncrement;
+                                  final minAllowed =
+                                      _currentBid + _minIncrement;
                                   if (_userBid - _minIncrement >= minAllowed) {
                                     setState(() {
                                       _userBid -= _minIncrement;
@@ -495,7 +578,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                 child: Container(
                                   padding: EdgeInsets.all(8.w),
                                   decoration: BoxDecoration(
-                                    color: (_userBid - _minIncrement >= _currentBid + _minIncrement)
+                                    color:
+                                        (_userBid - _minIncrement >=
+                                            _currentBid + _minIncrement)
                                         ? AppColors.sceTeal
                                         : AppColors.sceTeal.withOpacity(0.3),
                                     borderRadius: BorderRadius.circular(8.r),
@@ -540,12 +625,18 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     onPressed: () async {
                       setState(() => _isBidding = true);
                       final provider = context.read<AuctionsDetailProvider>();
-                      final success = await provider.placeBid(_auctionId, _userBid);
+                      final success = await provider.placeBid(
+                        _auctionId,
+                        _userBid,
+                      );
 
                       if (mounted) {
                         setState(() => _isBidding = false);
                         if (success) {
-                          AppSnackBar.success(context, "Bid placed successfully!");
+                          AppSnackBar.success(
+                            context,
+                            "Bid placed successfully!",
+                          );
                           provider.fetchBidHistory(_auctionId);
                         } else {
                           AppSnackBar.error(context, "Failed to place bid.");
@@ -578,11 +669,17 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                     final newVal = value ?? false;
                                     if (!newVal) {
                                       // Disable auto bid
-                                      final provider = context.read<AuctionsDetailProvider>();
+                                      final provider = context
+                                          .read<AuctionsDetailProvider>();
                                       await provider.deleteAutoBid(_auctionId);
                                       if (mounted) {
-                                        setState(() => _isAutoBidEnabled = false);
-                                        AppSnackBar.info(context, "Auto bid disabled.");
+                                        setState(
+                                          () => _isAutoBidEnabled = false,
+                                        );
+                                        AppSnackBar.info(
+                                          context,
+                                          "Auto bid disabled.",
+                                        );
                                       }
                                     } else {
                                       setState(() => _isAutoBidEnabled = true);
@@ -644,17 +741,25 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                 child: TextField(
                                   controller: _maxBidController,
                                   keyboardType: TextInputType.number,
-                                  style: FontManager.bodyMedium(color: Colors.white),
+                                  style: FontManager.bodyMedium(
+                                    color: Colors.white,
+                                  ),
                                   decoration: InputDecoration(
-                                    hintText: "e.g. ${_formatCurrency(_currentBid + 1000)}",
-                                    hintStyle: FontManager.bodyMedium(color: AppColors.textHint),
+                                    hintText:
+                                        "e.g. ${_formatCurrency(_currentBid + 1000)}",
+                                    hintStyle: FontManager.bodyMedium(
+                                      color: AppColors.textHint,
+                                    ),
                                     filled: true,
                                     fillColor: Colors.white.withOpacity(0.05),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8.r),
                                       borderSide: BorderSide.none,
                                     ),
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16.w,
+                                      vertical: 12.h,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -672,21 +777,37 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                             text: "SET AUTO BID",
                             isLoading: _isSettingAutoBid,
                             onPressed: () async {
-                              final maxStr = _maxBidController.text.replaceAll(',', '').trim();
+                              final maxStr = _maxBidController.text
+                                  .replaceAll(',', '')
+                                  .trim();
                               final maxAmount = int.tryParse(maxStr);
-                              if (maxAmount == null || maxAmount <= _currentBid) {
-                                AppSnackBar.error(context, "Enter a valid amount above CHF ${_formatCurrency(_currentBid)}");
+                              if (maxAmount == null ||
+                                  maxAmount <= _currentBid) {
+                                AppSnackBar.error(
+                                  context,
+                                  "Enter a valid amount above CHF ${_formatCurrency(_currentBid)}",
+                                );
                                 return;
                               }
                               setState(() => _isSettingAutoBid = true);
-                              final provider = context.read<AuctionsDetailProvider>();
-                              final success = await provider.createAutoBid(_auctionId, maxAmount);
+                              final provider = context
+                                  .read<AuctionsDetailProvider>();
+                              final success = await provider.createAutoBid(
+                                _auctionId,
+                                maxAmount,
+                              );
                               if (mounted) {
                                 setState(() => _isSettingAutoBid = false);
                                 if (success) {
-                                  AppSnackBar.success(context, "Auto bid set up to CHF ${_formatCurrency(maxAmount)}");
+                                  AppSnackBar.success(
+                                    context,
+                                    "Auto bid set up to CHF ${_formatCurrency(maxAmount)}",
+                                  );
                                 } else {
-                                  AppSnackBar.error(context, "Failed to set auto bid.");
+                                  AppSnackBar.error(
+                                    context,
+                                    "Failed to set auto bid.",
+                                  );
                                 }
                               }
                             },
