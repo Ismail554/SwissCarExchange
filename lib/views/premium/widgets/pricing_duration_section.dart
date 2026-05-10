@@ -9,15 +9,29 @@ import 'section_header.dart';
 class PricingDurationSection extends StatelessWidget {
   final TextEditingController reservePriceController;
   final TextEditingController buyNowPriceController;
-  final String selectedDuration;
-  final VoidCallback onSelectDuration;
+  final DateTime? startDate;
+  final TimeOfDay? startTime;
+  final DateTime? endDate;
+  final TimeOfDay? endTime;
+  final VoidCallback onSelectStartDate;
+  final VoidCallback onSelectStartTime;
+  final VoidCallback onSelectEndDate;
+  final VoidCallback onSelectEndTime;
+  final VoidCallback onClearStartTime;
 
   const PricingDurationSection({
     super.key,
     required this.reservePriceController,
     required this.buyNowPriceController,
-    required this.selectedDuration,
-    required this.onSelectDuration,
+    required this.startDate,
+    required this.startTime,
+    required this.endDate,
+    required this.endTime,
+    required this.onSelectStartDate,
+    required this.onSelectStartTime,
+    required this.onSelectEndDate,
+    required this.onSelectEndTime,
+    required this.onClearStartTime,
   });
 
   @override
@@ -57,15 +71,46 @@ class PricingDurationSection extends StatelessWidget {
             return null;
           },
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 20.h),
 
-        // Auction Duration
+        // Start Date & Time
         Text(
-          "Auction Duration",
+          "Auction Starts At",
           style: FontManager.bodySmall(color: AppColors.sceGreyA0),
         ),
         SizedBox(height: 8.h),
-        _buildDurationPicker(),
+        _buildPickerRow(
+          dateText: _formatDate(startDate),
+          timeText: _formatTime(startTime),
+          dateHint: "Select Start Date",
+          timeHint: "Select Time (Optional)",
+          isDateSelected: startDate != null,
+          isTimeSelected: startTime != null,
+          onTapDate: onSelectStartDate,
+          onTapTime: onSelectStartTime,
+          onClearTime: onClearStartTime,
+          showClearTime: startTime != null,
+        ),
+        SizedBox(height: 20.h),
+
+        // End Date & Time
+        Text(
+          "Auction Ends At",
+          style: FontManager.bodySmall(color: AppColors.sceGreyA0),
+        ),
+        SizedBox(height: 8.h),
+        _buildPickerRow(
+          dateText: _formatDate(endDate),
+          timeText: _formatTime(endTime),
+          dateHint: "Select End Date",
+          timeHint: "Select End Time",
+          isDateSelected: endDate != null,
+          isTimeSelected: endTime != null,
+          onTapDate: onSelectEndDate,
+          onTapTime: onSelectEndTime,
+          onClearTime: () {},
+          showClearTime: false,
+        ),
       ],
     );
   }
@@ -100,39 +145,136 @@ class PricingDurationSection extends StatelessWidget {
     );
   }
 
-  Widget _buildDurationPicker() {
-    return GestureDetector(
-      onTap: onSelectDuration,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.schedule, color: AppColors.sceGreyA0, size: 20.sp),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Text(
-                selectedDuration.isEmpty ? "Select duration" : selectedDuration,
-                style: FontManager.bodySmall(
-                  color: selectedDuration.isEmpty
-                      ? AppColors.sceGreyA0
-                      : Colors.white,
-                ),
+  Widget _buildPickerRow({
+    required String dateText,
+    required String timeText,
+    required String dateHint,
+    required String timeHint,
+    required bool isDateSelected,
+    required bool isTimeSelected,
+    required VoidCallback onTapDate,
+    required VoidCallback onTapTime,
+    required VoidCallback onClearTime,
+    required bool showClearTime,
+  }) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 5,
+          child: GestureDetector(
+            onTap: onTapDate,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: Colors.white.withOpacity(0.08)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_rounded,
+                    color: isDateSelected
+                        ? AppColors.sceTeal
+                        : AppColors.sceGreyA0,
+                    size: 18.sp,
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Text(
+                      isDateSelected ? dateText : dateHint,
+                      style: FontManager.bodySmall(
+                        color: isDateSelected
+                            ? Colors.white
+                            : AppColors.sceGreyA0,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: AppColors.sceGreyA0,
-              size: 22.sp,
-            ),
-          ],
+          ),
         ),
-      ),
+        SizedBox(width: 12.w),
+        Expanded(
+          flex: 4,
+          child: GestureDetector(
+            onTap: onTapTime,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: Colors.white.withOpacity(0.08)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.access_time_rounded,
+                    color: isTimeSelected
+                        ? AppColors.sceTeal
+                        : AppColors.sceGreyA0,
+                    size: 18.sp,
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Text(
+                      isTimeSelected ? timeText : timeHint,
+                      style: FontManager.bodySmall(
+                        color: isTimeSelected
+                            ? Colors.white
+                            : AppColors.sceGreyA0,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (showClearTime) ...[
+                    SizedBox(width: 4.w),
+                    GestureDetector(
+                      onTap: onClearTime,
+                      child: Padding(
+                        padding: EdgeInsets.all(2.w),
+                        child: Icon(
+                          Icons.cancel_rounded,
+                          color: AppColors.sceGreyA0,
+                          size: 16.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return "${date.day} ${months[date.month - 1]} ${date.year}";
+  }
+
+  String _formatTime(TimeOfDay? time) {
+    if (time == null) return '';
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return "$hour:$minute";
   }
 }

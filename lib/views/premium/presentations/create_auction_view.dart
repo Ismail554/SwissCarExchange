@@ -46,7 +46,10 @@ class _CreateAuctionState extends State<CreateAuction> {
   final List<File> _imageFiles = [];
   File? _videoFile;
   final List<File> _documentFiles = [];
-  String _selectedDuration = '';
+  DateTime? _startDate;
+  TimeOfDay? _startTime;
+  DateTime? _endDate;
+  TimeOfDay? _endTime;
 
   static const int _maxImages = 20;
   static const int _maxVideoSizeMB = 50;
@@ -193,7 +196,10 @@ class _CreateAuctionState extends State<CreateAuction> {
       final file = File(video.path);
       if (file.lengthSync() / (1024 * 1024) > _maxVideoSizeMB) {
         if (!mounted) return;
-        AppSnackBar.error(context, "Video too large. Max ${_maxVideoSizeMB}MB.");
+        AppSnackBar.error(
+          context,
+          "Video too large. Max ${_maxVideoSizeMB}MB.",
+        );
         return;
       }
       setState(() => _videoFile = file);
@@ -226,49 +232,132 @@ class _CreateAuctionState extends State<CreateAuction> {
 
   // _showLimitSnackbar replaced by AppSnackBar
 
-
-  void _showDurationSheet() {
-    final durations = ["3 Days", "5 Days", "7 Days", "10 Days", "14 Days"];
-    showModalBottomSheet(
+  Future<void> _pickStartDate() async {
+    final DateTime? picked = await showDatePicker(
       context: context,
-      backgroundColor: AppColors.sceCardBg,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 16.h),
-            CreateAuctionHelpers.sheetHandle(),
-            SizedBox(height: 16.h),
-            Text(
-              "Auction Duration",
-              style: FontManager.heading3(color: Colors.white),
+      initialDate: _startDate ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(minutes: 5)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.sceTeal,
+              onPrimary: Colors.black,
+              surface: AppColors.sceCardBg,
+              onSurface: Colors.white,
             ),
-            ...durations.map(
-              (d) => ListTile(
-                title: Text(
-                  d,
-                  style: FontManager.bodyMedium(
-                    color: _selectedDuration == d
-                        ? AppColors.sceTeal
-                        : Colors.white,
-                  ),
-                ),
-                trailing: _selectedDuration == d
-                    ? Icon(Icons.check_circle, color: AppColors.sceTeal)
-                    : null,
-                onTap: () {
-                  setState(() => _selectedDuration = d);
-                  Navigator.pop(ctx);
-                },
-              ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
             ),
-          ],
-        ),
-      ),
+          ),
+          child: child!,
+        );
+      },
     );
+    if (picked != null) {
+      setState(() {
+        _startDate = picked;
+        if (_endDate != null && _endDate!.isBefore(picked)) {
+          _endDate = null;
+        }
+      });
+    }
+  }
+
+  Future<void> _pickStartTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _startTime ?? TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.sceTeal,
+              onPrimary: Colors.black,
+              surface: AppColors.sceCardBg,
+              onSurface: Colors.white,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _startTime = picked;
+      });
+    }
+  }
+
+  void _clearStartTime() {
+    setState(() {
+      _startTime = null;
+    });
+  }
+
+  Future<void> _pickEndDate() async {
+    final DateTime initialDate =
+        _endDate ?? (_startDate ?? DateTime.now()).add(const Duration(days: 1));
+    final DateTime firstDate = _startDate ?? DateTime.now();
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate.isBefore(firstDate) ? firstDate : initialDate,
+      firstDate: firstDate,
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.sceTeal,
+              onPrimary: Colors.black,
+              surface: AppColors.sceCardBg,
+              onSurface: Colors.white,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _endDate = picked;
+      });
+    }
+  }
+
+  Future<void> _pickEndTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _endTime ?? TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.sceTeal,
+              onPrimary: Colors.black,
+              surface: AppColors.sceCardBg,
+              onSurface: Colors.white,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _endTime = picked;
+      });
+    }
   }
 
   void _onPublish() async {
@@ -278,18 +367,51 @@ class _CreateAuctionState extends State<CreateAuction> {
         AppSnackBar.error(context, "Please add at least one image.");
         return;
       }
-      if (_selectedDuration.isEmpty) {
+      if (_startDate == null) {
         if (!mounted) return;
-        AppSnackBar.error(context, "Please select auction duration.");
+        AppSnackBar.error(context, "Please select a start date.");
+        return;
+      }
+      if (_endDate == null) {
+        if (!mounted) return;
+        AppSnackBar.error(context, "Please select an end date.");
+        return;
+      }
+      if (_endTime == null) {
+        if (!mounted) return;
+        AppSnackBar.error(context, "Please select an end time.");
         return;
       }
 
-      final provider = Provider.of<CreateAuctionProvider>(context, listen: false);
+      final startsAt = DateTime(
+        _startDate!.year,
+        _startDate!.month,
+        _startDate!.day,
+        _startTime?.hour ?? 0,
+        _startTime?.minute ?? 0,
+      ).toUtc();
 
-      // Calculate dates
-      final startsAt = DateTime.now().toUtc();
-      final days = int.tryParse(_selectedDuration.split(' ')[0]) ?? 3;
-      final endsAt = startsAt.add(Duration(days: days));
+      final endsAt = DateTime(
+        _endDate!.year,
+        _endDate!.month,
+        _endDate!.day,
+        _endTime!.hour,
+        _endTime!.minute,
+      ).toUtc();
+
+      if (!endsAt.isAfter(startsAt)) {
+        if (!mounted) return;
+        AppSnackBar.error(
+          context,
+          "End date/time must be strictly after start date/time.",
+        );
+        return;
+      }
+
+      final provider = Provider.of<CreateAuctionProvider>(
+        context,
+        listen: false,
+      );
 
       final success = await provider.createAuction(
         context: context,
@@ -297,11 +419,14 @@ class _CreateAuctionState extends State<CreateAuction> {
         description: _descriptionController.text,
         brand: _brandController.text,
         model: _modelController.text,
-        category: _carCategoryController.text.toLowerCase().replaceAll(' ', '_'),
+        category: _carCategoryController.text.toLowerCase().replaceAll(
+          ' ',
+          '_',
+        ),
         year: int.tryParse(_yearController.text) ?? 0,
         mileage: int.tryParse(_mileageController.text) ?? 0,
         vin: _vinController.text,
-        fuelType: _fuelTypeController.text,
+        fuelType: _fuelTypeController.text.toLowerCase(),
         location: _locationController.text,
         reservePrice: _reservePriceController.text,
         buyNowPrice: _buyNowPriceController.text,
@@ -369,8 +494,15 @@ class _CreateAuctionState extends State<CreateAuction> {
               PricingDurationSection(
                 reservePriceController: _reservePriceController,
                 buyNowPriceController: _buyNowPriceController,
-                selectedDuration: _selectedDuration,
-                onSelectDuration: _showDurationSheet,
+                startDate: _startDate,
+                startTime: _startTime,
+                endDate: _endDate,
+                endTime: _endTime,
+                onSelectStartDate: _pickStartDate,
+                onSelectStartTime: _pickStartTime,
+                onSelectEndDate: _pickEndDate,
+                onSelectEndTime: _pickEndTime,
+                onClearStartTime: _clearStartTime,
               ),
               SizedBox(height: 32.h),
               Consumer<CreateAuctionProvider>(
@@ -379,7 +511,7 @@ class _CreateAuctionState extends State<CreateAuction> {
                     text: "Publish Auction",
                     onPressed: _onPublish,
                     isLoading: provider.isLoading,
-                    loadingText: "...uploading",
+                    loadingText: "...Uploading",
                   );
                 },
               ),

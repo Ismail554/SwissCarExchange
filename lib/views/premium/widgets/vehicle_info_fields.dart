@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/custom_dropdown_field.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
@@ -54,6 +55,7 @@ class VehicleInfoFields extends StatelessWidget {
           children: [
             Expanded(
               child: CustomTextField(
+                textInputAction: TextInputAction.next,
                 hintText: "Brand",
                 controller: brandController,
               ),
@@ -61,6 +63,7 @@ class VehicleInfoFields extends StatelessWidget {
             SizedBox(width: 12.w),
             Expanded(
               child: CustomTextField(
+                textInputAction: TextInputAction.next,
                 hintText: "Model",
                 controller: modelController,
               ),
@@ -74,6 +77,7 @@ class VehicleInfoFields extends StatelessWidget {
           children: [
             Expanded(
               child: CustomTextField(
+                textInputAction: TextInputAction.next,
                 hintText: "Year",
                 controller: yearController,
                 keyboardType: TextInputType.number,
@@ -82,6 +86,7 @@ class VehicleInfoFields extends StatelessWidget {
             SizedBox(width: 12.w),
             Expanded(
               child: CustomTextField(
+                textInputAction: TextInputAction.next,
                 hintText: "Mileage (km)",
                 controller: mileageController,
                 keyboardType: TextInputType.number,
@@ -92,17 +97,33 @@ class VehicleInfoFields extends StatelessWidget {
         SizedBox(height: 12.h),
 
         // VIN Number
-        CustomTextField(hintText: "VIN Number", controller: vinController),
+        CustomTextField(
+          textInputAction: TextInputAction.next,
+          hintText: "VIN Number",
+          controller: vinController,
+        ),
         SizedBox(height: 12.h),
 
         // Fuel Type & Location row
         Row(
           children: [
             Expanded(
-              child: CustomTextField(
+              child: CustomDropdownField(
                 textInputAction: TextInputAction.next,
                 hintText: "Fuel Type",
-                controller: fuelTypeController,
+                items: const [
+                  "Petrol",
+                  "Diesel",
+                  "Electric",
+                  "Hybrid",
+                  "Other",
+                ],
+                value: fuelTypeController.text.isNotEmpty
+                    ? fuelTypeController.text
+                    : null,
+                onChanged: (value) {
+                  fuelTypeController.text = value ?? "";
+                },
               ),
             ),
             SizedBox(width: 12.w),
@@ -135,10 +156,10 @@ class VehicleInfoFields extends StatelessWidget {
           textInputAction: TextInputAction.newline,
           controller: descriptionController,
           maxLines: 4,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
+          style: FontManager.bodyMedium(color: AppColors.white),
           decoration: InputDecoration(
             hintText: "Description",
-            hintStyle: TextStyle(color: AppColors.sceGreyA0, fontSize: 14.sp),
+            hintStyle: FontManager.bodyMedium(color: AppColors.sceGreyA0),
             filled: true,
             fillColor: Colors.white.withOpacity(0.04),
             contentPadding: EdgeInsets.symmetric(
