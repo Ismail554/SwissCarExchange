@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
@@ -16,6 +17,10 @@ import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/models/transactions/analytics_response.dart';
+import 'package:rionydo/app_utils/constants/global_state.dart';
+import 'package:rionydo/controllers/premium_analytics_provider.dart';
+import 'package:rionydo/models/profile/user_profile_response.dart';
+import 'package:rionydo/views/bidding/widgets/sales_by_category_section.dart';
 
 class BidsView extends StatefulWidget {
   const BidsView({super.key});
@@ -32,6 +37,12 @@ class _BidsViewState extends State<BidsView> {
   void initState() {
     super.initState();
     _fetchBidderStats();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final globalState = context.read<GlobalState>();
+      if (globalState.isPremium && globalState.userType == UserType.company) {
+        context.read<PremiumAnalyticsProvider>().fetchSalesByCategory();
+      }
+    });
   }
 
   Future<void> _fetchBidderStats() async {
@@ -226,6 +237,30 @@ class _BidsViewState extends State<BidsView> {
           ),
           SizedBox(height: 20.h),
 
+          // Sales by Category Section (Premium Company/Dealer users only)
+          Consumer2<GlobalState, PremiumAnalyticsProvider>(
+            builder: (context, globalState, provider, child) {
+              if (globalState.isPremium && globalState.userType == UserType.company) {
+                final hasData = provider.isLoading ||
+                    provider.error != null ||
+                    (provider.salesByCategory != null &&
+                        provider.salesByCategory!.results.isNotEmpty);
+
+                if (!hasData) {
+                  return const SizedBox.shrink();
+                }
+
+                return Column(
+                  children: [
+                    const SalesByCategorySection(),
+                    SizedBox(height: 20.h),
+                  ],
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+
           // Recent transactions header
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -247,6 +282,7 @@ class _BidsViewState extends State<BidsView> {
             ),
           ),
           SizedBox(height: 12.h),
+          
         ],
       ),
     );

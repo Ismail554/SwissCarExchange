@@ -63,7 +63,14 @@ class ApiService {
 static String get bidderStats => "$baseUrl/api/analytics/bidder-stats/"; // GET
 static String get bidderTransaction => "$baseUrl/api/analytics/bidder-transactions/"; // GET
 static String get dealerTransaction => "$baseUrl/api/analytics/dealer-transactions/"; // GET
-// 
+// Analytics
+static String spendingOverviewTends(int period) => "$baseUrl/api/analytics/spending-trends/?period=$period"; // GET
+
+
+// Premium analytics
+static String get premiumStats => "$baseUrl/api/analytics/stats/"; // GET
+static String get premiumTrands => "$baseUrl/api/analytics/trands/"; // GET
+static String get salesByCategory => "$baseUrl/api/analytics/sales-by-category/"; // GET
 
 
 
