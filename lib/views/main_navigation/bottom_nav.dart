@@ -7,7 +7,8 @@ import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auctions/presentations/add_auction_view.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';
 import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
-import 'package:rionydo/views/premium/presentations/subscription_view.dart';
+import 'package:rionydo/views/premium/presentations/update_subscription_view.dart';
+import 'package:rionydo/views/settings/presentations/manage_subscription_view.dart';
 
 /// The app-wide scaffold with custom bottom navigation.
 ///
@@ -69,7 +70,9 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         onAction: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SubscriptionViews()),
+            MaterialPageRoute(
+              builder: (context) => const AccountSubscriptionView(),
+            ),
           );
         },
       );

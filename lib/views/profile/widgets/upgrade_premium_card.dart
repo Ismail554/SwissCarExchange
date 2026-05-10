@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
-import 'package:rionydo/views/premium/presentations/subscription_view.dart';
+import 'package:rionydo/views/premium/presentations/update_subscription_view.dart';
 
 class UpgradePremiumCard extends StatelessWidget {
   const UpgradePremiumCard({super.key});

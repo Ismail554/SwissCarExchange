@@ -1,105 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:rionydo/app_utils/constants/global_state.dart';
+import 'package:rionydo/controllers/subscription_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
-
-// ─── Models ───────────────────────────────────────────────────────────────────
-
-class SubscriptionPlan {
-  final String plan;
-  final String name;
-  final String price;
-  final String currency;
-  final String interval;
-
-  const SubscriptionPlan({
-    required this.plan,
-    required this.name,
-    required this.price,
-    required this.currency,
-    required this.interval,
-  });
-
-  factory SubscriptionPlan.fromJson(Map<String, dynamic> json) =>
-      SubscriptionPlan(
-        plan: json['plan'],
-        name: json['name'],
-        price: json['price'],
-        currency: json['currency'],
-        interval: json['interval'],
-      );
-}
-
-class MySubscription {
-  final bool hasSubscription;
-  final String plan;
-  final String status;
-  final DateTime currentPeriodStart;
-  final DateTime currentPeriodEnd;
-  final bool cancelAtPeriodEnd;
-
-  const MySubscription({
-    required this.hasSubscription,
-    required this.plan,
-    required this.status,
-    required this.currentPeriodStart,
-    required this.currentPeriodEnd,
-    required this.cancelAtPeriodEnd,
-  });
-
-  factory MySubscription.fromJson(Map<String, dynamic> json) => MySubscription(
-    hasSubscription: json['has_subscription'],
-    plan: json['plan'],
-    status: json['status'],
-    currentPeriodStart: DateTime.parse(json['current_period_start']),
-    currentPeriodEnd: DateTime.parse(json['current_period_end']),
-    cancelAtPeriodEnd: json['cancel_at_period_end'],
-  );
-}
-
-// ─── Mock API ─────────────────────────────────────────────────────────────────
-
-class SubscriptionApi {
-  static Future<List<SubscriptionPlan>> fetchPlans() async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    return [
-      SubscriptionPlan.fromJson({
-        'plan': 'basic',
-        'name': 'Basic',
-        'price': '150.00',
-        'currency': 'chf',
-        'interval': 'month',
-      }),
-      SubscriptionPlan.fromJson({
-        'plan': 'premium',
-        'name': 'Premium',
-        'price': '350.00',
-        'currency': 'chf',
-        'interval': 'month',
-      }),
-    ];
-  }
-
-  static Future<MySubscription> fetchMySubscription() async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    return MySubscription.fromJson({
-      'has_subscription': true,
-      'plan': 'premium',
-      'status': 'active',
-      'current_period_start': '2026-05-04T00:43:30Z',
-      'current_period_end': '2026-06-04T00:43:30Z',
-      'cancel_at_period_end': false,
-    });
-  }
-
-  static Future<String> downgradePlan(String plan) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    return 'Downgrade scheduled for end of billing period.';
-  }
-
-  static Future<String> cancelSubscription(String plan) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    return 'Subscription cancelled successfully.';
-  }
-}
+import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/models/profile/user_profile_response.dart';
+import 'package:rionydo/models/subscription/subscription_plan.dart';
+import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/checkout_webview.dart';
 
 // ─── View ─────────────────────────────────────────────────────────────────────
 
@@ -112,74 +20,76 @@ class AccountSubscriptionView extends StatefulWidget {
 }
 
 class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
-  List<SubscriptionPlan> _plans = [];
-  MySubscription? _mySubscription;
-  bool _isLoading = true;
   bool _isActionLoading = false;
-  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
   }
 
   Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-    try {
-      final results = await Future.wait([
-        SubscriptionApi.fetchPlans(),
-        SubscriptionApi.fetchMySubscription(),
-      ]);
-      setState(() {
-        _plans = results[0] as List<SubscriptionPlan>;
-        _mySubscription = results[1] as MySubscription;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Failed to load subscription data.';
-        _isLoading = false;
-      });
+    final provider = context.read<SubscriptionProvider>();
+    await Future.wait([
+      provider.fetchPlans(),
+      provider.fetchMySubscription(),
+    ]);
+  }
+
+  /// Upgrade: company basic → premium via Stripe checkout.
+  Future<void> _handleUpgrade() async {
+    final userType = context.read<GlobalState>().userType;
+
+    // §9 Access Matrix: Private users cannot purchase Premium
+    if (userType == UserType.private) {
+      if (mounted) {
+        AppSnackBar.warning(context, 'Premium is available for company accounts only.');
+      }
+      return;
+    }
+
+    final provider = context.read<SubscriptionProvider>();
+    final checkoutUrl = await provider.checkout(SubscriptionPlanId.premium);
+
+    if (!mounted) return;
+
+    if (checkoutUrl != null && checkoutUrl.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CheckoutWebView(checkoutUrl: checkoutUrl),
+        ),
+      );
+    } else {
+      AppSnackBar.error(
+        context,
+        provider.errorMessage ?? 'Failed to start checkout.',
+      );
     }
   }
 
-  Future<void> _handleUpgradeOrDowngrade() async {
-    final sub = _mySubscription!;
-    final isBasic = sub.plan == 'basic';
-    final actionLabel = isBasic ? 'Upgrade' : 'Downgrade';
-    final targetPlan = isBasic ? 'premium' : 'basic';
-
+  /// Downgrade: premium → basic (placeholder until backend endpoint exists).
+  Future<void> _handleDowngrade() async {
     final confirmed = await _showConfirmDialog(
-      title: '$actionLabel Plan',
-      message: isBasic
-          ? 'You will be upgraded to the Premium plan immediately.'
-          : 'Your plan will be downgraded to Basic at the end of the current billing period.',
-      confirmLabel: actionLabel,
-      confirmColor: isBasic ? const Color(0xFF4CAF50) : const Color(0xFFFF9800),
+      title: 'Downgrade Plan',
+      message:
+          'Your plan will be downgraded to Basic at the end of the current billing period.',
+      confirmLabel: 'Downgrade',
+      confirmColor: const Color(0xFFFF9800),
     );
     if (!confirmed) return;
 
     setState(() => _isActionLoading = true);
-    try {
-      final msg = isBasic
-          ? await SubscriptionApi.downgradePlan(targetPlan) // reuse endpoint
-          : await SubscriptionApi.downgradePlan(targetPlan);
-      if (mounted) {
-        _showSnackBar(msg, isError: false);
-        await _loadData();
-      }
-    } catch (e) {
-      if (mounted)
-        _showSnackBar('Action failed. Please try again.', isError: true);
-    } finally {
-      if (mounted) setState(() => _isActionLoading = false);
+    // TODO: Replace with real API call when backend endpoint is ready.
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) {
+      AppSnackBar.info(context, 'Downgrade scheduled for end of billing period.');
+      await _loadData();
     }
+    if (mounted) setState(() => _isActionLoading = false);
   }
 
+  /// Cancel subscription (placeholder until backend endpoint exists).
   Future<void> _handleCancel() async {
     final confirmed = await _showConfirmDialog(
       title: 'Cancel Subscription',
@@ -191,18 +101,13 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
     if (!confirmed) return;
 
     setState(() => _isActionLoading = true);
-    try {
-      await SubscriptionApi.cancelSubscription(_mySubscription!.plan);
-      if (mounted) {
-        _showSnackBar('Subscription cancelled successfully.', isError: false);
-        await _loadData();
-      }
-    } catch (e) {
-      if (mounted)
-        _showSnackBar('Cancellation failed. Please try again.', isError: true);
-    } finally {
-      if (mounted) setState(() => _isActionLoading = false);
+    // TODO: Replace with real API call when backend endpoint is ready.
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) {
+      AppSnackBar.info(context, 'Subscription cancelled successfully.');
+      await _loadData();
     }
+    if (mounted) setState(() => _isActionLoading = false);
   }
 
   Future<bool> _showConfirmDialog({
@@ -256,56 +161,40 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
     return result ?? false;
   }
 
-  void _showSnackBar(String message, {required bool isError}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError
-            ? const Color(0xFFE53935)
-            : const Color(0xFF4CAF50),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
-      ),
-    );
-  }
-
-  String _formatDate(DateTime dt) =>
-      '${dt.day.toString().padLeft(2, '0')} ${_monthName(dt.month)} ${dt.year}';
-
-  String _monthName(int m) => const [
-    '',
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ][m];
-
   @override
   Widget build(BuildContext context) {
+    final subProvider = context.watch<SubscriptionProvider>();
+    final userType = context.watch<GlobalState>().userType;
+    final isLoading = subProvider.isLoading || subProvider.isLoadingSub;
+    final hasError =
+        subProvider.errorMessage != null || subProvider.subErrorMessage != null;
+    final errorMsg = subProvider.errorMessage ?? subProvider.subErrorMessage;
+
     return CommonBackground(
       child: SafeArea(
-        child: _isLoading
+        child: isLoading
             ? const _LoadingState()
-            : _errorMessage != null
-            ? _ErrorState(message: _errorMessage!, onRetry: _loadData)
-            : _buildContent(),
+            : hasError
+                ? _ErrorState(message: errorMsg!, onRetry: _loadData)
+                : _buildContent(subProvider, userType),
       ),
     );
   }
 
-  Widget _buildContent() {
-    final sub = _mySubscription!;
-    final isBasic = sub.plan == 'basic';
-    final currentPlan = _plans.firstWhere(
+  Widget _buildContent(SubscriptionProvider subProvider, UserType userType) {
+    final sub = subProvider.mySubscription;
+
+    // Guard: no subscription data yet
+    if (sub == null) {
+      return _ErrorState(
+        message: 'No subscription data available.',
+        onRetry: _loadData,
+      );
+    }
+
+    final isBasic = sub.plan == SubscriptionPlanId.basic;
+
+    final currentPlan = subProvider.plans.firstWhere(
       (p) => p.plan == sub.plan,
       orElse: () => SubscriptionPlan(
         plan: sub.plan,
@@ -315,6 +204,14 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
         interval: 'month',
       ),
     );
+
+    // §6: Private → show Basic only | Company → show all
+    final visiblePlans = subProvider.plans.where((p) {
+      if (userType == UserType.private) {
+        return p.plan == SubscriptionPlanId.basic;
+      }
+      return true; // company sees all
+    }).toList();
 
     return RefreshIndicator(
       onRefresh: _loadData,
@@ -337,7 +234,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
             // ── All Plans ──
             const _SectionLabel(label: 'Available Plans'),
             const SizedBox(height: 12),
-            ..._plans.map(
+            ...visiblePlans.map(
               (plan) =>
                   _PlanCard(plan: plan, isCurrentPlan: plan.plan == sub.plan),
             ),
@@ -347,19 +244,25 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
             if (sub.hasSubscription && sub.status == 'active') ...[
               const _SectionLabel(label: 'Manage Subscription'),
               const SizedBox(height: 12),
-              _ActionButton(
-                label: isBasic
-                    ? '⬆  Upgrade to Premium'
-                    : '⬇  Downgrade to Basic',
-                subtitle: isBasic
-                    ? 'Switch to the Premium plan'
-                    : 'Scheduled at end of billing period',
-                color: isBasic
-                    ? const Color(0xFF4CAF50)
-                    : const Color(0xFFFF9800),
-                isLoading: _isActionLoading,
-                onTap: _handleUpgradeOrDowngrade,
-              ),
+
+              // §9: Only company users can upgrade to premium
+              if (isBasic && userType == UserType.company)
+                _ActionButton(
+                  label: '⬆  Upgrade to Premium',
+                  subtitle: 'Switch to the Premium plan',
+                  color: const Color(0xFF4CAF50),
+                  isLoading: subProvider.isCheckingOut,
+                  onTap: _handleUpgrade,
+                )
+              else if (!isBasic)
+                _ActionButton(
+                  label: '⬇  Downgrade to Basic',
+                  subtitle: 'Scheduled at end of billing period',
+                  color: const Color(0xFFFF9800),
+                  isLoading: _isActionLoading,
+                  onTap: _handleDowngrade,
+                ),
+
               const SizedBox(height: 12),
               _ActionButton(
                 label: '✕  Cancel Subscription',
@@ -398,12 +301,12 @@ class _ErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.wifi_off_rounded,
             color: Color(0xFF7C7C9A),
-            size: 56,
+            size: 56.sp,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Text(
             message,
             textAlign: TextAlign.center,
@@ -439,7 +342,7 @@ class _PageHeader extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
@@ -481,8 +384,10 @@ class _CurrentSubscriptionCard extends StatelessWidget {
     required this.plan,
   });
 
-  String _formatDate(DateTime dt) =>
-      '${dt.day.toString().padLeft(2, '0')} ${_monthName(dt.month)} ${dt.year}';
+  String _formatDate(DateTime? dt) {
+    if (dt == null) return '—';
+    return '${dt.day.toString().padLeft(2, '0')} ${_monthName(dt.month)} ${dt.year}';
+  }
 
   String _monthName(int m) => const [
     '',
@@ -502,7 +407,7 @@ class _CurrentSubscriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPremium = subscription.plan == 'premium';
+    final isPremium = subscription.plan == SubscriptionPlanId.premium;
     final gradientColors = isPremium
         ? [const Color(0xFF7C6FF7), const Color(0xFF4F46E5)]
         : [const Color(0xFF2E9CCA), const Color(0xFF1976D2)];
@@ -518,7 +423,7 @@ class _CurrentSubscriptionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: gradientColors[0].withOpacity(0.35),
+            color: gradientColors[0].withValues(alpha: 0.35),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -547,7 +452,7 @@ class _CurrentSubscriptionCard extends StatelessWidget {
                   Text(
                     'Current Plan',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 13,
                     ),
                   ),
@@ -560,7 +465,7 @@ class _CurrentSubscriptionCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                'CHF ${plan.price}',
+                '${plan.currency.toUpperCase()} ${plan.price}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 32,
@@ -574,7 +479,7 @@ class _CurrentSubscriptionCard extends StatelessWidget {
                 child: Text(
                   '/ ${plan.interval}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.65),
+                    color: Colors.white.withValues(alpha: 0.65),
                     fontSize: 14,
                   ),
                 ),
@@ -582,7 +487,7 @@ class _CurrentSubscriptionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Container(height: 1, color: Colors.white.withOpacity(0.15)),
+          Container(height: 1, color: Colors.white.withValues(alpha: 0.15)),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -607,22 +512,22 @@ class _CurrentSubscriptionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.12),
+                color: Colors.white.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.info_outline_rounded,
                     color: Colors.white,
-                    size: 16,
+                    size: 16.sp,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   Text(
                     'Cancellation scheduled at period end',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.85),
-                      fontSize: 12,
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontSize: 12.sp,
                     ),
                   ),
                 ],
@@ -646,14 +551,17 @@ class _DateInfo extends StatelessWidget {
     children: [
       Text(
         label,
-        style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 11),
+        style: TextStyle(
+          color: Colors.white.withValues(alpha: 0.6),
+          fontSize: 11.sp,
+        ),
       ),
-      const SizedBox(height: 3),
+      SizedBox(height: 3.h),
       Text(
         date,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 13,
+          fontSize: 13.sp,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -669,23 +577,23 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final isActive = status == 'active';
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: isActive
-            ? const Color(0xFF4CAF50).withOpacity(0.2)
-            : const Color(0xFFE53935).withOpacity(0.2),
+            ? const Color(0xFF4CAF50).withValues(alpha: 0.2)
+            : const Color(0xFFE53935).withValues(alpha: 0.2),
         border: Border.all(
           color: isActive ? const Color(0xFF4CAF50) : const Color(0xFFE53935),
-          width: 1.2,
+          width: 1.2.w,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 6,
-            height: 6,
+            width: 6.w,
+            height: 6.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isActive
@@ -693,14 +601,14 @@ class _StatusBadge extends StatelessWidget {
                   : const Color(0xFFE53935),
             ),
           ),
-          const SizedBox(width: 6),
+          SizedBox(width: 6.w),
           Text(
             status[0].toUpperCase() + status.substring(1),
             style: TextStyle(
               color: isActive
                   ? const Color(0xFF4CAF50)
                   : const Color(0xFFE53935),
-              fontSize: 12,
+              fontSize: 12.sp,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -717,11 +625,11 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     label,
-    style: const TextStyle(
+    style: TextStyle(
       color: Colors.white,
-      fontSize: 16,
+      fontSize: 16.sp,
       fontWeight: FontWeight.w700,
-      letterSpacing: -0.2,
+      letterSpacing: -0.2.sp,
     ),
   );
 }
@@ -733,17 +641,17 @@ class _PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPremium = plan.plan == 'premium';
+    final isPremium = plan.plan == SubscriptionPlanId.premium;
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
         color: isCurrentPlan
-            ? const Color(0xFF7C6FF7).withOpacity(0.1)
+            ? const Color(0xFF7C6FF7).withValues(alpha: 0.1)
             : const Color(0xFF1E1E2E),
         border: Border.all(
           color: isCurrentPlan
               ? const Color(0xFF7C6FF7)
-              : Colors.white.withOpacity(0.08),
+              : Colors.white.withValues(alpha: 0.08),
           width: isCurrentPlan ? 1.5 : 1,
         ),
         borderRadius: BorderRadius.circular(18),
@@ -752,12 +660,12 @@ class _PlanCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 44.w,
+            height: 44.h,
             decoration: BoxDecoration(
               color: isPremium
-                  ? const Color(0xFF7C6FF7).withOpacity(0.15)
-                  : const Color(0xFF2E9CCA).withOpacity(0.15),
+                  ? const Color(0xFF7C6FF7).withValues(alpha: 0.15)
+                  : const Color(0xFF2E9CCA).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -767,10 +675,10 @@ class _PlanCard extends StatelessWidget {
               color: isPremium
                   ? const Color(0xFF7C6FF7)
                   : const Color(0xFF2E9CCA),
-              size: 22,
+              size: 22.sp,
             ),
           ),
-          const SizedBox(width: 14),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -779,28 +687,28 @@ class _PlanCard extends StatelessWidget {
                   children: [
                     Text(
                       plan.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 15,
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     if (isCurrentPlan) ...[
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8.w),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 2.h,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF7C6FF7).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0xFF7C6FF7).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Current',
                           style: TextStyle(
                             color: Color(0xFF7C6FF7),
-                            fontSize: 10,
+                            fontSize: 10.sp,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -808,23 +716,23 @@ class _PlanCard extends StatelessWidget {
                     ],
                   ],
                 ),
-                const SizedBox(height: 3),
+                SizedBox(height: 3.h),
                 Text(
                   '${plan.currency.toUpperCase()} ${plan.price} / ${plan.interval}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF7C7C9A),
-                    fontSize: 13,
+                    fontSize: 12.sp,
                   ),
                 ),
               ],
             ),
           ),
           Text(
-            'CHF ${plan.price}',
-            style: const TextStyle(
+            '${plan.currency.toUpperCase()} ${plan.price}',
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -857,11 +765,11 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
-          border: Border.all(color: color.withOpacity(0.4), width: 1.2),
-          borderRadius: BorderRadius.circular(16),
+          color: color.withValues(alpha: 0.08),
+          border: Border.all(color: color.withValues(alpha: 0.4), width: 1.2.w),
+          borderRadius: BorderRadius.circular(16.r),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
         child: Row(
           children: [
             Expanded(
@@ -872,16 +780,16 @@ class _ActionButton extends StatelessWidget {
                     label,
                     style: TextStyle(
                       color: color,
-                      fontSize: 15,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  SizedBox(height: 3.h),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      color: Color(0xFF7C7C9A),
-                      fontSize: 12,
+                    style: TextStyle(
+                      color: const Color(0xFF7C7C9A),
+                      fontSize: 12.sp,
                     ),
                   ),
                 ],
@@ -889,12 +797,15 @@ class _ActionButton extends StatelessWidget {
             ),
             if (isLoading)
               SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: color),
+                width: 20.w,
+                height: 20.h,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.w,
+                  color: color,
+                ),
               )
             else
-              Icon(Icons.arrow_forward_ios_rounded, color: color, size: 16),
+              Icon(Icons.arrow_forward_ios_rounded, color: color, size: 16.sp),
           ],
         ),
       ),

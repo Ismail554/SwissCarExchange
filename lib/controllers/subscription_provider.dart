@@ -17,6 +17,16 @@ class SubscriptionProvider extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  // ── My Subscription state ──────────────────────────────────────────
+  MySubscription? _mySubscription;
+  MySubscription? get mySubscription => _mySubscription;
+
+  bool _isLoadingSub = false;
+  bool get isLoadingSub => _isLoadingSub;
+
+  String? _subErrorMessage;
+  String? get subErrorMessage => _subErrorMessage;
+
   // ----------------------------------------------------------------
   // FETCH PLANS — GET /api/subscriptions/plans/
   // ----------------------------------------------------------------
@@ -51,6 +61,41 @@ class SubscriptionProvider extends ChangeNotifier {
     }
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  // ----------------------------------------------------------------
+  // FETCH MY SUBSCRIPTION — GET /api/subscriptions/me/
+  // ----------------------------------------------------------------
+  Future<void> fetchMySubscription() async {
+    _isLoadingSub = true;
+    _subErrorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.subscriptionStatus,
+        method: Methods.get,
+      );
+
+      response.fold(
+        (error) {
+          debugPrint('SUBS: ❌ fetchMySubscription error: $error');
+          _subErrorMessage = error;
+        },
+        (data) {
+          debugPrint('SUBS: ✅ fetchMySubscription success');
+          if (data is Map<String, dynamic>) {
+            _mySubscription = MySubscription.fromJson(data);
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('SUBS: ❌ Unexpected error: $e');
+      _subErrorMessage = 'Failed to load subscription. Please try again.';
+    }
+
+    _isLoadingSub = false;
     notifyListeners();
   }
 
@@ -92,3 +137,4 @@ class SubscriptionProvider extends ChangeNotifier {
     return checkoutUrl;
   }
 }
+

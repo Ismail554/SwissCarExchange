@@ -32,7 +32,7 @@ class BidderTransactionResponse {
   final int count;
   final String? next;
   final String? previous;
-  final List<dynamic> results; // Replace 'dynamic' with your Item model later
+  final List<dynamic> results; 
 
   BidderTransactionResponse({
     required this.count,
@@ -61,7 +61,7 @@ class DealerTransactionResponse {
   final int count;
   final String? next;
   final String? previous;
-  final List<dynamic> results; // Replace 'dynamic' with your Item model later
+  final List<TransactionItem> results; // Updated to use the TransactionItem model
   final double pendingAmount;
   final double receivedAmount;
 
@@ -78,7 +78,9 @@ class DealerTransactionResponse {
         count: json["count"] ?? 0,
         next: json["next"],
         previous: json["previous"],
-        results: json["results"] == null ? [] : List<dynamic>.from(json["results"].map((x) => x)),
+        results: json["results"] == null 
+            ? [] 
+            : List<TransactionItem>.from(json["results"].map((x) => TransactionItem.fromJson(x))),
         pendingAmount: (json["pending_amount"] ?? 0.0).toDouble(),
         receivedAmount: (json["received_amount"] ?? 0.0).toDouble(),
       );
@@ -87,8 +89,41 @@ class DealerTransactionResponse {
         "count": count,
         "next": next,
         "previous": previous,
-        "results": List<dynamic>.from(results.map((x) => x)),
+        "results": List<dynamic>.from(results.map((x) => x.toJson())),
         "pending_amount": pendingAmount,
         "received_amount": receivedAmount,
+      };
+}
+
+// --- Transaction Item (NEW) ---
+class TransactionItem {
+  final String auctionTitle;
+  final String amount;
+  final String status;
+  final DateTime soldAt;
+  final String buyerCompany;
+
+  TransactionItem({
+    required this.auctionTitle,
+    required this.amount,
+    required this.status,
+    required this.soldAt,
+    required this.buyerCompany,
+  });
+
+  factory TransactionItem.fromJson(Map<String, dynamic> json) => TransactionItem(
+        auctionTitle: json["auction_title"] ?? "",
+        amount: json["amount"] ?? "0.00",
+        status: json["status"] ?? "",
+        soldAt: DateTime.parse(json["sold_at"]),
+        buyerCompany: json["buyer_company"] ?? "",
+      );
+
+  Map<String, dynamic> toJson() => {
+        "auction_title": auctionTitle,
+        "amount": amount,
+        "status": status,
+        "sold_at": soldAt.toIso8601String(),
+        "buyer_company": buyerCompany,
       };
 }

@@ -8,7 +8,7 @@ import 'package:rionydo/views/profile/presentations/payment_method_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/settings/presentations/help_support_view.dart';
 import 'package:rionydo/views/settings/presentations/privacy_settings_view.dart';
-import 'package:rionydo/views/settings/presentations/subscription_view.dart'
+import 'package:rionydo/views/settings/presentations/manage_subscription_view.dart'
     hide SubscriptionView;
 import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
 
