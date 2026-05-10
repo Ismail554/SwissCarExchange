@@ -11,18 +11,20 @@ class CustomBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap:
-          onPressed ??
-          () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            }
-          },
+    return Align(
+      alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.only(left: 10.0),
-        child: Align(
-          alignment: Alignment.centerLeft,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap:
+              onPressed ??
+              () {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                  debugPrint('Back');
+                }
+              },
           child: Container(
             width: size.sp,
             height: size.sp,

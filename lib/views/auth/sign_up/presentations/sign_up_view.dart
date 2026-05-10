@@ -135,10 +135,11 @@ class _SignUpViewState extends State<SignUpView> {
                       ),
                       SizedBox(height: 8.h),
                       CustomTextField(
+                        obscureText: false,
                         textInputAction: .next,
                         controller: provider.emailController,
                         hintText: 'Your email address',
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: TextInputType.text,
                         prefixIcon: Icon(
                           Icons.email_outlined,
                           color: AppColors.sceGreyA0,

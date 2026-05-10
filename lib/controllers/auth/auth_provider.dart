@@ -293,10 +293,15 @@ class AuthProvider extends ChangeNotifier {
       skipAuth: true,
     );
 
+    _isLoading = false;
+    notifyListeners();
+
     response.fold(
       (error) {
         debugPrint('AUTH: ❌ verifyOtp API error: $error');
-        AppSnackBar.error(context, error);
+        if (context.mounted) {
+          AppSnackBar.error(context, error);
+        }
       },
       (data) {
         debugPrint('AUTH: ✅ verifyOtp API success! Response: $data');
@@ -308,17 +313,39 @@ class AuthProvider extends ChangeNotifier {
             AppSnackBar.success(context, "Email verified successfully.");
           }
 
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginViews()),
-            (route) => false,
-          );
+          final approvalStatus = data['approval_status']?.toString();
+
+          if (approvalStatus == 'approved') {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationShell(
+                  pages: [
+                    HomeView(),
+                    AuctionsView(),
+                    BidsView(),
+                    ProfileView(),
+                  ],
+                ),
+              ),
+              (route) => false,
+            );
+          } else if (approvalStatus == 'pending') {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const PendingView()),
+              (route) => false,
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginViews()),
+              (route) => false,
+            );
+          }
         }
       },
     );
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   // ----------------------------------------------------------------

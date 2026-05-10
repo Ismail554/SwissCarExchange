@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 
 import 'package:rionydo/views/auth/forgot_password/reset_password_view.dart';
+import 'package:rionydo/views/auth/login/login_views.dart';
 
 class OtpVerifyView extends StatefulWidget {
   final String email;
@@ -133,18 +134,48 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
       ),
     );
 
-    return CommonBackground(
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Top Bar with Back Button
-            Padding(
-              padding: EdgeInsets.only(left: 16.w, top: 16.h),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: const CustomBackButton(),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        if (context.mounted) {
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginViews()),
+              (route) => false,
+            );
+          }
+        }
+      },
+      child: CommonBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Top Bar with Back Button
+              Padding(
+                padding: EdgeInsets.only(left: 16.w, top: 16.h),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: CustomBackButton(
+                    onPressed: () {
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      } else {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginViews(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    },
+                  ),
+                ),
               ),
-            ),
 
             Expanded(
               child: SingleChildScrollView(
@@ -294,7 +325,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                             );
                           }
                         } else {
-                          context.read<AuthProvider>().verifyOtp(
+                          await context.read<AuthProvider>().verifyOtp(
                             context,
                             email: widget.email,
                             otp: _otpController.text,
@@ -309,6 +340,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
