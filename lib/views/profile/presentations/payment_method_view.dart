@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/controllers/bank_account_provider.dart';
 
 import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
 import 'package:rionydo/views/won_auction/presentations/auction_contact_view.dart';
@@ -27,6 +29,16 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
   final _bankNameCtrl = TextEditingController();
   final _swiftCtrl = TextEditingController();
 
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BankAccountProvider>().fetchBankDetails();
+    });
+  }
+
   @override
   void dispose() {
     _accountHolderCtrl.dispose();
@@ -36,21 +48,98 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
     super.dispose();
   }
 
-  void _submit() {
+  void _populateForm(BankAccountProvider provider) {
+    if (provider.bankAccount != null) {
+      _accountHolderCtrl.text = provider.bankAccount!.accountName;
+      _ibanCtrl.text = provider.bankAccount!.iban;
+      _bankNameCtrl.text = provider.bankAccount!.bankName;
+    }
+  }
+
+  Future<void> _submit() async {
     if (_formKey.currentState?.validate() ?? false) {
-      if (widget.isPaymentFlow) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                const PaySuccessful(nextScreen: AuctionContactView()),
-          ),
-        );
+      final provider = context.read<BankAccountProvider>();
+      final body = {
+        "bank_name": _bankNameCtrl.text.trim(),
+        "account_name": _accountHolderCtrl.text.trim(),
+        "iban": _ibanCtrl.text.trim(),
+      };
+
+      bool success;
+      if (_isEditing && provider.bankAccount != null) {
+        success = await provider.modifyBankDetails(body);
       } else {
+        success = await provider.addBankDetails(body);
+      }
+
+      if (success && mounted) {
         AppSnackBar.success(context, "Bank details saved successfully!");
-        Navigator.pop(context);
+        if (widget.isPaymentFlow) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  const PaySuccessful(nextScreen: AuctionContactView()),
+            ),
+          );
+        } else {
+          setState(() {
+            _isEditing = false;
+          });
+        }
+      } else if (provider.errorMessage != null && mounted) {
+        AppSnackBar.error(context, provider.errorMessage!);
       }
     }
+  }
+
+  void _confirmDelete(BankAccountProvider provider) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.sceCardBg,
+        title: Text(
+          "Delete Bank Details",
+          style: FontManager.heading3(color: AppColors.white),
+        ),
+        content: Text(
+          "Are you sure you want to delete your saved bank details?",
+          style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              "Cancel",
+              style: FontManager.bodyMedium(color: AppColors.white),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              final success = await provider.deleteBankDetails();
+              if (success && mounted) {
+                AppSnackBar.success(context, "Bank details deleted.");
+                // Reset text controllers
+                _accountHolderCtrl.clear();
+                _ibanCtrl.clear();
+                _bankNameCtrl.clear();
+                _swiftCtrl.clear();
+              } else if (provider.errorMessage != null && mounted) {
+                AppSnackBar.error(context, provider.errorMessage!);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.errorRed,
+            ),
+            child: Text(
+              "Delete",
+              style: FontManager.bodyMedium(color: AppColors.white),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -67,117 +156,295 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
           style: FontManager.heading2(color: AppColors.white),
         ),
       ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: Consumer<BankAccountProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.sceTeal),
+            );
+          }
+
+          // Show existing bank info if available and not in editing mode
+          if (provider.bankAccount != null && !_isEditing) {
+            return _buildExistingBankInfo(provider);
+          }
+
+          // Otherwise show the form
+          return _buildForm(provider);
+        },
+      ),
+    );
+  }
+
+  Widget _buildExistingBankInfo(BankAccountProvider provider) {
+    final account = provider.bankAccount!;
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _InfoBanner(
+              icon: Icons.account_balance_rounded,
+              message: widget.isPaymentFlow
+                  ? 'Your saved bank details will be used for this transfer.'
+                  : 'Your saved Swiss bank details for offline IBAN/SEPA transfers.',
+            ),
+            SizedBox(height: 28.h),
+            Container(
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                color: AppColors.sceCardBg,
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.account_balance_outlined,
+                        color: AppColors.sceTeal,
+                        size: 24.sp,
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Text(
+                          account.bankName,
+                          style: FontManager.heading3(color: AppColors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+                  _buildDetailRow("Account Holder", account.accountName),
+                  SizedBox(height: 12.h),
+                  _buildDetailRow("IBAN", account.iban),
+                ],
+              ),
+            ),
+            SizedBox(height: 40.h),
+            if (widget.isPaymentFlow) ...[
+              CustomButton(
+                text: 'Confirm Transfer with these details',
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const PaySuccessful(nextScreen: AuctionContactView()),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20.h),
+            ],
+            Row(
               children: [
-                // --- Info banner ---
-                _InfoBanner(
-                  icon: Icons.account_balance_rounded,
-                  message: widget.isPaymentFlow
-                      ? 'Provide your Swiss bank details to receive the payment via IBAN/SEPA transfer.'
-                      : 'Save your Swiss bank details for offline IBAN/SEPA transfers.',
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      _populateForm(provider);
+                      setState(() {
+                        _isEditing = true;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.edit_rounded,
+                      size: 18.sp,
+                      color: AppColors.white,
+                    ),
+                    label: Text(
+                      "Modify",
+                      style: FontManager.bodyMedium(color: AppColors.white),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      side: BorderSide(color: AppColors.grey.withOpacity(0.3)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 28.h),
-
-                // --- Account Holder Name ---
-                const _FieldLabel('Account Holder Name'),
-                SizedBox(height: 8.h),
-                _BankTextField(
-                  controller: _accountHolderCtrl,
-                  hint: 'e.g. Hans Müller',
-                  prefixIcon: Icons.person_outline_rounded,
-                  keyboardType: TextInputType.name,
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Enter account holder name'
-                      : null,
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: provider.isSaving
+                        ? null
+                        : () => _confirmDelete(provider),
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: 18.sp,
+                      color: AppColors.errorRed,
+                    ),
+                    label: Text(
+                      "Delete",
+                      style: FontManager.bodyMedium(color: AppColors.errorRed),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 14.h),
+                      side: BorderSide(
+                        color: AppColors.errorRed.withOpacity(0.3),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 18.h),
-
-                // --- IBAN ---
-                const _FieldLabel('IBAN'),
-                SizedBox(height: 8.h),
-                _BankTextField(
-                  controller: _ibanCtrl,
-                  hint: 'CH56 0483 5012 3456 7800 9',
-                  prefixIcon: Icons.tag_rounded,
-                  keyboardType: TextInputType.text,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9 ]')),
-                    _IbanFormatter(),
-                  ],
-                  maxLength: 26, // CH IBAN: 21 digits + 5 spaces
-                  textCapitalization: TextCapitalization.characters,
-                  validator: (v) {
-                    final raw = v?.replaceAll(' ', '') ?? '';
-                    if (raw.isEmpty) return 'Enter IBAN';
-                    if (!raw.toUpperCase().startsWith('CH')) {
-                      return 'Swiss IBAN must start with CH';
-                    }
-                    if (raw.length < 21) return 'IBAN is too short';
-                    return null;
-                  },
-                ),
-                SizedBox(height: 18.h),
-
-                // --- Bank Name ---
-                const _FieldLabel('Bank Name'),
-                SizedBox(height: 8.h),
-                _BankTextField(
-                  controller: _bankNameCtrl,
-                  hint: 'e.g. UBS, Credit Suisse, PostFinance',
-                  prefixIcon: Icons.account_balance_outlined,
-                  keyboardType: TextInputType.text,
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Enter bank name'
-                      : null,
-                ),
-                SizedBox(height: 18.h),
-
-                // --- SWIFT/BIC (optional) ---
-                const _FieldLabel('SWIFT / BIC Code (Optional)'),
-                SizedBox(height: 8.h),
-                _BankTextField(
-                  controller: _swiftCtrl,
-                  hint: 'e.g. UBSWCHZH80A',
-                  prefixIcon: Icons.code_rounded,
-                  keyboardType: TextInputType.text,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
-                    LengthLimitingTextInputFormatter(11),
-                  ],
-                  textCapitalization: TextCapitalization.characters,
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) return null; // optional
-                    final len = v.trim().length;
-                    if (len != 8 && len != 11) {
-                      return 'SWIFT/BIC must be 8 or 11 characters';
-                    }
-                    return null;
-                  },
-                ),
-
-                SizedBox(height: 12.h),
-
-                // --- Security note ---
-                _SecurityNote(),
-
-                SizedBox(height: 40.h),
-
-                // --- Submit button ---
-                CustomButton(
-                  text: widget.isPaymentFlow
-                      ? 'Confirm Transfer Details'
-                      : 'Save Bank Details',
-                  onPressed: _submit,
-                ),
-                SizedBox(height: 20.h),
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: FontManager.labelMedium(color: AppColors.sceGreyA0)),
+        SizedBox(height: 4.h),
+        Text(value, style: FontManager.bodyLarge(color: AppColors.white)),
+      ],
+    );
+  }
+
+  Widget _buildForm(BankAccountProvider provider) {
+    return SafeArea(
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- Info banner ---
+              _InfoBanner(
+                icon: Icons.account_balance_rounded,
+                message: widget.isPaymentFlow
+                    ? 'Provide your Swiss bank details to receive the payment via IBAN/SEPA transfer.'
+                    : 'Save your Swiss bank details for offline IBAN/SEPA transfers.',
+              ),
+              SizedBox(height: 28.h),
+
+              // --- Account Holder Name ---
+              const _FieldLabel('Account Holder Name'),
+              SizedBox(height: 8.h),
+              _BankTextField(
+                controller: _accountHolderCtrl,
+                hint: 'e.g. Hans Müller',
+                prefixIcon: Icons.person_outline_rounded,
+                keyboardType: TextInputType.name,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Enter account holder name'
+                    : null,
+              ),
+              SizedBox(height: 18.h),
+
+              // --- IBAN ---
+              const _FieldLabel('IBAN'),
+              SizedBox(height: 8.h),
+              _BankTextField(
+                controller: _ibanCtrl,
+                hint: 'CH56 0483 5012 3456 7800 9',
+                prefixIcon: Icons.tag_rounded,
+                keyboardType: TextInputType.text,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9 ]')),
+                  _IbanFormatter(),
+                ],
+                maxLength: 26, // CH IBAN: 21 digits + 5 spaces
+                textCapitalization: TextCapitalization.characters,
+                validator: (v) {
+                  final raw = v?.replaceAll(' ', '') ?? '';
+                  if (raw.isEmpty) return 'Enter IBAN';
+                  if (!raw.toUpperCase().startsWith('CH')) {
+                    return 'Swiss IBAN must start with CH';
+                  }
+                  if (raw.length < 21) return 'IBAN is too short';
+                  return null;
+                },
+              ),
+              SizedBox(height: 18.h),
+
+              // --- Bank Name ---
+              const _FieldLabel('Bank Name'),
+              SizedBox(height: 8.h),
+              _BankTextField(
+                controller: _bankNameCtrl,
+                hint: 'e.g. UBS, Credit Suisse, PostFinance',
+                prefixIcon: Icons.account_balance_outlined,
+                keyboardType: TextInputType.text,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Enter bank name' : null,
+              ),
+              SizedBox(height: 18.h),
+
+              // --- SWIFT/BIC (optional) ---
+              const _FieldLabel('SWIFT / BIC Code (Optional)'),
+
+              // SizedBox(height: 8.h),
+              // _BankTextField(
+              //   controller: _swiftCtrl,
+              //   hint: 'e.g. UBSWCHZH80A',
+              //   prefixIcon: Icons.code_rounded,
+              //   keyboardType: TextInputType.text,
+              //   inputFormatters: [
+              //     FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
+              //     LengthLimitingTextInputFormatter(11),
+              //   ],
+              //   textCapitalization: TextCapitalization.characters,
+              //   validator: (v) {
+              //     if (v == null || v.trim().isEmpty) return null; // optional
+              //     final len = v.trim().length;
+              //     if (len != 8 && len != 11) {
+              //       return 'SWIFT/BIC must be 8 or 11 characters';
+              //     }
+              //     return null;
+              //   },
+              // ),
+              SizedBox(height: 12.h),
+
+              // --- Security note ---
+              _SecurityNote(),
+
+              SizedBox(height: 40.h),
+
+              // --- Submit button ---
+              provider.isSaving
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.sceTeal,
+                      ),
+                    )
+                  : CustomButton(
+                      text: _isEditing
+                          ? 'Update Bank Details'
+                          : (widget.isPaymentFlow
+                                ? 'Confirm Transfer Details'
+                                : 'Save Bank Details'),
+                      onPressed: _submit,
+                    ),
+              SizedBox(height: 20.h),
+              if (_isEditing)
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _isEditing = false;
+                      });
+                    },
+                    child: Text(
+                      "Cancel Edit",
+                      style: FontManager.bodyMedium(color: AppColors.white),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

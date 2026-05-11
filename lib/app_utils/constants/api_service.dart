@@ -81,6 +81,11 @@ static String get overallRating => "$baseUrl/api/auctions/me/overall-rating/"; /
 // Auction Management
 static String get auctionManagement => "$baseUrl/api/auctions/me/"; // ?status= `active` - Active * `sold` - Sold * `unsold` - Unsold * `withdrawn` - Withdrawn
 
+// Bank 
+static String get allBankDetails => "$baseUrl/api/users/me/bank-account"; // GET // response: { "bank_name": "", "account_name": "", "iban": "" }
+static String get addBankDetails => "$baseUrl/api/users/me/bank-account/create/"; // POST // body:{ "bank_name": "", "account_name": " account holder name", "iban": "" }
+static String get modifyBankDetails => "$baseUrl/api/users/me/bank-account/update/"; // POST // body:{ "bank_name": "", "account_name": " account holder name", "iban": "" }
+static String get deleteBankDetails => "$baseUrl/api/users/me/bank-account/delete/"; // DELETE 
 
 
 
