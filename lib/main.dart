@@ -15,6 +15,7 @@ import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/controllers/subscription_provider.dart';
 import 'package:rionydo/controllers/premium_analytics_provider.dart';
 import 'package:rionydo/controllers/dealer_reviews_provider.dart';
+import 'package:rionydo/controllers/advance_statistics_provider.dart';
 import 'package:rionydo/firebase_options.dart';
 import 'package:rionydo/services/firebase_service.dart';
 
@@ -44,6 +45,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => AuctionsDetailProvider()),
         ChangeNotifierProvider(create: (_) => PremiumAnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => DealerReviewsProvider()),
+        ChangeNotifierProvider(create: (_) => AdvanceStatisticsProvider()),
       ],
       child: const MyApp(),
     ),
