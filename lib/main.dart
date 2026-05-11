@@ -7,6 +7,7 @@ import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/controllers/auctions/create_auctions_provider.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
+import 'package:rionydo/controllers/auctions/auction_management_provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 import 'package:rionydo/controllers/auth/register_provider.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
@@ -39,6 +40,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
         ChangeNotifierProvider(create: (_) => CreateAuctionProvider()),
         ChangeNotifierProvider(create: (_) => MyAuctionsProvider()),
+        ChangeNotifierProvider(create: (_) => AuctionManagementProvider()),
         ChangeNotifierProvider(create: (_) => AuctionsDetailProvider()),
         ChangeNotifierProvider(create: (_) => PremiumAnalyticsProvider()),
         ChangeNotifierProvider(create: (_) => DealerReviewsProvider()),

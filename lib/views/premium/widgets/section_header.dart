@@ -13,7 +13,7 @@ class AuctionSectionHeader extends StatelessWidget {
       title,
       style: FontManager.labelSmall(color: AppColors.sceGreyA0).copyWith(
         letterSpacing: 1.5,
-        fontSize: 11.sp,
+        fontSize: 10.sp,
         fontWeight: FontWeight.w600,
       ),
     );

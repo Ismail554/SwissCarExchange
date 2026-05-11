@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/controllers/auctions/auction_management_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/models/auctions/auction_image.dart';
+import 'package:rionydo/models/auctions/my_auctions_response.dart';
+import 'package:rionydo/models/premium/auction_management_response.dart' as premium;
 import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
 import 'package:rionydo/views/auctions/presentations/auction_details.dart';
-import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import '../widgets/auction_management_card.dart';
 
 class AuctionManagement extends StatefulWidget {
@@ -18,7 +21,22 @@ class AuctionManagement extends StatefulWidget {
 }
 
 class _AuctionManagementState extends State<AuctionManagement> {
-  int _selectedIndex = 0; // 0 for Active, 1 for Completed
+  static const _statusTabs = {
+    'active': 'Active',
+    'sold': 'Sold',
+    'unsold': 'Unsold',
+    'withdrawn': 'Withdrawn',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<AuctionManagementProvider>().fetchAuctions();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +75,11 @@ class _AuctionManagementState extends State<AuctionManagement> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const CreateAuction()),
-                );
+                ).then((_) {
+                  if (context.mounted) {
+                    context.read<AuctionManagementProvider>().fetchAuctions();
+                  }
+                });
               },
               child: Container(
                 padding: EdgeInsets.all(6.r),
@@ -77,34 +99,116 @@ class _AuctionManagementState extends State<AuctionManagement> {
           SizedBox(height: 16.h),
 
           // ── TABS / CHIPS ──
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Row(
-              children: [
-                _buildFilterChip("Active (2)", 0),
-                SizedBox(width: 12.w),
-                _buildFilterChip("Completed (1)", 1),
-              ],
-            ),
+          Consumer<AuctionManagementProvider>(
+            builder: (context, provider, _) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: _statusTabs.entries.map((entry) {
+                    final isSelected = provider.selectedStatus == entry.key;
+                    // We can append the count if it matches the current status
+                    final countText = isSelected && provider.response != null
+                        ? " (${provider.response!.count})"
+                        : "";
+                    return Padding(
+                      padding: EdgeInsets.only(right: 12.w),
+                      child: _buildFilterChip(
+                        "${entry.value}$countText",
+                        entry.key,
+                        provider,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              );
+            },
           ),
 
           SizedBox(height: 24.h),
 
           // ── LISTING ──
           Expanded(
-            child: _selectedIndex == 0
-                ? _buildActiveList()
-                : _buildCompletedList(),
+            child: Consumer<AuctionManagementProvider>(
+              builder: (context, provider, _) {
+                if (provider.isLoading && provider.auctions.isEmpty) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: AppColors.sceTeal),
+                  );
+                }
+
+                if (provider.errorMessage != null && provider.auctions.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error_outline, color: AppColors.errorRed, size: 48.sp),
+                          SizedBox(height: 12.h),
+                          Text(
+                            provider.errorMessage!,
+                            style: FontManager.bodyMedium(color: AppColors.sceGrey99),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 12.h),
+                          TextButton(
+                            onPressed: () => provider.fetchAuctions(),
+                            child: Text(
+                              "Retry",
+                              style: FontManager.bodyMedium(color: AppColors.sceTeal),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                if (provider.auctions.isEmpty) {
+                  return RefreshIndicator(
+                    color: AppColors.sceTeal,
+                    onRefresh: () => provider.fetchAuctions(),
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                        _buildEmptyState(_statusTabs[provider.selectedStatus] ?? ""),
+                      ],
+                    ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  color: AppColors.sceTeal,
+                  onRefresh: () => provider.fetchAuctions(),
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: provider.auctions.length,
+                    itemBuilder: (context, index) {
+                      final auction = provider.auctions[index];
+                      return _buildAuctionCard(auction);
+                    },
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterChip(String label, int index) {
-    bool isSelected = _selectedIndex == index;
+  Widget _buildFilterChip(
+    String label,
+    String statusKey,
+    AuctionManagementProvider provider,
+  ) {
+    bool isSelected = provider.selectedStatus == statusKey;
     return GestureDetector(
-      onTap: () => setState(() => _selectedIndex = index),
+      onTap: () => provider.setStatus(statusKey),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         decoration: BoxDecoration(
@@ -118,154 +222,130 @@ class _AuctionManagementState extends State<AuctionManagement> {
         ),
         child: Text(
           label,
-          style:
-              FontManager.labelMedium(
-                color: isSelected ? Colors.white : AppColors.sceGreyA0,
-              ).copyWith(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
+          style: FontManager.labelMedium(
+            color: isSelected ? Colors.white : AppColors.sceGreyA0,
+          ).copyWith(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildActiveList() {
-    return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      physics: const BouncingScrollPhysics(),
-      children: [
-        AuctionManagementCard(
-          imageUrl:
-              "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
-          title: "Porsche 911 GT3 2022",
-          status: "ACTIVE",
-          subStatus: "LIVE",
-          views: 342,
-          bids: 23,
-          bidders: 12,
-          currentBid: 185000,
-          reservePrice: 180000,
-          isReserveMet: true,
-          timeLeft: "2d 5h",
-          onViewDetails: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AuctionDetails(
-                  data: AuctionItem(
-                    id: 1,
-                    title: "Porsche 911 GT3 2022",
-                    vehicleBrand: "Porsche",
-                    sellerName: "Premium Dealer",
-                    currentHighestBid: "185,000",
-                    reservePrice: "180,000",
-                    status: "ACTIVE",
-                    createdAt: DateTime.now(),
-                    totalBidders: 12,
-                    images: [
-                      const AuctionImage(
-                        url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
-                        position: 0,
-                      )
-                    ],
-                  ),
-                ),
+  Widget _buildAuctionCard(premium.Auction auction) {
+    final imageUrl = auction.images.isNotEmpty ? auction.images.first.url : '';
+    final currentBid = double.tryParse(auction.currentHighestBid) ?? 0;
+    final reserve = double.tryParse(auction.reservePrice) ?? 0;
+    final isReserveMet = currentBid >= reserve;
+
+    return AuctionManagementCard(
+      imageUrl: imageUrl,
+      title: auction.title,
+      status: auction.status.toUpperCase(),
+      subStatus: _getSubStatus(auction),
+      views: auction.viewCount,
+      bids: auction.totalBids,
+      bidders: auction.totalBidders,
+      currentBid: currentBid,
+      reservePrice: reserve,
+      isReserveMet: isReserveMet,
+      timeLeft: _formatTimeLeft(auction.endsAt),
+      onViewDetails: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AuctionDetails(
+              data: AuctionItem(
+                id: auction.id,
+                title: auction.title,
+                vehicleBrand: auction.vehicleBrand,
+                sellerName: auction.sellerName,
+                currentHighestBid: auction.currentHighestBid,
+                reservePrice: auction.reservePrice,
+                status: auction.status,
+                createdAt: DateTime.now(),
+                endsAt: auction.endsAt,
+                totalBidders: auction.totalBidders,
+                images: auction.images
+                    .map((img) => AuctionImage(
+                          url: img.url,
+                          position: img.position,
+                        ))
+                    .toList(),
               ),
-            );
-          },
-          onMenuTap: () {},
-        ),
-        AuctionManagementCard(
-          imageUrl:
-              "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
-          title: "Mercedes-AMG GT 2021",
-          status: "ACTIVE",
-          subStatus: "SCHEDULED",
-          views: 189,
-          bids: 15,
-          bidders: 8,
-          currentBid: 95000,
-          reservePrice: 90000,
-          isReserveMet: true,
-          timeLeft: "5d 12h",
-          onViewDetails: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AuctionDetails(
-                  data: AuctionItem(
-                    id: 2,
-                    title: "Mercedes-AMG GT 2021",
-                    vehicleBrand: "Mercedes",
-                    sellerName: "Premium Dealer",
-                    currentHighestBid: "95,000",
-                    reservePrice: "90,000",
-                    status: "ACTIVE",
-                    createdAt: DateTime.now(),
-                    totalBidders: 8,
-                    images: [
-                      const AuctionImage(
-                        url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
-                        position: 0,
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-          onMenuTap: () {},
-        ),
-      ],
+            ),
+          ),
+        );
+      },
+      onMenuTap: () {},
     );
   }
 
-  Widget _buildCompletedList() {
-    return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      physics: const BouncingScrollPhysics(),
-      children: [
-        AuctionManagementCard(
-          imageUrl: "https://images.unsplash.com/photo-1542281286-9e0a16bb7366",
-          title: "Audi R8 V10 Plus 2018",
-          status: "COMPLETED",
-          subStatus: "FINISHED",
-          views: 654,
-          bids: 42,
-          bidders: 28,
-          currentBid: 125000,
-          reservePrice: 120000,
-          isReserveMet: true,
-          timeLeft: "Ended 2 days ago",
-          onViewDetails: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AuctionDetails(
-                  data: AuctionItem(
-                    id: 3,
-                    title: "Audi R8 V10 Plus 2018",
-                    vehicleBrand: "Audi",
-                    sellerName: "Premium Dealer",
-                    currentHighestBid: "125,000",
-                    reservePrice: "120,000",
-                    status: "COMPLETED",
-                    createdAt: DateTime.now(),
-                    totalBidders: 28,
-                    images: [
-                      const AuctionImage(
-                        url: "https://images.unsplash.com/photo-1542281286-9e0a16bb7366",
-                        position: 0,
-                      )
-                    ],
-                  ),
-                ),
+  String _getSubStatus(premium.Auction auction) {
+    final statusLower = auction.status.toLowerCase();
+    if (statusLower == 'active') {
+      final now = DateTime.now();
+      if (auction.endsAt != null && auction.endsAt!.isBefore(now)) {
+        return "ENDED";
+      }
+      return "LIVE";
+    }
+    return auction.status.toUpperCase();
+  }
+
+  String _formatTimeLeft(DateTime? endsAt) {
+    if (endsAt == null) return "No end date";
+    final now = DateTime.now();
+    if (endsAt.isBefore(now)) {
+      final diff = now.difference(endsAt);
+      if (diff.inDays > 0) {
+        return "Ended ${diff.inDays}d ago";
+      } else if (diff.inHours > 0) {
+        return "Ended ${diff.inHours}h ago";
+      } else {
+        return "Ended recently";
+      }
+    } else {
+      final diff = endsAt.difference(now);
+      if (diff.inDays > 0) {
+        return "${diff.inDays}d ${diff.inHours % 24}h left";
+      } else if (diff.inHours > 0) {
+        return "${diff.inHours}h ${diff.inMinutes % 60}m left";
+      } else {
+        return "${diff.inMinutes}m left";
+      }
+    }
+  }
+
+  Widget _buildEmptyState(String status) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 40.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.gavel_rounded,
+              color: AppColors.sceGrey99,
+              size: 64.sp,
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              "No $status Listings",
+              style: FontManager.bodyMedium(color: AppColors.sceGrey99).copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
               ),
-            );
-          },
-          onMenuTap: () {},
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              "You don't have any auctions listed under $status status currently.",
+              style: FontManager.bodySmall(color: AppColors.sceGreyA0),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
