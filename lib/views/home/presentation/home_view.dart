@@ -117,7 +117,10 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     Expanded(
                       child: StatCard(
-                        label: 'CURRENT BALANCE',
+                        ///// Pending work
+                        /// Only for bidder role won auction
+                        /// for dealer  "total_revenue": "202750.00", [/api/analytics/stats/]
+                        label: 'Won Auction',
                         value: 'CHF 32,500',
                         subValue: '+ 5.4%',
                         accentColor: AppColors.sceTeal,
@@ -126,6 +129,9 @@ class _HomeViewState extends State<HomeView> {
                     SizedBox(width: 12.w),
                     Expanded(
                       child: StatCard(
+                        // Inherit from bidder-stats/
+                        //only for bidder role
+                        // for dealer  "active_auctions": 3, [/api/analytics/stats/]
                         label: 'WATCHLIST',
                         value: '24',
                         labelDesc: 'Active Auctions',

@@ -13,6 +13,7 @@ import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/controllers/subscription_provider.dart';
 import 'package:rionydo/controllers/premium_analytics_provider.dart';
+import 'package:rionydo/controllers/dealer_reviews_provider.dart';
 import 'package:rionydo/firebase_options.dart';
 import 'package:rionydo/services/firebase_service.dart';
 
@@ -24,7 +25,7 @@ Future<void> main() async {
 
   final globalState = GlobalState();
   await globalState.rehydrate();
-  
+
   // Fire and forget FCM initialization to avoid blocking runApp
   FirebaseService.initFirebaseMessaging();
 
@@ -40,6 +41,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => MyAuctionsProvider()),
         ChangeNotifierProvider(create: (_) => AuctionsDetailProvider()),
         ChangeNotifierProvider(create: (_) => PremiumAnalyticsProvider()),
+        ChangeNotifierProvider(create: (_) => DealerReviewsProvider()),
       ],
       child: const MyApp(),
     ),

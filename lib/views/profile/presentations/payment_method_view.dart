@@ -10,12 +10,11 @@ import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
 import 'package:rionydo/views/won_auction/presentations/auction_contact_view.dart';
 
-/// Screen to save and manage user payment methods (cards) or complete a payment.
+/// Screen to collect Switzerland offline bank transfer information (IBAN/SEPA).
 class PaymentMethodView extends StatefulWidget {
   final bool isPaymentFlow;
-  
-  const PaymentMethodView({super.key, this.isPaymentFlow = false});
 
+  const PaymentMethodView({super.key, this.isPaymentFlow = false});
 
   @override
   State<PaymentMethodView> createState() => _PaymentMethodViewState();
@@ -23,33 +22,32 @@ class PaymentMethodView extends StatefulWidget {
 
 class _PaymentMethodViewState extends State<PaymentMethodView> {
   final _formKey = GlobalKey<FormState>();
-  final _cardNumberCtrl = TextEditingController();
-  final _cardHolderCtrl = TextEditingController();
-  final _expiryCtrl = TextEditingController();
-  final _cvvCtrl = TextEditingController();
+  final _accountHolderCtrl = TextEditingController();
+  final _ibanCtrl = TextEditingController();
+  final _bankNameCtrl = TextEditingController();
+  final _swiftCtrl = TextEditingController();
 
   @override
   void dispose() {
-    _cardNumberCtrl.dispose();
-    _cardHolderCtrl.dispose();
-    _expiryCtrl.dispose();
-    _cvvCtrl.dispose();
+    _accountHolderCtrl.dispose();
+    _ibanCtrl.dispose();
+    _bankNameCtrl.dispose();
+    _swiftCtrl.dispose();
     super.dispose();
   }
 
-  void _saveCard() {
+  void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
       if (widget.isPaymentFlow) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const PaySuccessful(
-              nextScreen: AuctionContactView(),
-            ),
+            builder: (context) =>
+                const PaySuccessful(nextScreen: AuctionContactView()),
           ),
         );
       } else {
-        AppSnackBar.success(context, "Card saved successfully!");
+        AppSnackBar.success(context, "Bank details saved successfully!");
         Navigator.pop(context);
       }
     }
@@ -65,7 +63,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
         leadingWidth: 56.w,
         leading: const CustomBackButton(),
         title: Text(
-          'Payment Methods',
+          'Bank Transfer',
           style: FontManager.heading2(color: AppColors.white),
         ),
       ),
@@ -77,100 +75,105 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.isPaymentFlow 
-                      ? 'Enter your card details to complete the payment'
-                      : 'Save your cards for getting online payments',
-                  style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
+                // --- Info banner ---
+                _InfoBanner(
+                  icon: Icons.account_balance_rounded,
+                  message: widget.isPaymentFlow
+                      ? 'Provide your Swiss bank details to receive the payment via IBAN/SEPA transfer.'
+                      : 'Save your Swiss bank details for offline IBAN/SEPA transfers.',
                 ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 28.h),
 
-                // --- Card Number ---
-                const _FieldLabel('Card Number'),
+                // --- Account Holder Name ---
+                const _FieldLabel('Account Holder Name'),
                 SizedBox(height: 8.h),
-                _CardTextField(
-                  controller: _cardNumberCtrl,
-                  hint: '1234 5678 9012 3456',
-                  prefixIcon: Icons.credit_card_rounded,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    _CardNumberFormatter(),
-                  ],
-                  maxLength: 19,
-                  validator: (v) => (v == null || v.length < 19)
-                      ? 'Enter a valid card number'
-                      : null,
-                ),
-                SizedBox(height: 18.h),
-
-                // --- Cardholder Name ---
-                const _FieldLabel('Cardholder Name'),
-                SizedBox(height: 8.h),
-                _CardTextField(
-                  controller: _cardHolderCtrl,
-                  hint: 'John Doe',
+                _BankTextField(
+                  controller: _accountHolderCtrl,
+                  hint: 'e.g. Hans Müller',
+                  prefixIcon: Icons.person_outline_rounded,
                   keyboardType: TextInputType.name,
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Enter cardholder name'
+                      ? 'Enter account holder name'
                       : null,
                 ),
                 SizedBox(height: 18.h),
 
-                // --- Expiry + CVV row ---
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const _FieldLabel('Expiry Date'),
-                          SizedBox(height: 8.h),
-                          _CardTextField(
-                            controller: _expiryCtrl,
-                            hint: 'MM/YY',
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              _ExpiryFormatter(),
-                            ],
-                            maxLength: 5,
-                            validator: (v) =>
-                                (v == null || v.length < 5) ? 'Invalid' : null,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const _FieldLabel('CVV'),
-                          SizedBox(height: 8.h),
-                          _CardTextField(
-                            controller: _cvvCtrl,
-                            hint: '123',
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            maxLength: 3,
-                            obscureText: true,
-                            validator: (v) =>
-                                (v == null || v.length < 3) ? 'Invalid' : null,
-                          ),
-                        ],
-                      ),
-                    ),
+                // --- IBAN ---
+                const _FieldLabel('IBAN'),
+                SizedBox(height: 8.h),
+                _BankTextField(
+                  controller: _ibanCtrl,
+                  hint: 'CH56 0483 5012 3456 7800 9',
+                  prefixIcon: Icons.tag_rounded,
+                  keyboardType: TextInputType.text,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9 ]')),
+                    _IbanFormatter(),
                   ],
+                  maxLength: 26, // CH IBAN: 21 digits + 5 spaces
+                  textCapitalization: TextCapitalization.characters,
+                  validator: (v) {
+                    final raw = v?.replaceAll(' ', '') ?? '';
+                    if (raw.isEmpty) return 'Enter IBAN';
+                    if (!raw.toUpperCase().startsWith('CH')) {
+                      return 'Swiss IBAN must start with CH';
+                    }
+                    if (raw.length < 21) return 'IBAN is too short';
+                    return null;
+                  },
                 ),
-                SizedBox(height: 48.h),
+                SizedBox(height: 18.h),
 
-                // --- Save button ---
+                // --- Bank Name ---
+                const _FieldLabel('Bank Name'),
+                SizedBox(height: 8.h),
+                _BankTextField(
+                  controller: _bankNameCtrl,
+                  hint: 'e.g. UBS, Credit Suisse, PostFinance',
+                  prefixIcon: Icons.account_balance_outlined,
+                  keyboardType: TextInputType.text,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'Enter bank name'
+                      : null,
+                ),
+                SizedBox(height: 18.h),
+
+                // --- SWIFT/BIC (optional) ---
+                const _FieldLabel('SWIFT / BIC Code (Optional)'),
+                SizedBox(height: 8.h),
+                _BankTextField(
+                  controller: _swiftCtrl,
+                  hint: 'e.g. UBSWCHZH80A',
+                  prefixIcon: Icons.code_rounded,
+                  keyboardType: TextInputType.text,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
+                    LengthLimitingTextInputFormatter(11),
+                  ],
+                  textCapitalization: TextCapitalization.characters,
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return null; // optional
+                    final len = v.trim().length;
+                    if (len != 8 && len != 11) {
+                      return 'SWIFT/BIC must be 8 or 11 characters';
+                    }
+                    return null;
+                  },
+                ),
+
+                SizedBox(height: 12.h),
+
+                // --- Security note ---
+                _SecurityNote(),
+
+                SizedBox(height: 40.h),
+
+                // --- Submit button ---
                 CustomButton(
-                  text: widget.isPaymentFlow ? 'Pay Now' : 'Save',
-                  onPressed: _saveCard,
+                  text: widget.isPaymentFlow
+                      ? 'Confirm Transfer Details'
+                      : 'Save Bank Details',
+                  onPressed: _submit,
                 ),
                 SizedBox(height: 20.h),
               ],
@@ -183,7 +186,70 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
 }
 
 // ---------------------------------------------------------------------------
-// Reused Internal Widgets (adapted from OnlinePaymentView for better encapsulation)
+// Info Banner
+// ---------------------------------------------------------------------------
+
+class _InfoBanner extends StatelessWidget {
+  final IconData icon;
+  final String message;
+
+  const _InfoBanner({required this.icon, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color: AppColors.sceTeal.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: AppColors.sceTeal.withOpacity(0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.sceTeal, size: 20.sp),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Text(
+              message,
+              style: FontManager.bodySmall(color: AppColors.sceGreyA0),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Security Note
+// ---------------------------------------------------------------------------
+
+class _SecurityNote extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          Icons.lock_outline_rounded,
+          color: AppColors.sceGreyA0,
+          size: 14.sp,
+        ),
+        SizedBox(width: 6.w),
+        Expanded(
+          child: Text(
+            'Your bank details are stored securely and only used for IBAN/SEPA transfers.',
+            style: FontManager.bodySmall(color: AppColors.sceGreyA0),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Reusable Field Label
 // ---------------------------------------------------------------------------
 
 class _FieldLabel extends StatelessWidget {
@@ -196,7 +262,11 @@ class _FieldLabel extends StatelessWidget {
   }
 }
 
-class _CardTextField extends StatelessWidget {
+// ---------------------------------------------------------------------------
+// Reusable Bank Text Field
+// ---------------------------------------------------------------------------
+
+class _BankTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
   final IconData? prefixIcon;
@@ -204,9 +274,10 @@ class _CardTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
   final bool obscureText;
+  final TextCapitalization textCapitalization;
   final String? Function(String?)? validator;
 
-  const _CardTextField({
+  const _BankTextField({
     required this.controller,
     required this.hint,
     this.prefixIcon,
@@ -214,6 +285,7 @@ class _CardTextField extends StatelessWidget {
     this.inputFormatters,
     this.maxLength,
     this.obscureText = false,
+    this.textCapitalization = TextCapitalization.none,
     this.validator,
   });
 
@@ -225,6 +297,7 @@ class _CardTextField extends StatelessWidget {
       inputFormatters: inputFormatters,
       maxLength: maxLength,
       obscureText: obscureText,
+      textCapitalization: textCapitalization,
       validator: validator,
       style: FontManager.bodyMedium(color: AppColors.white),
       buildCounter:
@@ -266,40 +339,24 @@ class _CardTextField extends StatelessWidget {
   }
 }
 
-class _CardNumberFormatter extends TextInputFormatter {
+// ---------------------------------------------------------------------------
+// IBAN Formatter — groups into blocks of 4 separated by spaces
+// e.g. CH56 0483 5012 3456 7800 9
+// ---------------------------------------------------------------------------
+
+class _IbanFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final digits = newValue.text.replaceAll(' ', '');
+    final raw = newValue.text.replaceAll(' ', '').toUpperCase();
     final buffer = StringBuffer();
-    for (int i = 0; i < digits.length; i++) {
+    for (int i = 0; i < raw.length; i++) {
       if (i > 0 && i % 4 == 0) buffer.write(' ');
-      buffer.write(digits[i]);
+      buffer.write(raw[i]);
     }
     final formatted = buffer.toString();
-    return newValue.copyWith(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
-    );
-  }
-}
-
-class _ExpiryFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final digits = newValue.text.replaceAll('/', '');
-    if (digits.length <= 2) {
-      return newValue.copyWith(
-        text: digits,
-        selection: TextSelection.collapsed(offset: digits.length),
-      );
-    }
-    final formatted = '${digits.substring(0, 2)}/${digits.substring(2)}';
     return newValue.copyWith(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),

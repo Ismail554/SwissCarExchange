@@ -133,7 +133,7 @@ class _BidsViewState extends State<BidsView> {
           _buildPinnedHeader(),
           _buildBody(),
           _buildTransactionSliver(),
-          SliverToBoxAdapter(child: SizedBox(height: 32.h)),
+         SliverToBoxAdapter(child: SizedBox(height: 32.h)),
         ],
       ),
     );

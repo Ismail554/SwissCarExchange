@@ -72,6 +72,9 @@ static String get premiumStats => "$baseUrl/api/analytics/stats/"; // GET
 static String get premiumTrands => "$baseUrl/api/analytics/trands/"; // GET
 static String get salesByCategory => "$baseUrl/api/analytics/sales-by-category/"; // GET
 
+// Review
+static String get allReviews => "$baseUrl/api/auctions/me/reviews/";
+
 
 
 

@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/views/auctions/presentations/auction_details.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AuctionsView extends StatefulWidget {
   const AuctionsView({super.key});
@@ -145,13 +146,7 @@ class _AuctionsViewState extends State<AuctionsView> {
             Consumer<MyAuctionsProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                  return const Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.sceTeal,
-                      ),
-                    ),
-                  );
+                  return _buildShimmerLoading();
                 }
 
                 if (provider.errorMessage != null) {
@@ -182,29 +177,49 @@ class _AuctionsViewState extends State<AuctionsView> {
                       ),
                       AppSpacing.h10,
                       Expanded(
-                        child: auctions.isEmpty
-                            ? Center(
-                                child: Text(
-                                  "No auctions found",
-                                  style: FontManager.bodyMedium(
-                                    color: AppColors.textHint,
+                        child: RefreshIndicator(
+                          color: AppColors.sceTeal,
+                          backgroundColor: AppColors.sceCardBg,
+                          onRefresh: () async {
+                            await context.read<MyAuctionsProvider>().fetchAuctions(
+                                  statusFilter: _mapFilterToStatus(
+                                    _filters[_selectedFilterIndex],
                                   ),
-                                ),
-                              )
-                            : GridView.builder(
-                                padding: EdgeInsets.only(bottom: 20.h),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 16.w,
-                                      mainAxisSpacing: 16.h,
-                                      childAspectRatio: 0.54,
+                                );
+                          },
+                          child: auctions.isEmpty
+                              ? ListView(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  children: [
+                                    SizedBox(
+                                      height: 300.h,
+                                      child: Center(
+                                        child: Text(
+                                          "No auctions found",
+                                          style: FontManager.bodyMedium(
+                                            color: AppColors.textHint,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                itemCount: auctions.length,
-                                itemBuilder: (context, index) {
-                                  return _buildAuctionCard(auctions[index]);
-                                },
-                              ),
+                                  ],
+                                )
+                              : GridView.builder(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  padding: EdgeInsets.only(bottom: 20.h),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 16.w,
+                                        mainAxisSpacing: 16.h,
+                                        childAspectRatio: 0.54,
+                                      ),
+                                  itemCount: auctions.length,
+                                  itemBuilder: (context, index) {
+                                    return _buildAuctionCard(auctions[index]);
+                                  },
+                                ),
+                        ),
                       ),
                     ],
                   ),
@@ -469,5 +484,109 @@ class _AuctionsViewState extends State<AuctionsView> {
     } else {
       return "${difference.inMinutes}m remaining";
     }
+  }
+
+  Widget _buildShimmerLoading() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppSpacing.h10,
+          _buildShimmerBox(width: 120.w, height: 16.h),
+          AppSpacing.h10,
+          Expanded(
+            child: GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.only(bottom: 20.h),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16.w,
+                mainAxisSpacing: 16.h,
+                childAspectRatio: 0.54,
+              ),
+              itemCount: 6,
+              itemBuilder: (context, index) {
+                return _buildShimmerCard();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.sceCardBg,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 4,
+            child: _buildShimmerBox(borderRadius: BorderRadius.zero),
+          ),
+          Expanded(
+            flex: 4,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildShimmerBox(width: 110.w, height: 14.h),
+                      SizedBox(height: 6.h),
+                      _buildShimmerBox(width: 70.w, height: 10.h),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Divider(
+                        color: Colors.white.withOpacity(0.07),
+                        height: 1,
+                        thickness: 1,
+                      ),
+                      SizedBox(height: 8.h),
+                      _buildShimmerBox(width: 50.w, height: 10.h),
+                      SizedBox(height: 4.h),
+                      _buildShimmerBox(width: 80.w, height: 14.h),
+                      SizedBox(height: 6.h),
+                      _buildShimmerBox(
+                        width: 100.w,
+                        height: 16.h,
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerBox({double? width, double? height, BorderRadiusGeometry? borderRadius}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.white.withOpacity(0.05),
+      highlightColor: Colors.white.withOpacity(0.1),
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: borderRadius ?? BorderRadius.circular(12.r),
+        ),
+      ),
+    );
   }
 }

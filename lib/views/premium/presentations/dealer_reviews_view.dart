@@ -1,14 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/utils/app_spacing.dart';
+import 'package:rionydo/controllers/dealer_reviews_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/models/profile/all_review_response.dart';
 import 'package:rionydo/views/premium/widgets/dealer_review_card.dart';
 import 'package:rionydo/views/premium/widgets/dealer_review_summary_card.dart';
 
-class DealerReviewsView extends StatelessWidget {
+class DealerReviewsView extends StatefulWidget {
   const DealerReviewsView({super.key});
+
+  @override
+  State<DealerReviewsView> createState() => _DealerReviewsViewState();
+}
+
+class _DealerReviewsViewState extends State<DealerReviewsView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DealerReviewsProvider>(context, listen: false).fetchReviews();
+    });
+  }
+
+  String _formatDate(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    final month = months[dateTime.month - 1];
+    return "$month ${dateTime.day}, ${dateTime.year}";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,89 +67,133 @@ class DealerReviewsView extends StatelessWidget {
           ],
         ),
       ),
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 16.h),
-            
-            // ── OVERALL RATING ──
-            const DealerReviewSummaryCard(
-              overallRating: 4.7,
-              communication: 4.8,
-              accuracy: 4.5,
-              reliability: 4.9,
-            ),
+      child: Consumer<DealerReviewsProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.reviewResponse == null) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.sceTeal),
+            );
+          }
 
-            SizedBox(height: 32.h),
-
-            // ── ALL REVIEWS SECTION ──
-            Text(
-              "ALL REVIEWS",
-              style: FontManager.labelSmall(color: AppColors.sceGreyA0).copyWith(
-                letterSpacing: 1.2,
-                fontWeight: FontWeight.bold,
+          if (provider.errorMessage != null && provider.reviewResponse == null) {
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, color: AppColors.errorRed, size: 48.sp),
+                    AppSpacing.h12,
+                    Text(
+                      provider.errorMessage!,
+                      style: FontManager.bodyMedium(color: AppColors.sceGrey99),
+                      textAlign: TextAlign.center,
+                    ),
+                    AppSpacing.h12,
+                    TextButton(
+                      onPressed: () => provider.fetchReviews(),
+                      child: Text(
+                        "Retry",
+                        style: FontManager.bodyMedium(color: AppColors.sceTeal),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 16.h),
+            );
+          }
 
-            // ── REVIEW LIST ──
-            _buildReviewList(),
-            
-            SizedBox(height: 40.h),
-          ],
-        ),
+          final results = provider.reviewResponse?.results ?? [];
+
+          return RefreshIndicator(
+            color: AppColors.sceTeal,
+            onRefresh: () => provider.fetchReviews(),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+              children: [
+                if (results.isEmpty) ...[
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.rate_review_outlined,
+                          color: AppColors.sceGrey99,
+                          size: 64.sp,
+                        ),
+                        AppSpacing.h16,
+                        Text(
+                          "No reviews yet",
+                          style: FontManager.bodyMedium(color: AppColors.sceGrey99).copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                        AppSpacing.h4,
+                        Text(
+                          "When buyers leave feedback, it will appear here.",
+                          style: FontManager.bodySmall(color: AppColors.sceGreyA0),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ] else ...[
+                  // ── OVERALL RATING ──
+                  DealerReviewSummaryCard(
+                    overallRating: provider.averageOverall,
+                    communication: provider.averageCommunication,
+                    accuracy: provider.averageAccuracy,
+                    reliability: provider.averageReliability,
+                  ),
+
+                  SizedBox(height: 32.h),
+
+                  // ── ALL REVIEWS SECTION ──
+                  Text(
+                    "ALL REVIEWS",
+                    style: FontManager.labelSmall(color: AppColors.sceGreyA0).copyWith(
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // ── REVIEW LIST ──
+                  _buildReviewList(results),
+
+                  SizedBox(height: 40.h),
+                ],
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildReviewList() {
-    final reviews = [
-      {
-        "author": "AutoSelect Swiss",
-        "date": "Oct 20, 2023",
-        "rating": 5.0,
-        "review": "Excellent dealer, very professional and the car was exactly as described. Highly recommend!",
-        "comm": 5.0,
-        "acc": 5.0,
-        "rel": 5.0,
-      },
-      {
-        "author": "Marcus Weber",
-        "date": "Oct 15, 2023",
-        "rating": 4.0,
-        "review": "Good experience overall. The communication was prompt, though the car preparation took slightly longer than expected.",
-        "comm": 4.0,
-        "acc": 4.5,
-        "rel": 4.0,
-      },
-      {
-        "author": "Zurich Luxury Motors",
-        "date": "Oct 02, 2023",
-        "rating": 5.0,
-        "review": "Seamless transaction. The reliability of this dealer is top-notch. Will definitely work together again.",
-        "comm": 5.0,
-        "acc": 5.0,
-        "rel": 5.0,
-      },
-    ];
-
+  Widget _buildReviewList(List<Review> results) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: reviews.length,
+      itemCount: results.length,
       separatorBuilder: (context, index) => SizedBox(height: 16.h),
       itemBuilder: (context, index) {
-        final r = reviews[index];
+        final r = results[index];
+        final authorName = r.reviewer.fullName.isNotEmpty
+            ? r.reviewer.fullName
+            : (r.reviewer.company.isNotEmpty ? r.reviewer.company : "Anonymous User");
+
         return DealerReviewCard(
-          author: r["author"] as String,
-          date: r["date"] as String,
-          rating: r["rating"] as double,
-          review: r["review"] as String,
-          communication: r["comm"] as double,
-          accuracy: r["acc"] as double,
-          reliability: r["rel"] as double,
+          author: authorName,
+          date: _formatDate(r.createdAt),
+          rating: r.overallRating,
+          review: r.reviewText,
+          communication: r.communicationRating,
+          accuracy: r.vehicleAccuracyRating,
+          reliability: r.transactionReliabilityRating,
         );
       },
     );

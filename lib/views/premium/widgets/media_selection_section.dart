@@ -114,7 +114,7 @@ class MediaSelectionSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           child: Container(
             width: 72.w,
-            height: 72.w,
+            height: 72.h,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(color: Colors.white.withOpacity(0.1)),

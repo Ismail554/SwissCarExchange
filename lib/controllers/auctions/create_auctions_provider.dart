@@ -59,21 +59,27 @@ class CreateAuctionProvider extends ChangeNotifier {
       }
 
       // 2. Upload Video (if any)
-      String? videoUrl;
+      String videoUrl = "";
       if (video != null) {
-        videoUrl = await S3UploadHelper.presignAndUpload(
+        final url = await S3UploadHelper.presignAndUpload(
           video,
           presignedEndpoint: ApiService.auctionPresignedUrl,
         );
+        if (url != null) {
+          videoUrl = url;
+        }
       }
 
       // 3. Upload Document (if any)
-      String? documentUrl;
+      String documentUrl = "";
       if (document != null) {
-        documentUrl = await S3UploadHelper.presignAndUpload(
+        final url = await S3UploadHelper.presignAndUpload(
           document,
           presignedEndpoint: ApiService.auctionPresignedUrl,
         );
+        if (url != null) {
+          documentUrl = url;
+        }
       }
 
       // 4. Create Auction
@@ -101,7 +107,7 @@ class CreateAuctionProvider extends ChangeNotifier {
         url: ApiService.createAuction,
         method: Methods.post,
         body: payload,
-        successCode: 201
+        successCode: 201,
       );
 
       return response.fold(
