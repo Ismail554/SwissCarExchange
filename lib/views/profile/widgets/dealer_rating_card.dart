@@ -1,15 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
+import 'package:rionydo/controllers/dealer_reviews_provider.dart';
 import 'package:rionydo/views/premium/presentations/dealer_reviews_view.dart';
+import 'package:shimmer/shimmer.dart';
 
-class DealerRatingCard extends StatelessWidget {
+class DealerRatingCard extends StatefulWidget {
   const DealerRatingCard({super.key});
 
   @override
+  State<DealerRatingCard> createState() => _DealerRatingCardState();
+}
+
+class _DealerRatingCardState extends State<DealerRatingCard> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DealerReviewsProvider>().fetchOverallRating();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final ratingProvider = context.watch<DealerReviewsProvider>();
+    final ratingData = ratingProvider.overallRating;
+    final isLoading = ratingProvider.isRatingLoading && ratingData == null;
+
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
@@ -37,32 +57,43 @@ class DealerRatingCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        '4.6',
-                        style: TextStyle(
-                          color: AppColors.sceGold,
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 4.h),
-                        child: Text(
-                          ' / 5',
+                      if (isLoading)
+                        _buildShimmerBox(width: 50.w, height: 24.h)
+                      else
+                        Text(
+                          ratingData?.overallRating.toStringAsFixed(1) ?? '0.0',
                           style: TextStyle(
-                            color: AppColors.grey,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
+                            color: AppColors.sceGold,
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                      ),
+                      if (!isLoading) ...[
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 4.h),
+                          child: Text(
+                            ' / 5',
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   SizedBox(height: 2.h),
-                  Text(
-                    'Based on 28 reviews',
-                    style: FontManager.bodySmall(color: AppColors.grey),
-                  ),
+                  if (isLoading)
+                    Padding(
+                      padding: EdgeInsets.only(top: 4.h),
+                      child: _buildShimmerBox(width: 120.w, height: 12.h),
+                    )
+                  else
+                    Text(
+                      'Based on ${ratingData?.totalReviewCount ?? 0} reviews',
+                      style: FontManager.bodySmall(color: AppColors.grey),
+                    ),
                 ],
               ),
             ],
@@ -70,10 +101,13 @@ class DealerRatingCard extends StatelessWidget {
           AppSpacing.h20,
           Container(height: 1, color: AppColors.darkGrey),
           AppSpacing.h16,
-          Text(
-            '28 completed sales',
-            style: FontManager.bodyMedium(color: AppColors.greyD4),
-          ),
+          if (isLoading)
+            _buildShimmerBox(width: 140.w, height: 16.h)
+          else
+            Text(
+              '${ratingData?.totalReviewCount ?? 0} completed sales',
+              style: FontManager.bodyMedium(color: AppColors.greyD4),
+            ),
           AppSpacing.h16,
           SizedBox(
             width: double.infinity,
@@ -81,7 +115,9 @@ class DealerRatingCard extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => DealerReviewsView()),
+                  MaterialPageRoute(
+                    builder: (context) => const DealerReviewsView(),
+                  ),
                 );
               },
               style: OutlinedButton.styleFrom(
@@ -113,6 +149,21 @@ class DealerRatingCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerBox({double? width, double? height}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.white.withOpacity(0.05),
+      highlightColor: Colors.white.withOpacity(0.1),
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4.r),
+        ),
       ),
     );
   }

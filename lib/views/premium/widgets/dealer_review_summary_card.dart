@@ -37,7 +37,11 @@ class DealerReviewSummaryCard extends StatelessWidget {
                   color: AppColors.sceGold,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.star_rounded, color: Colors.white, size: 32.sp),
+                child: Icon(
+                  Icons.star_rounded,
+                  color: Colors.white,
+                  size: 32.sp,
+                ),
               ),
               SizedBox(width: 16.w),
               Column(
@@ -48,14 +52,17 @@ class DealerReviewSummaryCard extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: overallRating.toString(),
-                          style: FontManager.heading2(color: AppColors.sceGold).copyWith(
-                            fontSize: 36.sp,
-                            fontWeight: FontWeight.w900,
-                          ),
+                          style: FontManager.heading2(color: AppColors.sceGold)
+                              .copyWith(
+                                fontSize: 36.sp,
+                                fontWeight: FontWeight.w900,
+                              ),
                         ),
                         TextSpan(
                           text: " / 5",
-                          style: FontManager.hintText().copyWith(fontSize: 18.sp),
+                          style: FontManager.hintText().copyWith(
+                            fontSize: 18.sp,
+                          ),
                         ),
                       ],
                     ),
@@ -65,17 +72,17 @@ class DealerReviewSummaryCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 24.h),
-          Divider(color: AppColors.sceGold.withOpacity(0.1)),
-          SizedBox(height: 16.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildRatingColumn("Communication", communication),
-              _buildRatingColumn("Accuracy", accuracy),
-              _buildRatingColumn("Reliability", reliability),
-            ],
-          ),
+          // SizedBox(height: 24.h),
+          // Divider(color: AppColors.sceGold.withOpacity(0.1)),
+          // SizedBox(height: 16.h),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     _buildRatingColumn("Communication", communication),
+          //     _buildRatingColumn("Accuracy", accuracy),
+          //     _buildRatingColumn("Reliability", reliability),
+          //   ],
+          // ),
         ],
       ),
     );
@@ -84,10 +91,7 @@ class DealerReviewSummaryCard extends StatelessWidget {
   Widget _buildRatingColumn(String label, double rating) {
     return Column(
       children: [
-        Text(
-          label,
-          style: FontManager.labelSmall(color: AppColors.sceGreyA0),
-        ),
+        Text(label, style: FontManager.labelSmall(color: AppColors.sceGreyA0)),
         SizedBox(height: 8.h),
         SceStarRating(rating: rating, size: 14),
       ],

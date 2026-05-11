@@ -3,6 +3,7 @@ import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/models/profile/all_review_response.dart';
+import 'package:rionydo/models/profile/overall_rating_response.dart';
 
 class DealerReviewsProvider extends ChangeNotifier {
   ReviewResponse? _reviewResponse;
@@ -13,6 +14,15 @@ class DealerReviewsProvider extends ChangeNotifier {
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+
+  OverallRatingResponse? _overallRating;
+  OverallRatingResponse? get overallRating => _overallRating;
+
+  bool _isRatingLoading = false;
+  bool get isRatingLoading => _isRatingLoading;
+
+  String? _ratingErrorMessage;
+  String? get ratingErrorMessage => _ratingErrorMessage;
 
   // ─── Computed Getters for Summary Averages ────────────────────────────────
   double get averageOverall {
@@ -25,21 +35,27 @@ class DealerReviewsProvider extends ChangeNotifier {
   double get averageCommunication {
     final list = _reviewResponse?.results;
     if (list == null || list.isEmpty) return 0.0;
-    final total = list.map((e) => e.communicationRating).reduce((a, b) => a + b);
+    final total = list
+        .map((e) => e.communicationRating)
+        .reduce((a, b) => a + b);
     return double.parse((total / list.length).toStringAsFixed(1));
   }
 
   double get averageAccuracy {
     final list = _reviewResponse?.results;
     if (list == null || list.isEmpty) return 0.0;
-    final total = list.map((e) => e.vehicleAccuracyRating).reduce((a, b) => a + b);
+    final total = list
+        .map((e) => e.vehicleAccuracyRating)
+        .reduce((a, b) => a + b);
     return double.parse((total / list.length).toStringAsFixed(1));
   }
 
   double get averageReliability {
     final list = _reviewResponse?.results;
     if (list == null || list.isEmpty) return 0.0;
-    final total = list.map((e) => e.transactionReliabilityRating).reduce((a, b) => a + b);
+    final total = list
+        .map((e) => e.transactionReliabilityRating)
+        .reduce((a, b) => a + b);
     return double.parse((total / list.length).toStringAsFixed(1));
   }
 
@@ -72,6 +88,37 @@ class DealerReviewsProvider extends ChangeNotifier {
     }
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> fetchOverallRating() async {
+    _isRatingLoading = true;
+    _ratingErrorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.overallRating,
+        method: Methods.get,
+        skipAuth: false,
+      );
+
+      response.fold(
+        (error) {
+          debugPrint('REVIEWS: ❌ fetchOverallRating error: $error');
+          _ratingErrorMessage = error;
+        },
+        (data) {
+          debugPrint('REVIEWS: ✅ fetchOverallRating success');
+          _overallRating = OverallRatingResponse.fromJson(data);
+        },
+      );
+    } catch (e) {
+      debugPrint('REVIEWS: ❌ Unexpected error in fetchOverallRating: $e');
+      _ratingErrorMessage = 'Failed to load rating.';
+    }
+
+    _isRatingLoading = false;
     notifyListeners();
   }
 }

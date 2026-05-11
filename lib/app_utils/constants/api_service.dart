@@ -74,6 +74,7 @@ static String get salesByCategory => "$baseUrl/api/analytics/sales-by-category/"
 
 // Review
 static String get allReviews => "$baseUrl/api/auctions/me/reviews/";
+static String get overallRating => "$baseUrl/api/auctions/me/overall-rating/"; // response: { "overall_rating": 2.0, "total_review_count": 1 }
 
 
 

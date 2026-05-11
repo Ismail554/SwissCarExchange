@@ -28,6 +28,7 @@ class _AuctionsViewState extends State<AuctionsView> {
     "Withdrawn",
     "Payment Expired",
     "Shipping Expired",
+    "Scheduled",
     "Removed",
   ];
 
@@ -53,6 +54,8 @@ class _AuctionsViewState extends State<AuctionsView> {
         return "payment_expired";
       case "Shipping Expired":
         return "shipping_expired";
+      case "Scheduled":
+        return "scheduled";
       case "Removed":
         return "removed";
       default:
@@ -181,7 +184,9 @@ class _AuctionsViewState extends State<AuctionsView> {
                           color: AppColors.sceTeal,
                           backgroundColor: AppColors.sceCardBg,
                           onRefresh: () async {
-                            await context.read<MyAuctionsProvider>().fetchAuctions(
+                            await context
+                                .read<MyAuctionsProvider>()
+                                .fetchAuctions(
                                   statusFilter: _mapFilterToStatus(
                                     _filters[_selectedFilterIndex],
                                   ),
@@ -189,7 +194,8 @@ class _AuctionsViewState extends State<AuctionsView> {
                           },
                           child: auctions.isEmpty
                               ? ListView(
-                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
                                   children: [
                                     SizedBox(
                                       height: 300.h,
@@ -205,7 +211,8 @@ class _AuctionsViewState extends State<AuctionsView> {
                                   ],
                                 )
                               : GridView.builder(
-                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
                                   padding: EdgeInsets.only(bottom: 20.h),
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
@@ -575,7 +582,11 @@ class _AuctionsViewState extends State<AuctionsView> {
     );
   }
 
-  Widget _buildShimmerBox({double? width, double? height, BorderRadiusGeometry? borderRadius}) {
+  Widget _buildShimmerBox({
+    double? width,
+    double? height,
+    BorderRadiusGeometry? borderRadius,
+  }) {
     return Shimmer.fromColors(
       baseColor: Colors.white.withOpacity(0.05),
       highlightColor: Colors.white.withOpacity(0.1),
