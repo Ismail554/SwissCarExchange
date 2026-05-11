@@ -80,6 +80,7 @@ class PricingDurationSection extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         _buildPickerRow(
+          context: context,
           dateText: _formatDate(startDate),
           timeText: _formatTime(startTime),
           dateHint: "Select Start Date",
@@ -100,6 +101,7 @@ class PricingDurationSection extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         _buildPickerRow(
+          context: context,
           dateText: _formatDate(endDate),
           timeText: _formatTime(endTime),
           dateHint: "Select End Date",
@@ -146,6 +148,7 @@ class PricingDurationSection extends StatelessWidget {
   }
 
   Widget _buildPickerRow({
+    required BuildContext context,
     required String dateText,
     required String timeText,
     required String dateHint,
@@ -162,7 +165,10 @@ class PricingDurationSection extends StatelessWidget {
         Expanded(
           flex: 5,
           child: GestureDetector(
-            onTap: onTapDate,
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              onTapDate();
+            },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               decoration: BoxDecoration(
@@ -200,7 +206,10 @@ class PricingDurationSection extends StatelessWidget {
         Expanded(
           flex: 4,
           child: GestureDetector(
-            onTap: onTapTime,
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              onTapTime();
+            },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
               decoration: BoxDecoration(
@@ -232,7 +241,10 @@ class PricingDurationSection extends StatelessWidget {
                   if (showClearTime) ...[
                     SizedBox(width: 4.w),
                     GestureDetector(
-                      onTap: onClearTime,
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                        onClearTime();
+                      },
                       child: Padding(
                         padding: EdgeInsets.all(2.w),
                         child: Icon(

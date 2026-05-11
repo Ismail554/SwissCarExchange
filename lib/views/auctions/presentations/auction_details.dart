@@ -85,8 +85,8 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                               size: 20,
                             ),
                             onPressed: () async {
-                              final provider =
-                                  context.read<AuctionsDetailProvider>();
+                              final provider = context
+                                  .read<AuctionsDetailProvider>();
                               final isCurrentlyWatchlisted =
                                   detail?.isWatchlisted ?? false;
 

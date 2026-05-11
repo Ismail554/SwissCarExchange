@@ -9,7 +9,9 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
+import 'package:rionydo/controllers/home_stats_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
+import 'package:rionydo/models/profile/user_profile_response.dart';
 import 'package:rionydo/views/auctions/presentations/auction_details.dart';
 import 'package:rionydo/views/auctions/widgets/auction_countdown.dart';
 import 'package:rionydo/views/home/widgets/notification_badge.dart';
@@ -30,6 +32,14 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MyAuctionsProvider>().fetchAuctions();
+      // Fetch home stats based on user role
+      final isDealer = context.read<GlobalState>().userType == UserType.company;
+      final statsProvider = context.read<HomeStatsProvider>();
+      if (isDealer) {
+        statsProvider.fetchDealerStats();
+      } else {
+        statsProvider.fetchBidderStats();
+      }
     });
   }
 
@@ -113,34 +123,84 @@ class _HomeViewState extends State<HomeView> {
               delegate: SliverChildListDelegate([
                 AppSpacing.h24,
                 // ── Stats Row ───────────────────────────────────────────
-                Row(
-                  children: [
-                    Expanded(
-                      child: StatCard(
-                        ///// Pending work
-                        /// Only for bidder role --> won auction
-                        /// for dealer --> ["total_revenue": "202750.00", [/api/analytics/stats/]
-                        label: 'Won Auction',
-                        value: 'CHF 32,500',
-                        subValue: '+ 5.4%',
-                        accentColor: AppColors.sceTeal,
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: StatCard(
-                        ///// Pending work
-                        // Inherit from bidder-stats/
-                        //only for bidder role
-                        // for dealer  "active_auctions": 3, [/api/analytics/stats/]
-                        label: 'WATCHLIST',
-                        value: '24',
-                        labelDesc: 'Active Auctions',
-                        accentColor: AppColors.sceGold,
-                        isWatchlist: true,
-                      ),
-                    ),
-                  ],
+                Consumer2<HomeStatsProvider, GlobalState>(
+                  builder: (context, statsProvider, globalState, _) {
+                    final isDealer = globalState.userType == UserType.company;
+
+                    // ── Card 1: Revenue (dealer) / Won Auctions (bidder) ──
+                    String card1Label;
+                    String card1Value;
+                    String? card1Sub;
+
+                    if (statsProvider.isLoading) {
+                      card1Label = isDealer ? 'TOTAL REVENUE' : 'WON AUCTIONS';
+                      card1Value = '00';
+                    } else if (isDealer && statsProvider.dealerStats != null) {
+                      card1Label = 'TOTAL REVENUE';
+                      card1Value =
+                          'CHF ${statsProvider.dealerStats!.totalRevenue}';
+                    } else if (!isDealer && statsProvider.bidderStats != null) {
+                      card1Label = 'WON AUCTIONS';
+                      card1Value = '${statsProvider.bidderStats!.auctionsWon}';
+                      card1Sub =
+                          'Win rate: ${statsProvider.bidderStats!.winRate.toStringAsFixed(0)}%';
+                    } else {
+                      card1Label = isDealer ? 'TOTAL REVENUE' : 'WON AUCTIONS';
+                      card1Value = '0';
+                    }
+
+                    // ── Card 2: Active Auctions (dealer) / Participated (bidder) ──
+                    String card2Label;
+                    String card2Value;
+                    String? card2Desc;
+
+                    if (statsProvider.isLoading) {
+                      card2Label = isDealer
+                          ? 'ACTIVE AUCTIONS'
+                          : 'PARTICIPATED';
+                      card2Value = '0';
+                    } else if (isDealer && statsProvider.dealerStats != null) {
+                      card2Label = 'ACTIVE AUCTIONS';
+                      card2Value =
+                          '${statsProvider.dealerStats!.activeAuctions}';
+                      card2Desc =
+                          'Sold: ${statsProvider.dealerStats!.soldCount}';
+                    } else if (!isDealer && statsProvider.bidderStats != null) {
+                      card2Label = 'PARTICIPATED';
+                      card2Value =
+                          '${statsProvider.bidderStats!.auctionsParticipated}';
+                      card2Desc =
+                          'Avg bid: CHF ${statsProvider.bidderStats!.avgBid}';
+                    } else {
+                      card2Label = isDealer
+                          ? 'ACTIVE AUCTIONS'
+                          : 'PARTICIPATED';
+                      card2Value = '—';
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: StatCard(
+                            label: card1Label,
+                            value: card1Value,
+                            subValue: card1Sub,
+                            accentColor: AppColors.sceTeal,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: StatCard(
+                            label: card2Label,
+                            value: card2Value,
+                            labelDesc: card2Desc,
+                            accentColor: AppColors.sceGold,
+                            isWatchlist: isDealer,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 AppSpacing.h20,
 

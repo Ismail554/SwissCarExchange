@@ -19,6 +19,7 @@ import 'package:rionydo/controllers/premium_analytics_provider.dart';
 import 'package:rionydo/controllers/dealer_reviews_provider.dart';
 import 'package:rionydo/controllers/advance_statistics_provider.dart';
 import 'package:rionydo/controllers/bank_account_provider.dart';
+import 'package:rionydo/controllers/home_stats_provider.dart';
 import 'package:rionydo/firebase_options.dart';
 import 'package:rionydo/services/firebase_service.dart';
 
@@ -56,6 +57,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => AdvanceStatisticsProvider()),
         ChangeNotifierProvider(create: (_) => BankAccountProvider()),
         ChangeNotifierProvider(create: (_) => WonAuctionProvider()),
+        ChangeNotifierProvider(create: (_) => HomeStatsProvider()),
       ],
       child: const MyApp(),
     ),

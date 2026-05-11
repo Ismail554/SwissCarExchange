@@ -26,6 +26,9 @@ class _AuctionCountdownState extends State<AuctionCountdown> {
   Timer? _timer;
   Duration _timeLeft = Duration.zero;
 
+  bool get _isEnded =>
+      widget.endTime != null && DateTime.now().isAfter(widget.endTime!);
+
   @override
   void initState() {
     super.initState();
@@ -48,99 +51,207 @@ class _AuctionCountdownState extends State<AuctionCountdown> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        _calculateTimeLeft();
-      }
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) _calculateTimeLeft();
     });
   }
 
   void _calculateTimeLeft() {
     if (widget.endTime == null) {
-      setState(() {
-        _timeLeft = Duration.zero;
-      });
+      setState(() => _timeLeft = Duration.zero);
       return;
     }
-
-    final now = DateTime.now();
-    final difference = widget.endTime!.difference(now);
-
-    setState(() {
-      _timeLeft = difference.isNegative ? Duration.zero : difference;
-    });
+    final diff = widget.endTime!.difference(DateTime.now());
+    setState(() => _timeLeft = diff.isNegative ? Duration.zero : diff);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_timeLeft == Duration.zero && widget.endTime != null && DateTime.now().isAfter(widget.endTime!)) {
-      return Text(
-        "AUCTION ENDED",
-        style: widget.valueStyle ?? FontManager.heading3(color: AppColors.errorRed),
+    // ── Ended state ──
+    if (_isEnded) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          color: AppColors.errorRed.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: AppColors.errorRed.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.timer_off_rounded,
+              color: AppColors.errorRed,
+              size: 13.sp,
+            ),
+            SizedBox(width: 5.w),
+            Text(
+              'AUCTION ENDED',
+              style:
+                  widget.valueStyle ??
+                  FontManager.labelSmall(
+                    color: AppColors.errorRed,
+                  ).copyWith(fontWeight: FontWeight.w700, fontSize: 11.sp),
+            ),
+          ],
+        ),
       );
     }
 
     final days = _timeLeft.inDays;
-    final hours = _timeLeft.inHours % 24;
+    final showDays = widget.showDays || days > 0;
+    final hours = showDays ? _timeLeft.inHours % 24 : _timeLeft.inHours;
     final minutes = _timeLeft.inMinutes % 60;
     final seconds = _timeLeft.inSeconds % 60;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (widget.showDays && days > 0) ...[
-          _buildTimeSegment(days.toString().padLeft(2, '0'), "DAYS"),
-          _buildSeparator(),
-        ],
-        _buildTimeSegment(hours.toString().padLeft(2, '0'), "HRS"),
-        _buildSeparator(),
-        _buildTimeSegment(minutes.toString().padLeft(2, '0'), "MIN"),
-        _buildSeparator(),
-        _buildTimeSegment(seconds.toString().padLeft(2, '0'), "SEC"),
-      ],
+    // Urgency: under 1 hour remaining
+    final isUrgent = _timeLeft.inSeconds > 0 && _timeLeft.inHours < 1;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Shrink segment width if space is tight
+        final availableWidth = constraints.maxWidth;
+        final segmentCount = showDays && days > 0 ? 4 : 3;
+        // Each segment + separators. Separator ~16.w each (padding 6 * 2 + colon width ~4)
+        final separatorCount = segmentCount - 1;
+        final usableWidth = availableWidth - (separatorCount * 20.w);
+        final segmentWidth = (usableWidth / segmentCount).clamp(40.0, 65.0);
+
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (showDays && days > 0) ...[
+              _TimeSegment(
+                value: _pad(days),
+                label: 'DAYS',
+                width: segmentWidth.w,
+                isUrgent: isUrgent,
+                valueStyle: widget.valueStyle,
+                labelStyle: widget.labelStyle,
+              ),
+              _Separator(isUrgent: isUrgent),
+            ],
+            _TimeSegment(
+              value: _pad(hours),
+              label: 'HRS',
+              width: segmentWidth.w,
+              isUrgent: isUrgent,
+              valueStyle: widget.valueStyle,
+              labelStyle: widget.labelStyle,
+            ),
+            _Separator(isUrgent: isUrgent),
+            _TimeSegment(
+              value: _pad(minutes),
+              label: 'MIN',
+              width: segmentWidth.w,
+              isUrgent: isUrgent,
+              valueStyle: widget.valueStyle,
+              labelStyle: widget.labelStyle,
+            ),
+            _Separator(isUrgent: isUrgent),
+            _TimeSegment(
+              value: _pad(seconds),
+              label: 'SEC',
+              width: segmentWidth.w,
+              isUrgent: isUrgent,
+              valueStyle: widget.valueStyle,
+              labelStyle: widget.labelStyle,
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildTimeSegment(String value, String label) {
-    return Container(
-      width: 65.w,
-      padding: EdgeInsets.symmetric(vertical: 10.h),
+  String _pad(int n) => n.toString().padLeft(2, '0');
+}
+
+// ── Time Segment ─────────────────────────────────────────────────────────────
+
+class _TimeSegment extends StatelessWidget {
+  final String value;
+  final String label;
+  final double width;
+  final bool isUrgent;
+  final TextStyle? valueStyle;
+  final TextStyle? labelStyle;
+
+  const _TimeSegment({
+    required this.value,
+    required this.label,
+    required this.width,
+    required this.isUrgent,
+    this.valueStyle,
+    this.labelStyle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final urgentColor = AppColors.errorRed;
+    final borderColor = isUrgent
+        ? urgentColor.withOpacity(0.35)
+        : Colors.white.withOpacity(0.07);
+    final bgColor = isUrgent
+        ? urgentColor.withOpacity(0.07)
+        : AppColors.sceCardBg;
+    final valueColor = isUrgent ? urgentColor : Colors.white;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: width,
+      padding: EdgeInsets.symmetric(vertical: 8.h),
       decoration: BoxDecoration(
-        color: AppColors.sceCardBg,
+        color: bgColor,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             value,
-            style: widget.valueStyle ??
+            style:
+                valueStyle ??
                 FontManager.heading3(
-                  color: Colors.white,
-                ).copyWith(fontSize: 22.sp),
+                  color: valueColor,
+                ).copyWith(fontSize: 20.sp, height: 1),
           ),
-          SizedBox(height: 2.h),
+          SizedBox(height: 3.h),
           Text(
             label,
-            style: widget.labelStyle ??
+            style:
+                labelStyle ??
                 FontManager.labelSmall(
-                  color: AppColors.textHint,
-                ).copyWith(fontSize: 9.sp),
+                  color: isUrgent
+                      ? urgentColor.withOpacity(0.7)
+                      : AppColors.textHint,
+                ).copyWith(fontSize: 8.sp, letterSpacing: 0.4),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildSeparator() {
+// ── Separator ─────────────────────────────────────────────────────────────────
+
+class _Separator extends StatelessWidget {
+  final bool isUrgent;
+
+  const _Separator({required this.isUrgent});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 6.w),
+      padding: EdgeInsets.symmetric(horizontal: 4.w),
       child: Text(
-        ":",
+        ':',
         style: FontManager.heading3(
-          color: AppColors.textHint,
-        ),
+          color: isUrgent
+              ? AppColors.errorRed.withOpacity(0.6)
+              : AppColors.textHint,
+        ).copyWith(fontSize: 18.sp, height: 1),
       ),
     );
   }
