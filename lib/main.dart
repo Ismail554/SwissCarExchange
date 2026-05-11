@@ -9,6 +9,7 @@ import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/controllers/auctions/create_auctions_provider.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
 import 'package:rionydo/controllers/auctions/auction_management_provider.dart';
+import 'package:rionydo/controllers/auctions/won_auction_provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 import 'package:rionydo/controllers/auth/register_provider.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
@@ -23,7 +24,7 @@ import 'package:rionydo/services/firebase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    // Lock the orientation to portrait
+  // Lock the orientation to portrait
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -54,6 +55,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => DealerReviewsProvider()),
         ChangeNotifierProvider(create: (_) => AdvanceStatisticsProvider()),
         ChangeNotifierProvider(create: (_) => BankAccountProvider()),
+        ChangeNotifierProvider(create: (_) => WonAuctionProvider()),
       ],
       child: const MyApp(),
     ),

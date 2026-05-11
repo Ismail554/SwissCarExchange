@@ -647,62 +647,69 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   SizedBox(height: 24.h),
 
                   // Auto Bid Section
-                  Container(
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      color: AppColors.sceTealStatBg.withOpacity(0.5),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: _isAuctionEnded
+                          ? null
+                          : () async {
+                              final newVal = !_isAutoBidEnabled;
+                              if (!newVal) {
+                                // Disable auto bid
+                                final provider = context
+                                    .read<AuctionsDetailProvider>();
+                                await provider.deleteAutoBid(_auctionId);
+                                if (mounted) {
+                                  setState(() => _isAutoBidEnabled = false);
+                                  AppSnackBar.info(
+                                    context,
+                                    "Auto bid disabled.",
+                                  );
+                                }
+                              } else {
+                                setState(() => _isAutoBidEnabled = true);
+                              }
+                            },
                       borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(
-                        color: AppColors.sceTeal.withOpacity(0.2),
+                      child: Ink(
+                        padding: EdgeInsets.all(16.w),
+                        decoration: BoxDecoration(
+                          color: AppColors.sceTealStatBg.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: AppColors.sceTeal.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            IgnorePointer(
+                              child: SizedBox(
+                                height: 24.w,
+                                width: 24.w,
+                                child: Checkbox(
+                                  value: _isAutoBidEnabled,
+                                  onChanged: _isAuctionEnded ? null : (_) {},
+                                  activeColor: AppColors.sceTeal,
+                                  checkColor: Colors.white,
+                                  side: BorderSide(
+                                    color: AppColors.sceTeal.withOpacity(0.5),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.r),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Text(
+                              "Enable Auto Bidding",
+                              style: FontManager.labelMedium(
+                                color: AppColors.sceTeal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          height: 24.w,
-                          width: 24.w,
-                          child: Checkbox(
-                            value: _isAutoBidEnabled,
-                            onChanged: _isAuctionEnded
-                                ? null
-                                : (bool? value) async {
-                                    final newVal = value ?? false;
-                                    if (!newVal) {
-                                      // Disable auto bid
-                                      final provider = context
-                                          .read<AuctionsDetailProvider>();
-                                      await provider.deleteAutoBid(_auctionId);
-                                      if (mounted) {
-                                        setState(
-                                          () => _isAutoBidEnabled = false,
-                                        );
-                                        AppSnackBar.info(
-                                          context,
-                                          "Auto bid disabled.",
-                                        );
-                                      }
-                                    } else {
-                                      setState(() => _isAutoBidEnabled = true);
-                                    }
-                                  },
-                            activeColor: AppColors.sceTeal,
-                            checkColor: Colors.white,
-                            side: BorderSide(
-                              color: AppColors.sceTeal.withOpacity(0.5),
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Text(
-                          "Enable Auto Bidding",
-                          style: FontManager.labelMedium(
-                            color: AppColors.sceTeal,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
 

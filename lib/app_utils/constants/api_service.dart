@@ -87,7 +87,8 @@ static String get addBankDetails => "$baseUrl/api/users/me/bank-account/create/"
 static String get modifyBankDetails => "$baseUrl/api/users/me/bank-account/update/"; // POST // body:{ "bank_name": "", "account_name": " account holder name", "iban": "" }
 static String get deleteBankDetails => "$baseUrl/api/users/me/bank-account/delete/"; // DELETE 
 
-
+// Won Auction
+static String get wonAuction => "$baseUrl/api/auctions/me/bid/?filter=won";
 
 
 

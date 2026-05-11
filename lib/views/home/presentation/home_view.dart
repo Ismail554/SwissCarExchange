@@ -118,8 +118,8 @@ class _HomeViewState extends State<HomeView> {
                     Expanded(
                       child: StatCard(
                         ///// Pending work
-                        /// Only for bidder role won auction
-                        /// for dealer  "total_revenue": "202750.00", [/api/analytics/stats/]
+                        /// Only for bidder role --> won auction
+                        /// for dealer --> ["total_revenue": "202750.00", [/api/analytics/stats/]
                         label: 'Won Auction',
                         value: 'CHF 32,500',
                         subValue: '+ 5.4%',
@@ -129,6 +129,7 @@ class _HomeViewState extends State<HomeView> {
                     SizedBox(width: 12.w),
                     Expanded(
                       child: StatCard(
+                        ///// Pending work
                         // Inherit from bidder-stats/
                         //only for bidder role
                         // for dealer  "active_auctions": 3, [/api/analytics/stats/]
