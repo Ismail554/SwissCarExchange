@@ -1,10 +1,15 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/models/profile/bank_account_model.dart';
 
 class BankAccountProvider extends ChangeNotifier {
+  static const _storage = FlutterSecureStorage();
+  static const String _bankAccountCacheKey = 'cached_bank_account';
+
   BankAccountModel? _bankAccount;
   BankAccountModel? get bankAccount => _bankAccount;
 
@@ -17,11 +22,22 @@ class BankAccountProvider extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  /// Fetches existing bank details
+  /// Fetches existing bank details (supports local cache for offline)
   Future<void> fetchBankDetails() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
+
+    // 1. Try to load cached data first for offline capability
+    final cachedData = await _storage.read(key: _bankAccountCacheKey);
+    if (cachedData != null) {
+      try {
+        _bankAccount = BankAccountModel.fromJson(jsonDecode(cachedData));
+        notifyListeners(); // update UI instantly with cache
+      } catch (e) {
+        debugPrint('BANK_ACCOUNT: ❌ Error decoding cache: $e');
+      }
+    }
 
     try {
       final response = await DioManager.apiRequest(
@@ -30,25 +46,38 @@ class BankAccountProvider extends ChangeNotifier {
         skipAuth: false,
       );
 
-      response.fold(
-        (error) {
+      await response.fold(
+        (error) async {
           debugPrint('BANK_ACCOUNT: ❌ fetchBankDetails error: $error');
-          // If no bank details exist, it might return a 404 or specific error.
-          // We set it to null so the UI can show the add form.
-          _bankAccount = null;
+          // If user specifically has no bank account (404/not found), clear cache
+          final errLower = error.toLowerCase();
+          if (errLower.contains('404') || errLower.contains('not found')) {
+            _bankAccount = null;
+            await _storage.delete(key: _bankAccountCacheKey);
+          } else {
+            // Keep local cached details if network is unavailable
+            if (_bankAccount == null) {
+              _errorMessage = error;
+            }
+          }
         },
-        (data) {
+        (data) async {
           debugPrint('BANK_ACCOUNT: ✅ fetchBankDetails success');
           if (data != null && data.isNotEmpty) {
             _bankAccount = BankAccountModel.fromJson(data);
+            await _storage.write(
+              key: _bankAccountCacheKey,
+              value: jsonEncode(data),
+            );
           } else {
             _bankAccount = null;
+            await _storage.delete(key: _bankAccountCacheKey);
           }
         },
       );
     } catch (e) {
       debugPrint('BANK_ACCOUNT: ❌ Unexpected error: $e');
-      _bankAccount = null;
+      // Maintain cached data on connection failures
     }
 
     _isLoading = false;
@@ -69,7 +98,7 @@ class BankAccountProvider extends ChangeNotifier {
         skipAuth: false,
       );
 
-      return response.fold(
+      return await response.fold(
         (error) {
           debugPrint('BANK_ACCOUNT: ❌ addBankDetails error: $error');
           _errorMessage = error;
@@ -77,10 +106,16 @@ class BankAccountProvider extends ChangeNotifier {
           notifyListeners();
           return false;
         },
-        (data) {
+        (data) async {
           debugPrint('BANK_ACCOUNT: ✅ addBankDetails success');
-          // Refresh the details
-          fetchBankDetails();
+          // Cache the new details instantly
+          _bankAccount = BankAccountModel.fromJson(body);
+          await _storage.write(
+            key: _bankAccountCacheKey,
+            value: jsonEncode(body),
+          );
+
+          fetchBankDetails(); // Refresh details in background
           _isSaving = false;
           notifyListeners();
           return true;
@@ -109,7 +144,7 @@ class BankAccountProvider extends ChangeNotifier {
         skipAuth: false,
       );
 
-      return response.fold(
+      return await response.fold(
         (error) {
           debugPrint('BANK_ACCOUNT: ❌ modifyBankDetails error: $error');
           _errorMessage = error;
@@ -117,10 +152,16 @@ class BankAccountProvider extends ChangeNotifier {
           notifyListeners();
           return false;
         },
-        (data) {
+        (data) async {
           debugPrint('BANK_ACCOUNT: ✅ modifyBankDetails success');
-          // Refresh the details
-          fetchBankDetails();
+          // Cache updated details instantly
+          _bankAccount = BankAccountModel.fromJson(body);
+          await _storage.write(
+            key: _bankAccountCacheKey,
+            value: jsonEncode(body),
+          );
+
+          fetchBankDetails(); // Refresh details in background
           _isSaving = false;
           notifyListeners();
           return true;
@@ -148,7 +189,7 @@ class BankAccountProvider extends ChangeNotifier {
         skipAuth: false,
       );
 
-      return response.fold(
+      return await response.fold(
         (error) {
           debugPrint('BANK_ACCOUNT: ❌ deleteBankDetails error: $error');
           _errorMessage = error;
@@ -156,9 +197,10 @@ class BankAccountProvider extends ChangeNotifier {
           notifyListeners();
           return false;
         },
-        (data) {
+        (data) async {
           debugPrint('BANK_ACCOUNT: ✅ deleteBankDetails success');
           _bankAccount = null;
+          await _storage.delete(key: _bankAccountCacheKey);
           _isSaving = false;
           notifyListeners();
           return true;

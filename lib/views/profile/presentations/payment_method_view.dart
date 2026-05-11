@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
@@ -159,9 +160,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
       body: Consumer<BankAccountProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.sceTeal),
-            );
+            return _buildShimmerLoading();
           }
 
           // Show existing bank info if available and not in editing mode
@@ -310,6 +309,116 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
         SizedBox(height: 4.h),
         Text(value, style: FontManager.bodyLarge(color: AppColors.white)),
       ],
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Banner Shimmer
+            _buildShimmerBox(
+              width: double.infinity,
+              height: 60.h,
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            SizedBox(height: 28.h),
+            // Card Shimmer
+            Container(
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                color: AppColors.sceCardBg,
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      _buildShimmerBox(
+                        width: 24.w,
+                        height: 24.h,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      SizedBox(width: 12.w),
+                      _buildShimmerBox(
+                        width: 150.w,
+                        height: 20.h,
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24.h),
+                  _buildShimmerDetailItem(),
+                  SizedBox(height: 16.h),
+                  _buildShimmerDetailItem(),
+                ],
+              ),
+            ),
+            SizedBox(height: 40.h),
+            // Buttons Shimmer
+            Row(
+              children: [
+                Expanded(
+                  child: _buildShimmerBox(
+                    height: 48.h,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: _buildShimmerBox(
+                    height: 48.h,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerDetailItem() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildShimmerBox(
+          width: 100.w,
+          height: 12.h,
+          borderRadius: BorderRadius.circular(3.r),
+        ),
+        SizedBox(height: 6.h),
+        _buildShimmerBox(
+          width: 200.w,
+          height: 16.h,
+          borderRadius: BorderRadius.circular(4.r),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShimmerBox({
+    double? width,
+    required double height,
+    BorderRadius? borderRadius,
+  }) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.sceCardBg.withOpacity(0.6),
+      highlightColor: AppColors.grey.withOpacity(0.15),
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: borderRadius ?? BorderRadius.circular(8.r),
+        ),
+      ),
     );
   }
 
