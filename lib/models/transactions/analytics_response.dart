@@ -1,3 +1,32 @@
+// --- Bidder Stats ---
+class BidderStats {
+  final int auctionsWon;
+  final int auctionsParticipated;
+  final String avgBid;
+  final double winRate;
+
+  BidderStats({
+    required this.auctionsWon,
+    required this.auctionsParticipated,
+    required this.avgBid,
+    required this.winRate,
+  });
+
+  factory BidderStats.fromJson(Map<String, dynamic> json) => BidderStats(
+    auctionsWon: json["auctions_won"] as int? ?? 0,
+    auctionsParticipated: json["auctions_participated"] as int? ?? 0,
+    avgBid: json["avg_bid"] as String? ?? "0.00",
+    winRate: (json["win_rate"] as num?)?.toDouble() ?? 0.0,
+  );
+
+  Map<String, dynamic> toJson() => {
+    "auctions_won": auctionsWon,
+    "auctions_participated": auctionsParticipated,
+    "avg_bid": avgBid,
+    "win_rate": winRate,
+  };
+}
+
 // --- Bidder Transaction Response ---
 class BidderTransactionResponse {
   final int count;
@@ -19,16 +48,17 @@ class BidderTransactionResponse {
         previous: json["previous"] as String?,
         results: json["results"] == null
             ? []
-            : List<BidderTransactionItem>.from(json["results"]
-                .map((x) => BidderTransactionItem.fromJson(x))),
+            : List<BidderTransactionItem>.from(
+                json["results"].map((x) => BidderTransactionItem.fromJson(x)),
+              ),
       );
 
   Map<String, dynamic> toJson() => {
-        "count": count,
-        "next": next,
-        "previous": previous,
-        "results": List<dynamic>.from(results.map((x) => x.toJson())),
-      };
+    "count": count,
+    "next": next,
+    "previous": previous,
+    "results": List<dynamic>.from(results.map((x) => x.toJson())),
+  };
 }
 
 // --- Bidder Transaction Item ---
@@ -59,12 +89,12 @@ class BidderTransactionItem {
       );
 
   Map<String, dynamic> toJson() => {
-        "auction_id": auctionId,
-        "auction_title": auctionTitle,
-        "amount": amount,
-        "status": status,
-        "auction_date": auctionDate?.toIso8601String(),
-      };
+    "auction_id": auctionId,
+    "auction_title": auctionTitle,
+    "amount": amount,
+    "status": status,
+    "auction_date": auctionDate?.toIso8601String(),
+  };
 }
 
 // --- Dealer Transaction Response ---
@@ -92,20 +122,21 @@ class DealerTransactionResponse {
         previous: json["previous"] as String?,
         results: json["results"] == null
             ? []
-            : List<DealerTransactionItem>.from(json["results"]
-                .map((x) => DealerTransactionItem.fromJson(x))),
+            : List<DealerTransactionItem>.from(
+                json["results"].map((x) => DealerTransactionItem.fromJson(x)),
+              ),
         pendingAmount: (json["pending_amount"] as num?)?.toDouble() ?? 0.0,
         receivedAmount: (json["received_amount"] as num?)?.toDouble() ?? 0.0,
       );
 
   Map<String, dynamic> toJson() => {
-        "count": count,
-        "next": next,
-        "previous": previous,
-        "results": List<dynamic>.from(results.map((x) => x.toJson())),
-        "pending_amount": pendingAmount,
-        "received_amount": receivedAmount,
-      };
+    "count": count,
+    "next": next,
+    "previous": previous,
+    "results": List<dynamic>.from(results.map((x) => x.toJson())),
+    "pending_amount": pendingAmount,
+    "received_amount": receivedAmount,
+  };
 }
 
 // --- Dealer Transaction Item ---
@@ -129,15 +160,17 @@ class DealerTransactionItem {
         auctionTitle: json["auction_title"] ?? "",
         amount: json["amount"] ?? "0.00",
         status: json["status"] ?? "",
-        soldAt: json["sold_at"] != null ? DateTime.tryParse(json["sold_at"]) : null,
+        soldAt: json["sold_at"] != null
+            ? DateTime.tryParse(json["sold_at"])
+            : null,
         buyerCompany: json["buyer_company"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {
-        "auction_title": auctionTitle,
-        "amount": amount,
-        "status": status,
-        "sold_at": soldAt?.toIso8601String(),
-        "buyer_company": buyerCompany,
-      };
+    "auction_title": auctionTitle,
+    "amount": amount,
+    "status": status,
+    "sold_at": soldAt?.toIso8601String(),
+    "buyer_company": buyerCompany,
+  };
 }

@@ -4,7 +4,7 @@ import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/views/profile/presentations/payment_method_view.dart';
+import 'package:rionydo/views/payment/presentations/payment_process_view.dart';
 import 'package:rionydo/views/won_auction/presentations/auction_contact_view.dart';
 import 'package:rionydo/views/won_auction/presentations/rate_dealer_view.dart';
 
@@ -188,7 +188,7 @@ class WonAuctionCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PaymentMethodView(isPaymentFlow: true, auctionId: auctionId),
+                          builder: (context) => PaymentProcessView(auctionId: auctionId),
                         ),
                       );
                     },
