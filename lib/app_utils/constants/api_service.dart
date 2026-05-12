@@ -16,7 +16,8 @@ class ApiService {
       "$baseUrl/api/auth/verify-email/"; // body: {"code": "994405", "email": ""}
   static String get authStatus =>
       "$baseUrl/api/auth/status/"; // validate with access token // response : {"approval_status": "approved"} or {"approval_status": "pending"} or {"approval_status": "suspended"}
-  static String get logout => "$baseUrl/api/auth/logout/"; // POST // body: { "refresh": "" }
+  static String get logout =>
+      "$baseUrl/api/auth/logout/"; // POST // body: { "refresh": "" }
   // Forgot Password
   static String get forgotPassword =>
       "$baseUrl/api/auth/reset-password/request/"; // body: {"email": ""}
@@ -142,4 +143,16 @@ class ApiService {
       "$baseUrl/api/auctions/$auctionId/transaction/choose-shipping/"; // POST // respone: { "auction_id": 26, "status": "shipping_pending", "shipping_method": "local_pickup", "shipping_deadline": "2026-05-18T23:44:44.667087Z" }
   static String markShipping(String auctionId) =>
       "$baseUrl/api/auctions/$auctionId/transaction/mark-shipping-done/"; // POST // response : { "auction_id": 26, "status": "completed", "shipping_marked_at": "2026-05-12T00:38:08.302624Z" }
+
+  //  Support & Chat
+  static String get getSupportContact =>
+      "$baseUrl/api/admin/support-contact/"; // GET // response: { "support_email": "", "support_phone": "" }
+  static String get startChat =>
+      "$baseUrl/api/users/chat/start/"; // POST // body: { "body": "", "attachments": [ { "object_key": "chat-attachmensstsc.pdf", "public_url": "https://cdn.com/t.pdf", "content_type": "application/pdf", "file_name": "t.pdf", "size_bytes": 248123 } ] } // response: { "conversation_id": 2, "message": { "id": 16, "conversation_id": 2, "body": "", "message_type": "text_with_attachment", "created_at": "2026-05-12T21:22:42.416149Z", "sender": { "id": 6, "email": "superuser@jvai.com", "role_kind": "dealer" }, "attachments": [ { "id": 8, "object_key": "chat-attachmenssts/12/2026/04/kyc-d5c.pdf", "public_url": "https://cdn.example.com/chat-attachments/12/2026/04/kyc-doc.pdf", "content_type": "application/pdf", "file_name": "kyc-doc.pdf", "size_bytes": 248123 } ] } }
+  static String get chatHistory =>
+      "$baseUrl/api/users/chat/messages/"; // GET // response: { "messages": [ { "id": 1, "sender": "user", "content": "Hi, I need help with my account verification.", "timestamp": "2026-05-12T14:45:32.823102Z", "attachments": [ { "object_key": "chat-attachments/12/2026/04/kyc-doc.pdf", "public_url": "https://cdn.example.com/chat-attachments/12/2026/04/kyc-doc.pdf", "content_type": "application/pdf", "file_name": "kyc-doc.pdf", "size_bytes": 248123 } ] } ] }
+  static String get sendMessage =>
+      "$baseUrl/api/users/chat/messages/send/"; // POST // body: { "body": "Please find the updated document.", "attachments": [ { "object_key": "chat-attachmendsaasssts/12/2026/04/doc-2.pdf", "public_url": "https://cdn.example.com/chat-attacsdshments/12/2026/04/doc-2.pdf", "content_type": "application/pdf", "file_name": "doc-22.pdf", "size_bytes": 78421 } ] }
+  static String get attachmentPreUrl =>
+      "$baseUrl/api/users/chat/upload/presigned-url/"; // with Params content_type , file_name // response: { "presigned_url": "https://", "object_key": "chat-attachments/6/2026/05/d7dda647c8216d3.png", "public_url": "https://pub-25400/d3.png", "content_type": "image/png" }
 }

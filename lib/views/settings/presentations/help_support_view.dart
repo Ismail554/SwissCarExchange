@@ -8,8 +8,59 @@ import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/views/settings/presentations/chat_support_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HelpSupportView extends StatelessWidget {
+import 'package:rionydo/app_utils/constants/api_service.dart';
+import 'package:rionydo/app_utils/network/dio_manager.dart';
+import 'package:rionydo/app_utils/network/enums.dart';
+import 'package:rionydo/models/admin/support_contact_response.dart';
+
+class HelpSupportView extends StatefulWidget {
   const HelpSupportView({super.key});
+
+  @override
+  State<HelpSupportView> createState() => _HelpSupportViewState();
+}
+
+class _HelpSupportViewState extends State<HelpSupportView> {
+  bool _isLoading = true;
+  String _supportEmail = "support@swisscarexchange.ch";
+  String _supportPhone = "+41 44 123 45 67";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchContactInfo();
+  }
+
+  Future<void> _fetchContactInfo() async {
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.getSupportContact,
+        method: Methods.get,
+      );
+
+      response.fold(
+        (error) {
+          debugPrint('Failed to load support contact: $error');
+          if (mounted) setState(() => _isLoading = false);
+        },
+        (data) {
+          debugPrint('Response from ${ApiService.getSupportContact}: $data');
+          if (mounted && data != null) {
+            final contactData = SupportContactResponse.fromJson(data);
+            setState(() {
+              _supportEmail = contactData.supportEmail.isNotEmpty ? contactData.supportEmail : _supportEmail;
+              _supportPhone = contactData.supportPhone.isNotEmpty ? contactData.supportPhone : _supportPhone;
+              _isLoading = false;
+            });
+          } else {
+            if (mounted) setState(() => _isLoading = false);
+          }
+        },
+      );
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +87,16 @@ class HelpSupportView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
-              child: Column(
+              child: _isLoading 
+                ? Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40.h),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.sceTeal,
+                      ),
+                    ),
+                  )
+                : Column(
                 children: [
                   _ContactItem(
                     icon: Icons.chat_bubble_outline_rounded,
@@ -56,11 +116,11 @@ class HelpSupportView extends StatelessWidget {
                   _ContactItem(
                     icon: Icons.mail_outline_rounded,
                     title: "Email Support",
-                    subtitle: "support@swisscarexchange.ch",
+                    subtitle: _supportEmail,
                     iconColor: AppColors.sceTeal,
                     onTap: () {
                       launchUrl(
-                        Uri.parse("mailto:[EMAIL_ADDRESS]"),
+                        Uri.parse("mailto:$_supportEmail"),
                         mode: LaunchMode.externalApplication,
                       );
                     },
@@ -69,11 +129,11 @@ class HelpSupportView extends StatelessWidget {
                   _ContactItem(
                     icon: Icons.phone_outlined,
                     title: "Phone Support",
-                    subtitle: "+41 44 123 45 67",
+                    subtitle: _supportPhone,
                     iconColor: AppColors.sceTeal,
                     onTap: () {
                       launchUrl(
-                        Uri.parse("tel:+41441234567"),
+                        Uri.parse("tel:$_supportPhone"),
                         mode: LaunchMode.externalApplication,
                       );
                     },

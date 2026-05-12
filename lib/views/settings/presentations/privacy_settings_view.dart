@@ -219,7 +219,7 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
               prefixIcon: Icon(Icons.lock_outline, color: AppColors.sceGreyA0),
             ),
             AppSpacing.h16,
-            const CustomTextField(
+             CustomTextField(
               hintText: "Confirm New Password",
               obscureText: true,
               prefixIcon: Icon(Icons.lock_person, color: AppColors.sceGreyA0),

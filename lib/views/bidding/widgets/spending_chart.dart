@@ -8,11 +8,7 @@ class SpendingChart extends StatelessWidget {
   final List<SpendingTrend> trends;
   final String period; // '7D' | '30D' | '90D' | '1Y'
 
-  const SpendingChart({
-    super.key,
-    required this.trends,
-    required this.period,
-  });
+  const SpendingChart({super.key, required this.trends, required this.period});
 
   static const double _yAxisWidth = 58.0;
   static const double _xLabelHeight = 20.0;
@@ -28,8 +24,18 @@ class SpendingChart extends StatelessWidget {
       try {
         final dt = DateTime.parse(raw);
         const mo = [
-          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
         ];
         // 7D → "May 7", 30D → "07" (compact for scroll)
         return period == '7D'
@@ -71,8 +77,9 @@ class SpendingChart extends StatelessWidget {
       );
     }
 
-    final amounts =
-        trends.map((t) => double.tryParse(t.amount) ?? 0.0).toList();
+    final amounts = trends
+        .map((t) => double.tryParse(t.amount) ?? 0.0)
+        .toList();
     final maxAmt = amounts.reduce((a, b) => a > b ? a : b);
     final normalised = maxAmt > 0
         ? amounts.map((v) => v / maxAmt).toList()
@@ -94,15 +101,17 @@ class SpendingChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: yTicks
-                  .map((v) => Text(
-                        _formatY(v),
-                        style: const TextStyle(
-                          color: AppColors.grey,
-                          fontSize: 8,
-                          height: 1.2,
-                        ),
-                        textAlign: TextAlign.right,
-                      ))
+                  .map(
+                    (v) => Text(
+                      _formatY(v),
+                      style: const TextStyle(
+                        color: AppColors.grey,
+                        fontSize: 8,
+                        height: 1.2,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -204,8 +213,22 @@ class _ChartPainter extends CustomPainter {
     final fillPath = Path()..moveTo(pts[0].dx, pts[0].dy);
     for (int i = 1; i < count; i++) {
       final cpX = (pts[i - 1].dx + pts[i].dx) / 2;
-      linePath.cubicTo(cpX, pts[i - 1].dy, cpX, pts[i].dy, pts[i].dx, pts[i].dy);
-      fillPath.cubicTo(cpX, pts[i - 1].dy, cpX, pts[i].dy, pts[i].dx, pts[i].dy);
+      linePath.cubicTo(
+        cpX,
+        pts[i - 1].dy,
+        cpX,
+        pts[i].dy,
+        pts[i].dx,
+        pts[i].dy,
+      );
+      fillPath.cubicTo(
+        cpX,
+        pts[i - 1].dy,
+        cpX,
+        pts[i].dy,
+        pts[i].dx,
+        pts[i].dy,
+      );
     }
     fillPath
       ..lineTo(pts.last.dx, chartH)
@@ -260,8 +283,10 @@ class _ChartPainter extends CustomPainter {
         style: const TextStyle(color: AppColors.grey, fontSize: 8.5),
       );
       tp.layout();
-      final x = (size.width * i / (count - 1) - tp.width / 2)
-          .clamp(0.0, size.width - tp.width);
+      final x = (size.width * i / (count - 1) - tp.width / 2).clamp(
+        0.0,
+        size.width - tp.width,
+      );
       tp.paint(canvas, Offset(x, chartH + 4));
     }
   }
