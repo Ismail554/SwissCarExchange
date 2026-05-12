@@ -35,7 +35,7 @@ Future<void> main() async {
   ]);
   await dotenv.load(fileName: ".env");
   DioManager.init();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final globalState = GlobalState();
   await globalState.rehydrate();

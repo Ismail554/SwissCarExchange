@@ -50,14 +50,14 @@ class NotificationItem {
   });
 
   factory NotificationItem.fromJson(Map<String, dynamic> json) => NotificationItem(
-        id: json["id"],
-        category: json["category"],
-        notificationType: json["notification_type"],
-        title: json["title"],
-        body: json["body"],
-        data: NotificationData.fromJson(json["data"]),
-        readAt: json["read_at"] == null ? null : DateTime.parse(json["read_at"]),
-        createdAt: DateTime.parse(json["created_at"]),
+        id: json["id"] ?? 0,
+        category: json["category"] ?? '',
+        notificationType: json["notification_type"] ?? '',
+        title: json["title"] ?? '',
+        body: json["body"] ?? '',
+        data: json["data"] != null ? NotificationData.fromJson(json["data"]) : NotificationData(),
+        readAt: json["read_at"] == null ? null : DateTime.tryParse(json["read_at"]),
+        createdAt: json["created_at"] == null ? DateTime.now() : DateTime.tryParse(json["created_at"]) ?? DateTime.now(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -83,7 +83,7 @@ class NotificationData {
 
   factory NotificationData.fromJson(Map<String, dynamic> json) => NotificationData(
         auctionId: json["auction_id"],
-        newAmount: json["new_amount"],
+        newAmount: json["new_amount"]?.toString(),
       );
 
   Map<String, dynamic> toJson() => {

@@ -1,27 +1,18 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rionydo/app_helper/s3_upload_helper.dart';
+import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
+import 'package:rionydo/app_utils/network/dio_manager.dart';
+import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-
-/// A single chat message model.
-class _ChatMessage {
-  final String? text;
-  final String? imagePath;
-  final String time;
-  final bool isSupport;
-
-  _ChatMessage({
-    this.text,
-    this.imagePath,
-    required this.time,
-    required this.isSupport,
-  });
-}
+import 'package:rionydo/models/chat/chat_message_model.dart';
 
 class ChatSupportView extends StatefulWidget {
   const ChatSupportView({super.key});
@@ -35,41 +26,344 @@ class _ChatSupportViewState extends State<ChatSupportView> {
   final ScrollController _scrollController = ScrollController();
   final ImagePicker _picker = ImagePicker();
 
-  final List<_ChatMessage> _messages = [
-    _ChatMessage(
-      text: "Hello! Welcome to SwissCarExchange support. How can I help you today?",
-      time: "10:30 AM",
-      isSupport: true,
-    ),
-  ];
+  final List<ChatMessage> _messages = [];
+  Timer? _pollTimer;
+  bool _initialLoading = true;
+  bool _isSending = false;
+  bool _isUploading = false;
+  bool _showTypingIndicator = false;
+  int? _conversationId;
 
-  /// Predefined demo replies keyed by chip text.
-  static const Map<String, String> _demoReplies = {
-    "How to bid?":
-        "To place a bid, go to any active auction, review the car details, then tap \"Place Bid\". Enter your amount and confirm!",
-    "Payment methods":
-        "We accept Visa, Mastercard, AMEX, and direct bank transfers (IBAN). You can manage your payment methods in Settings.",
-    "Contact dealer":
-        "After winning an auction you'll receive the dealer's phone number and email on the Auction Contact screen.",
-  };
+  // ─── Lifecycle ──────────────────────────────────────────────────────────────
 
-  /// Fallback replies for free-text messages.
-  static const List<String> _genericReplies = [
-    "Thanks for reaching out! A support agent will review your message shortly.",
-    "Got it! Let me look into that for you.",
-    "I appreciate your patience. We'll get back to you within a few minutes.",
-    "Thank you! Is there anything else I can help you with?",
-    "That's a great question. Let me check our records.",
-  ];
-
-  int _replyIndex = 0;
-
-  String _currentTime() {
-    final now = TimeOfDay.now();
-    final hour = now.hourOfPeriod == 0 ? 12 : now.hourOfPeriod;
-    final period = now.period == DayPeriod.am ? "AM" : "PM";
-    return "${hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} $period";
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
   }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  // ─── API Calls ─────────────────────────────────────────────────────────────
+
+  /// Fetch chat history – on first load shows spinner, later merges silently.
+  Future<void> _loadHistory() async {
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.chatHistory,
+        method: Methods.get,
+      );
+
+      response.fold(
+        (error) {
+          debugPrint('Chat history error: $error');
+          if (mounted && _initialLoading) {
+            setState(() => _initialLoading = false);
+          }
+        },
+        (data) {
+          if (!mounted) return;
+          final chatHistory = ChatHistoryResponse.fromJson(data as Map<String, dynamic>);
+          final fetched = chatHistory.results;
+
+          // Sort by createdAt ascending
+          fetched.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
+          // Merge: only add messages whose ID we don't already have.
+          final existingIds = _messages.map((m) => m.id).toSet();
+          final newMessages =
+              fetched.where((m) => !existingIds.contains(m.id)).toList();
+
+          if (newMessages.isNotEmpty || _initialLoading) {
+            setState(() {
+              _messages.addAll(newMessages);
+              _initialLoading = false;
+              if (_conversationId == null) {
+                for (final m in _messages) {
+                  if (m.conversationId != null) {
+                    _conversationId = m.conversationId;
+                    break;
+                  }
+                }
+              }
+            });
+            if (newMessages.isNotEmpty) _scrollToBottom();
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('Chat history exception: $e');
+      if (mounted && _initialLoading) {
+        setState(() => _initialLoading = false);
+      }
+    }
+
+    // Start 30-second polling after initial load
+    _startPolling();
+  }
+
+  /// Re-fetch every 30 seconds without blocking UI.
+  void _startPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      _pollHistory();
+    });
+  }
+
+  /// Silent background poll – no loading indicator, no full rebuild.
+  Future<void> _pollHistory() async {
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.chatHistory,
+        method: Methods.get,
+      );
+
+      response.fold(
+        (error) => debugPrint('Poll error: $error'),
+        (data) {
+          if (!mounted) return;
+          final chatHistory = ChatHistoryResponse.fromJson(data as Map<String, dynamic>);
+          final fetched = chatHistory.results;
+          fetched.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
+          final existingIds = _messages.map((m) => m.id).toSet();
+          final newMessages =
+              fetched.where((m) => !existingIds.contains(m.id)).toList();
+
+          if (newMessages.isNotEmpty) {
+            // If any new support message arrived, hide the typing indicator.
+            final hasNewSupportMsg = newMessages.any((m) => m.isSupport);
+            setState(() {
+              _messages.addAll(newMessages);
+              if (hasNewSupportMsg) _showTypingIndicator = false;
+            });
+            _scrollToBottom();
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('Poll exception: $e');
+    }
+  }
+
+  /// Start a new conversation (first message).
+  Future<void> _startConversation(String text,
+      {List<ChatAttachment>? attachments}) async {
+    final body = <String, dynamic>{'body': text};
+    if (attachments != null && attachments.isNotEmpty) {
+      body['attachments'] = attachments.map((a) => a.toJson()).toList();
+    }
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.startChat,
+      method: Methods.post,
+      body: body,
+      altCodes: [201],
+    );
+
+    response.fold(
+      (error) {
+        debugPrint('Start chat error: $error');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to start chat: $error'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      (data) {
+        if (!mounted) return;
+        _conversationId = data['conversation_id'] as int?;
+        final msgData = data['message'] as Map<String, dynamic>?;
+        if (msgData != null) {
+          final msg = ChatMessage.fromJson(msgData);
+          final exists = _messages.any((m) => m.id == msg.id);
+          if (!exists) {
+            setState(() => _messages.add(msg));
+            _scrollToBottom();
+          }
+        }
+      },
+    );
+  }
+
+  /// Send a message in an existing conversation.
+  Future<void> _sendApiMessage(String text,
+      {List<ChatAttachment>? attachments}) async {
+    final body = <String, dynamic>{'body': text};
+    if (attachments != null && attachments.isNotEmpty) {
+      body['attachments'] = attachments.map((a) => a.toJson()).toList();
+    }
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.sendMessage,
+      method: Methods.post,
+      body: body,
+      altCodes: [201],
+    );
+
+    response.fold(
+      (error) {
+        debugPrint('Send message error: $error');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to send: $error'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      (data) {
+        if (!mounted) return;
+        // The API may return the message directly or inside a 'message' key.
+        final msgData =
+            data is Map<String, dynamic> && data.containsKey('message')
+                ? data['message'] as Map<String, dynamic>
+                : data as Map<String, dynamic>;
+        final msg = ChatMessage.fromJson(msgData);
+        final exists = _messages.any((m) => m.id == msg.id);
+        if (!exists) {
+          setState(() => _messages.add(msg));
+          _scrollToBottom();
+        }
+      },
+    );
+  }
+
+  // ─── Message Sending Flow ──────────────────────────────────────────────────
+
+  Future<void> _sendTextMessage(String text) async {
+    if (text.trim().isEmpty || _isSending) return;
+    setState(() => _isSending = true);
+    _controller.clear();
+
+    // Optimistic local placeholder
+    final placeholder = ChatMessage(
+      id: -DateTime.now().millisecondsSinceEpoch,
+      body: text,
+      messageType: 'text',
+      createdAt: DateTime.now(),
+      attachments: [],
+    );
+    setState(() => _messages.add(placeholder));
+    _scrollToBottom();
+
+    try {
+      if (_conversationId == null && _messages.where((m) => !m.isSupport && m.id > 0).isEmpty) {
+        await _startConversation(text);
+      } else {
+        await _sendApiMessage(text);
+      }
+      // Remove placeholder after the real message arrives
+      setState(() {
+        _messages.removeWhere((m) => m.id == placeholder.id);
+        _showTypingIndicator = true;
+      });
+      _scrollToBottom();
+      // Quick poll after 2s to catch fast admin replies
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted && _showTypingIndicator) _pollHistory();
+      });
+    } catch (e) {
+      debugPrint('Send failed: $e');
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
+  }
+
+  Future<void> _pickAndSendImage() async {
+    if (_isUploading) return;
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      imageQuality: 80,
+    );
+    if (image == null) return;
+
+    setState(() => _isUploading = true);
+
+    try {
+      final file = File(image.path);
+      final fileName = image.name;
+      final contentType = mimeTypeFor(image.path);
+
+      // 1. Get presigned URL from chat-specific endpoint
+      final urls = await S3UploadHelper.getPresignedUrl(
+        contentType: contentType,
+        fileName: fileName,
+        presignedEndpoint: ApiService.attachmentPreUrl,
+      );
+
+      if (urls == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to upload attachment'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // 2. Upload to S3
+      final uploaded = await S3UploadHelper.uploadToS3(
+        presignedUrl: urls['presigned_url']!,
+        file: file,
+        contentType: contentType,
+      );
+
+      if (!uploaded) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Upload failed, please try again'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // 3. Build attachment payload
+      final attachment = ChatAttachment(
+        objectKey: urls['object_key'] ?? '',
+        publicUrl: urls['public_url']!,
+        contentType: contentType,
+        fileName: fileName,
+        sizeBytes: await file.length(),
+      );
+
+      // 4. Send message with attachment
+      if (_conversationId == null && _messages.where((m) => !m.isSupport && m.id > 0).isEmpty) {
+        await _startConversation('', attachments: [attachment]);
+      } else {
+        await _sendApiMessage('', attachments: [attachment]);
+      }
+      if (mounted) {
+        setState(() => _showTypingIndicator = true);
+        _scrollToBottom();
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted && _showTypingIndicator) _pollHistory();
+        });
+      }
+    } catch (e) {
+      debugPrint('Image send error: $e');
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  // ─── Helpers ───────────────────────────────────────────────────────────────
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -83,60 +377,13 @@ class _ChatSupportViewState extends State<ChatSupportView> {
     });
   }
 
-  void _sendTextMessage(String text) {
-    if (text.trim().isEmpty) return;
-    setState(() {
-      _messages.add(_ChatMessage(text: text, time: _currentTime(), isSupport: false));
-    });
-    _controller.clear();
-    _scrollToBottom();
-    _simulateReply(text);
+  String _formatTime(DateTime dt) {
+    final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
+    final period = dt.hour >= 12 ? 'PM' : 'AM';
+    return '${hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')} $period';
   }
 
-  void _sendImageMessage(String path) {
-    setState(() {
-      _messages.add(_ChatMessage(imagePath: path, time: _currentTime(), isSupport: false));
-    });
-    _scrollToBottom();
-    _simulateReply(null);
-  }
-
-  void _simulateReply(String? userText) {
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (!mounted) return;
-      String reply;
-      if (userText != null && _demoReplies.containsKey(userText)) {
-        reply = _demoReplies[userText]!;
-      } else if (userText == null) {
-        reply = "Thanks for the image! I'll review it and get back to you.";
-      } else {
-        reply = _genericReplies[_replyIndex % _genericReplies.length];
-        _replyIndex++;
-      }
-      setState(() {
-        _messages.add(_ChatMessage(text: reply, time: _currentTime(), isSupport: true));
-      });
-      _scrollToBottom();
-    });
-  }
-
-  Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1024,
-      imageQuality: 80,
-    );
-    if (image != null) {
-      _sendImageMessage(image.path);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _scrollController.dispose();
-    super.dispose();
-  }
+  // ─── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -202,58 +449,102 @@ class _ChatSupportViewState extends State<ChatSupportView> {
         ),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.h),
-          child: Divider(color: Colors.white.withOpacity(0.05), height: 1),
+          child: Divider(
+            color: Colors.white.withValues(alpha: 0.05),
+            height: 1,
+          ),
         ),
       ),
       body: Column(
         children: [
           /// MESSAGE LIST
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.all(20.w),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
-                if (msg.imagePath != null) {
-                  return _ImageBubble(
-                    imagePath: msg.imagePath!,
-                    time: msg.time,
-                    isSupport: msg.isSupport,
-                  );
-                }
-                return _ChatBubble(
-                  message: msg.text!,
-                  time: msg.time,
-                  isSupport: msg.isSupport,
-                );
-              },
-            ),
+            child: _initialLoading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.sceTeal,
+                    ),
+                  )
+                : _messages.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline_rounded,
+                              size: 48.sp,
+                              color: AppColors.sceGrey99,
+                            ),
+                            AppSpacing.h16,
+                            Text(
+                              'Start a conversation',
+                              style: FontManager.bodyMedium(
+                                color: AppColors.sceGrey99,
+                              ),
+                            ),
+                            AppSpacing.h8,
+                            Text(
+                              'Send a message to get help from our team',
+                              style: FontManager.bodySmall(
+                                color: AppColors.sceGrey99,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: EdgeInsets.all(20.w),
+                        itemCount: _messages.length + (_showTypingIndicator ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          // Typing indicator as last item
+                          if (index == _messages.length && _showTypingIndicator) {
+                            return const _TypingIndicator();
+                          }
+                          final msg = _messages[index];
+                          // Render attachments (images)
+                          if (msg.attachments.isNotEmpty &&
+                              msg.body.isEmpty) {
+                            return _ImageBubble(
+                              imageUrl: msg.attachments.first.publicUrl,
+                              time: _formatTime(msg.createdAt),
+                              isSupport: msg.isSupport,
+                            );
+                          }
+                          return _ChatBubble(
+                            message: msg.body,
+                            time: _formatTime(msg.createdAt),
+                            isSupport: msg.isSupport,
+                            attachments: msg.attachments,
+                          );
+                        },
+                      ),
           ),
 
-          /// SUGGESTION CHIPS
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-            child: Row(
-              children: [
-                _SuggestionChip(
-                  text: "How to bid?",
-                  onTap: () => _sendTextMessage("How to bid?"),
-                ),
-                AppSpacing.w10,
-                _SuggestionChip(
-                  text: "Payment methods",
-                  onTap: () => _sendTextMessage("Payment methods"),
-                ),
-                AppSpacing.w10,
-                _SuggestionChip(
-                  text: "Contact dealer",
-                  onTap: () => _sendTextMessage("Contact dealer"),
-                ),
-              ],
+          /// SUGGESTION CHIPS (only show when no messages yet)
+          if (_messages.isEmpty && !_initialLoading)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              child: Row(
+                children: [
+                  _SuggestionChip(
+                    text: "How to bid?",
+                    onTap: () => _sendTextMessage("How to bid?"),
+                  ),
+                  AppSpacing.w10,
+                  _SuggestionChip(
+                    text: "Payment methods",
+                    onTap: () => _sendTextMessage("Payment methods"),
+                  ),
+                  AppSpacing.w10,
+                  _SuggestionChip(
+                    text: "Contact dealer",
+                    onTap: () => _sendTextMessage("Contact dealer"),
+                  ),
+                ],
+              ),
             ),
-          ),
 
           /// INPUT BAR
           SafeArea(
@@ -267,14 +558,18 @@ class _ChatSupportViewState extends State<ChatSupportView> {
               decoration: BoxDecoration(
                 color: AppColors.sceDarkBg,
                 border: Border(
-                  top: BorderSide(color: Colors.white.withOpacity(0.05)),
+                  top: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.05),
+                  ),
                 ),
               ),
               child: Row(
                 children: [
                   _ChatIconButton(
-                    icon: Icons.image_outlined,
-                    onTap: _pickImage,
+                    icon: _isUploading
+                        ? Icons.hourglass_top_rounded
+                        : Icons.image_outlined,
+                    onTap: _isUploading ? () {} : _pickAndSendImage,
                   ),
                   AppSpacing.w12,
                   Expanded(
@@ -285,7 +580,7 @@ class _ChatSupportViewState extends State<ChatSupportView> {
                         color: AppColors.sceCardBg,
                         borderRadius: BorderRadius.circular(12.r),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.08),
+                          color: Colors.white.withValues(alpha: 0.08),
                         ),
                       ),
                       child: TextField(
@@ -308,20 +603,31 @@ class _ChatSupportViewState extends State<ChatSupportView> {
                     height: 50.h,
                     width: 50.h,
                     decoration: BoxDecoration(
-                      color: AppColors.sceCardBg,
+                      color: _isSending
+                          ? AppColors.sceCardBg
+                          : AppColors.sceTeal,
                       borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.08),
-                      ),
                     ),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.send_rounded,
-                        color: AppColors.white,
-                        size: 20.sp,
-                      ),
-                      onPressed: () => _sendTextMessage(_controller.text),
-                    ),
+                    child: _isSending
+                        ? Center(
+                            child: SizedBox(
+                              width: 20.sp,
+                              height: 20.sp,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.white,
+                              ),
+                            ),
+                          )
+                        : IconButton(
+                            icon: Icon(
+                              Icons.send_rounded,
+                              color: AppColors.white,
+                              size: 20.sp,
+                            ),
+                            onPressed: () =>
+                                _sendTextMessage(_controller.text),
+                          ),
                   ),
                 ],
               ),
@@ -339,11 +645,13 @@ class _ChatBubble extends StatelessWidget {
   final String message;
   final String time;
   final bool isSupport;
+  final List<ChatAttachment> attachments;
 
   const _ChatBubble({
     required this.message,
     required this.time,
     required this.isSupport,
+    this.attachments = const [],
   });
 
   @override
@@ -359,7 +667,7 @@ class _ChatBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSupport
               ? AppColors.sceCardBg
-              : AppColors.sceTeal.withOpacity(0.1),
+              : AppColors.sceTeal.withValues(alpha: 0.1),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16.r),
             topRight: Radius.circular(16.r),
@@ -368,17 +676,37 @@ class _ChatBubble extends StatelessWidget {
           ),
           border: Border.all(
             color: isSupport
-                ? Colors.white.withOpacity(0.05)
-                : AppColors.sceTeal.withOpacity(0.2),
+                ? Colors.white.withValues(alpha: 0.05)
+                : AppColors.sceTeal.withValues(alpha: 0.2),
           ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              message,
-              style: FontManager.bodyMedium(color: AppColors.white),
-            ),
+            // Inline attachment thumbnails
+            if (attachments.isNotEmpty)
+              ...attachments.map(
+                (a) => Padding(
+                  padding: EdgeInsets.only(bottom: 8.h),
+                  child: _isImageType(a.contentType)
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8.r),
+                          child: Image.network(
+                            a.publicUrl,
+                            width: double.infinity,
+                            height: 140.h,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, e, st) => _filePlaceholder(a),
+                          ),
+                        )
+                      : _filePlaceholder(a),
+                ),
+              ),
+            if (message.isNotEmpty)
+              Text(
+                message,
+                style: FontManager.bodyMedium(color: AppColors.white),
+              ),
             AppSpacing.h4,
             Text(
               time,
@@ -391,15 +719,42 @@ class _ChatBubble extends StatelessWidget {
       ),
     );
   }
+
+  bool _isImageType(String ct) =>
+      ct.startsWith('image/');
+
+  Widget _filePlaceholder(ChatAttachment a) {
+    return Container(
+      padding: EdgeInsets.all(10.w),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.attach_file, color: AppColors.sceGrey99, size: 18.sp),
+          AppSpacing.w8,
+          Flexible(
+            child: Text(
+              a.fileName,
+              style: FontManager.bodySmall(color: AppColors.white),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ImageBubble extends StatelessWidget {
-  final String imagePath;
+  final String imageUrl;
   final String time;
   final bool isSupport;
 
   const _ImageBubble({
-    required this.imagePath,
+    required this.imageUrl,
     required this.time,
     required this.isSupport,
   });
@@ -416,7 +771,7 @@ class _ImageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSupport
               ? AppColors.sceCardBg
-              : AppColors.sceTeal.withOpacity(0.1),
+              : AppColors.sceTeal.withValues(alpha: 0.1),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16.r),
             topRight: Radius.circular(16.r),
@@ -425,8 +780,8 @@ class _ImageBubble extends StatelessWidget {
           ),
           border: Border.all(
             color: isSupport
-                ? Colors.white.withOpacity(0.05)
-                : AppColors.sceTeal.withOpacity(0.2),
+                ? Colors.white.withValues(alpha: 0.05)
+                : AppColors.sceTeal.withValues(alpha: 0.2),
           ),
         ),
         child: Column(
@@ -437,11 +792,33 @@ class _ImageBubble extends StatelessWidget {
                 topLeft: Radius.circular(15.r),
                 topRight: Radius.circular(15.r),
               ),
-              child: Image.file(
-                File(imagePath),
+              child: Image.network(
+                imageUrl,
                 width: double.infinity,
                 height: 180.h,
                 fit: BoxFit.cover,
+                loadingBuilder: (_, child, progress) {
+                  if (progress == null) return child;
+                  return SizedBox(
+                    height: 180.h,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.sceTeal,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  );
+                },
+                errorBuilder: (_, e, st) => SizedBox(
+                  height: 180.h,
+                  child: Center(
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      color: AppColors.sceGrey99,
+                      size: 40.sp,
+                    ),
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -474,7 +851,7 @@ class _ChatIconButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: IconButton(
         icon: Icon(icon, color: AppColors.sceGrey99, size: 22.sp),
@@ -500,13 +877,95 @@ class _SuggestionChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.sceCardBg,
           borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         ),
         child: Text(
           text,
           style: FontManager.bodySmall(
             color: AppColors.white,
           ).copyWith(fontSize: 12.sp),
+        ),
+      ),
+    );
+  }
+}
+
+/// Animated three-dot typing indicator aligned to the support (left) side.
+class _TypingIndicator extends StatefulWidget {
+  const _TypingIndicator();
+
+  @override
+  State<_TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<_TypingIndicator>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: AppColors.sceCardBg,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16.r),
+            topRight: Radius.circular(16.r),
+            bottomRight: Radius.circular(16.r),
+          ),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.05),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (i) {
+            return AnimatedBuilder(
+              animation: _ctrl,
+              builder: (_, child) {
+                // Stagger each dot by 0.2
+                final delay = i * 0.2;
+                final t = (_ctrl.value - delay).clamp(0.0, 1.0);
+                // Bounce: go up then back down in first half of the cycle.
+                final bounce = (t < 0.5)
+                    ? Curves.easeOut.transform(t * 2)
+                    : Curves.easeIn.transform(1 - (t - 0.5) * 2);
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 3.w),
+                  child: Transform.translate(
+                    offset: Offset(0, -4 * bounce),
+                    child: Container(
+                      width: 8.w,
+                      height: 8.w,
+                      decoration: BoxDecoration(
+                        color: AppColors.sceGrey99
+                            .withValues(alpha: 0.4 + 0.6 * bounce),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
         ),
       ),
     );

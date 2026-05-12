@@ -1,9 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/app_utils/network/token_manager.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
+import 'package:rionydo/firebase_options.dart';
 import 'package:rionydo/models/auth/login_response.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
@@ -146,6 +148,9 @@ class AuthProvider extends ChangeNotifier {
         final plan = loginData.subscription?.plan ?? SubscriptionPlanId.basic;
         context.read<GlobalState>().isPremium =
             (plan == SubscriptionPlanId.premium);
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
         await SecureStorageHelper.saveSubscriptionPlan(plan);
 
         Navigator.pushAndRemoveUntil(

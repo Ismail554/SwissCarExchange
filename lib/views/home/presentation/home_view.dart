@@ -18,6 +18,8 @@ import 'package:rionydo/views/home/widgets/notification_badge.dart';
 import 'package:rionydo/views/home/widgets/premium_dealer_card.dart';
 import 'package:rionydo/views/home/widgets/section_header.dart';
 import 'package:rionydo/views/home/widgets/stat_card.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -31,16 +33,34 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MyAuctionsProvider>().fetchAuctions();
-      // Fetch home stats based on user role
+      final auctionsProvider = context.read<MyAuctionsProvider>();
+      if (auctionsProvider.auctions.isEmpty) {
+        auctionsProvider.fetchAuctions();
+      }
+      // Fetch home stats based on user role if not already loaded
       final isDealer = context.read<GlobalState>().userType == UserType.company;
       final statsProvider = context.read<HomeStatsProvider>();
       if (isDealer) {
-        statsProvider.fetchDealerStats();
+        if (statsProvider.dealerStats == null) {
+          statsProvider.fetchDealerStats();
+        }
       } else {
-        statsProvider.fetchBidderStats();
+        if (statsProvider.bidderStats == null) {
+          statsProvider.fetchBidderStats();
+        }
       }
     });
+  }
+
+  Future<void> _refreshData() async {
+    final isDealer = context.read<GlobalState>().userType == UserType.company;
+    final statsProvider = context.read<HomeStatsProvider>();
+    if (isDealer) {
+      await statsProvider.fetchDealerStats();
+    } else {
+      await statsProvider.fetchBidderStats();
+    }
+    await context.read<MyAuctionsProvider>().fetchAuctions();
   }
 
   @override
@@ -48,9 +68,15 @@ class _HomeViewState extends State<HomeView> {
     final isPremium = context.watch<GlobalState>().isPremium;
 
     return CommonBackground(
-      child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
+      child: RefreshIndicator(
+        onRefresh: _refreshData,
+        color: AppColors.sceTeal,
+        backgroundColor: AppColors.sceDarkBg,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          slivers: [
           // ── Top Header (Logo) - Scrolls Away ──────────────────────────
           SliverToBoxAdapter(
             child: Center(
@@ -219,18 +245,23 @@ class _HomeViewState extends State<HomeView> {
                 // ── Auction Sections (dynamic from provider) ─────────────
                 Consumer<MyAuctionsProvider>(
                   builder: (context, provider, child) {
-                    if (provider.isLoading) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 40.h),
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.sceTeal,
-                          ),
-                        ),
+                    if (provider.isLoading && provider.auctions.isEmpty) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SectionHeader(title: 'LIVE AUCTIONS'),
+                          AppSpacing.h16,
+                          _buildShimmerCard(),
+                          _buildShimmerCard(),
+                          AppSpacing.h32,
+                          const SectionHeader(title: 'UPCOMING AUCTIONS'),
+                          AppSpacing.h16,
+                          _buildShimmerCard(),
+                        ],
                       );
                     }
 
-                    if (provider.errorMessage != null) {
+                    if (provider.errorMessage != null && provider.auctions.isEmpty) {
                       return Padding(
                         padding: EdgeInsets.symmetric(vertical: 40.h),
                         child: Center(
@@ -312,6 +343,7 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -346,12 +378,21 @@ class _HomeViewState extends State<HomeView> {
                     top: Radius.circular(20.r),
                   ),
                   child: imageUrl.isNotEmpty
-                      ? Image.network(
-                          imageUrl,
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
                           height: 180.h,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
+                          placeholder: (context, url) => Shimmer.fromColors(
+                            baseColor: Colors.white10,
+                            highlightColor: Colors.white24,
+                            child: Container(
+                              height: 180.h,
+                              width: double.infinity,
+                              color: Colors.white,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
                             height: 180.h,
                             width: double.infinity,
                             color: Colors.white.withOpacity(0.07),
@@ -613,6 +654,24 @@ class _HomeViewState extends State<HomeView> {
             style: FontManager.bodyMedium(color: AppColors.textHint),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerCard() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 20.h),
+      child: Shimmer.fromColors(
+        baseColor: Colors.white10,
+        highlightColor: Colors.white24,
+        child: Container(
+          height: 320.h,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+        ),
       ),
     );
   }

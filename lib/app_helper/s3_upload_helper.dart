@@ -52,7 +52,11 @@ class S3UploadHelper {
           return null;
         }
         debugPrint('S3: ✅ Presigned URL received. Public: $public');
-        return {'presigned_url': presigned, 'public_url': public};
+        return {
+          'presigned_url': presigned,
+          'public_url': public,
+          if (data['object_key'] != null) 'object_key': data['object_key'] as String,
+        };
       },
     );
   }

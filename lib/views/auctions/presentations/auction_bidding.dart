@@ -9,7 +9,6 @@ import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auctions/widgets/auction_countdown.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/models/auctions/auctions_detail_response.dart';
-import 'package:rionydo/models/auctions/auction_image.dart';
 import 'package:rionydo/models/bid/bid_history_response.dart';
 import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:provider/provider.dart';
