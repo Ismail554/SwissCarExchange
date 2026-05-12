@@ -6,7 +6,6 @@ import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/views/bidding/widgets/all_transactions_screen.dart';
 import 'package:rionydo/views/bidding/widgets/bids_models.dart';
-import 'package:rionydo/views/bidding/widgets/payment_option_sheet.dart';
 import 'package:rionydo/views/bidding/widgets/pinned_header_delegate.dart';
 import 'package:rionydo/views/bidding/widgets/slide_up_route.dart';
 import 'package:rionydo/views/bidding/widgets/spending_chart.dart';
@@ -33,12 +32,17 @@ class _BidsViewState extends State<BidsView> {
   String _selectedPeriod = '30D';
   BidderStats? _bidderStats;
 
+  // Real transaction data from API
+  List<Transaction> _transactions = [];
+  bool _txLoading = false;
+
   @override
   void initState() {
     super.initState();
     _fetchBidderStats();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final globalState = context.read<GlobalState>();
+      _fetchTransactions(globalState.userType);
       if (globalState.isPremium && globalState.userType == UserType.company) {
         context.read<PremiumAnalyticsProvider>().fetchSalesByCategory();
       }
@@ -73,6 +77,104 @@ class _BidsViewState extends State<BidsView> {
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Fetch transactions based on user role
+  // ---------------------------------------------------------------------------
+
+  Future<void> _fetchTransactions(UserType userType) async {
+    if (!mounted) return;
+    setState(() => _txLoading = true);
+
+    final url = userType == UserType.company
+        ? ApiService.dealerTransaction
+        : ApiService.bidderTransaction;
+
+    try {
+      final response = await DioManager.apiRequest(
+        url: url,
+        method: Methods.get,
+      );
+
+      response.fold(
+        (error) {
+          debugPrint('Failed to load transactions: $error');
+        },
+        (data) {
+          if (data != null && mounted) {
+            final List<Transaction> mapped;
+            if (userType == UserType.company) {
+              final parsed = DealerTransactionResponse.fromJson(
+                data as Map<String, dynamic>,
+              );
+              mapped = parsed.results.map(_mapDealer).toList();
+            } else {
+              final parsed = BidderTransactionResponse.fromJson(
+                data as Map<String, dynamic>,
+              );
+              mapped = parsed.results.map(_mapBidder).toList();
+            }
+            setState(() => _transactions = mapped);
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('Error fetching transactions: $e');
+    } finally {
+      if (mounted) setState(() => _txLoading = false);
+    }
+  }
+
+  String _formatDate(DateTime? dt) {
+    if (dt == null) return '--';
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
+  }
+
+  Transaction _mapDealer(DealerTransactionItem item) {
+    final amount =
+        'CHF ${double.tryParse(item.amount)?.toStringAsFixed(0) ?? item.amount}';
+    // Dealer statuses: 'payment_pending' = unpaid tag, everything else = paid
+    final status = item.status.toLowerCase() == 'payment_pending'
+        ? TransactionStatus.unpaid
+        : TransactionStatus.paid;
+    return Transaction(
+      carName: item.auctionTitle,
+      date: _formatDate(item.soldAt),
+      amount: amount,
+      status: status,
+      auctionId: item.auctionId?.toString(),
+    );
+  }
+
+  Transaction _mapBidder(BidderTransactionItem item) {
+    final amount =
+        'CHF ${double.tryParse(item.amount)?.toStringAsFixed(0) ?? item.amount}';
+    // Bidder statuses: 'unpaid' = Pay Now button, everything else = paid
+    final status = item.status.toLowerCase() == 'unpaid'
+        ? TransactionStatus.payNow
+        : TransactionStatus.paid;
+    return Transaction(
+      carName: item.auctionTitle,
+      date: _formatDate(item.auctionDate),
+      amount: amount,
+      status: status,
+      auctionId: item.auctionId?.toString(),
+    );
+  }
+
   String _formatAvgBid(String avgBidStr) {
     final parsed = double.tryParse(avgBidStr);
     if (parsed != null) {
@@ -85,8 +187,9 @@ class _BidsViewState extends State<BidsView> {
     return avgBidStr;
   }
 
-  List<Transaction> get _filteredTransactions =>
-      kAllTransactions.take(kPeriodTxCount[_selectedPeriod]!).toList();
+  /// Returns real API transactions (no period-slicing; the API already returns
+  /// the relevant set). Falls back to empty list while loading.
+  List<Transaction> get _filteredTransactions => _transactions;
 
   PeriodStats get _stats {
     if (_bidderStats == null) {
@@ -113,10 +216,9 @@ class _BidsViewState extends State<BidsView> {
   void _selectPeriod(String period) => setState(() => _selectedPeriod = period);
 
   void _openAllTransactions() {
+    if (_transactions.isEmpty) return;
     Navigator.of(context).push(
-      SlideUpRoute(
-        child: AllTransactionsScreen(transactions: _filteredTransactions),
-      ),
+      SlideUpRoute(child: AllTransactionsScreen(transactions: _transactions)),
     );
   }
 
@@ -133,7 +235,7 @@ class _BidsViewState extends State<BidsView> {
           _buildPinnedHeader(),
           _buildBody(),
           _buildTransactionSliver(),
-         SliverToBoxAdapter(child: SizedBox(height: 32.h)),
+          SliverToBoxAdapter(child: SizedBox(height: 32.h)),
         ],
       ),
     );
@@ -240,8 +342,10 @@ class _BidsViewState extends State<BidsView> {
           // Sales by Category Section (Premium Company/Dealer users only)
           Consumer2<GlobalState, PremiumAnalyticsProvider>(
             builder: (context, globalState, provider, child) {
-              if (globalState.isPremium && globalState.userType == UserType.company) {
-                final hasData = provider.isLoading ||
+              if (globalState.isPremium &&
+                  globalState.userType == UserType.company) {
+                final hasData =
+                    provider.isLoading ||
                     provider.error != null ||
                     (provider.salesByCategory != null &&
                         provider.salesByCategory!.results.isNotEmpty);
@@ -282,7 +386,6 @@ class _BidsViewState extends State<BidsView> {
             ),
           ),
           SizedBox(height: 12.h),
-          
         ],
       ),
     );
@@ -293,6 +396,33 @@ class _BidsViewState extends State<BidsView> {
   // ---------------------------------------------------------------------------
 
   Widget _buildTransactionSliver() {
+    // Loading state
+    if (_txLoading) {
+      return const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 32),
+          child: Center(
+            child: CircularProgressIndicator(color: AppColors.sceTeal),
+          ),
+        ),
+      );
+    }
+
+    // Empty state
+    if (_transactions.isEmpty) {
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 20.w),
+          child: Center(
+            child: Text(
+              'No transactions found.',
+              style: FontManager.bodyMedium(color: AppColors.grey),
+            ),
+          ),
+        ),
+      );
+    }
+
     final transactions = _filteredTransactions;
     final itemCount = transactions.length * 2 - 1;
 
@@ -307,14 +437,7 @@ class _BidsViewState extends State<BidsView> {
             );
           }
           final tx = transactions[index ~/ 2];
-          return TransactionRow(
-            transaction: tx,
-            onPayNow: () => showPaymentOptionSheet(
-              context,
-              carName: tx.carName,
-              amount: tx.amount,
-            ),
-          );
+          return TransactionRow(transaction: tx);
         }, childCount: itemCount),
       ),
     );

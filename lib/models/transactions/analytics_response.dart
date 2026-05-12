@@ -141,6 +141,7 @@ class DealerTransactionResponse {
 
 // --- Dealer Transaction Item ---
 class DealerTransactionItem {
+  final int? auctionId;
   final String auctionTitle;
   final String amount;
   final String status;
@@ -148,6 +149,7 @@ class DealerTransactionItem {
   final String buyerCompany;
 
   DealerTransactionItem({
+    this.auctionId,
     required this.auctionTitle,
     required this.amount,
     required this.status,
@@ -157,6 +159,7 @@ class DealerTransactionItem {
 
   factory DealerTransactionItem.fromJson(Map<String, dynamic> json) =>
       DealerTransactionItem(
+        auctionId: json["auction_id"] as int?,
         auctionTitle: json["auction_title"] ?? "",
         amount: json["amount"] ?? "0.00",
         status: json["status"] ?? "",
@@ -167,6 +170,7 @@ class DealerTransactionItem {
       );
 
   Map<String, dynamic> toJson() => {
+    "auction_id": auctionId,
     "auction_title": auctionTitle,
     "amount": amount,
     "status": status,

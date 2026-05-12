@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/views/bidding/widgets/bids_models.dart';
-import 'package:rionydo/views/bidding/widgets/payment_option_sheet.dart';
 import 'package:rionydo/views/bidding/widgets/transaction_row.dart';
 
 /// Full-screen list of all transactions — opened via the slide-up route.
@@ -37,15 +36,7 @@ class AllTransactionsScreen extends StatelessWidget {
         separatorBuilder: (_, __) =>
             Divider(color: AppColors.grey.withOpacity(0.15), height: 1),
         itemBuilder: (context, index) {
-          final tx = transactions[index];
-          return TransactionRow(
-            transaction: tx,
-            onPayNow: () => showPaymentOptionSheet(
-              context,
-              carName: tx.carName,
-              amount: tx.amount,
-            ),
-          );
+          return TransactionRow(transaction: transactions[index]);
         },
       ),
     );

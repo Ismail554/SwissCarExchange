@@ -2,19 +2,21 @@
 // Models & dummy data for the Bids / Analytics screen
 // ---------------------------------------------------------------------------
 
-enum TransactionStatus { paid, payNow }
+enum TransactionStatus { paid, payNow, unpaid }
 
 class Transaction {
   final String carName;
   final String date;
   final String amount;
   final TransactionStatus status;
+  final String? auctionId;
 
   const Transaction({
     required this.carName,
     required this.date,
     required this.amount,
     required this.status,
+    this.auctionId,
   });
 }
 

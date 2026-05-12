@@ -8,7 +8,6 @@ import 'package:rionydo/views/payment/presentations/payment_process_view.dart';
 import 'package:rionydo/views/won_auction/presentations/auction_contact_view.dart';
 import 'package:rionydo/views/won_auction/presentations/rate_dealer_view.dart';
 
-
 class WonAuctionCard extends StatelessWidget {
   final String auctionId;
   final String imageUrl;
@@ -162,7 +161,8 @@ class WonAuctionCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AuctionContactView(auctionId: auctionId),
+                        builder: (context) =>
+                            AuctionContactView(auctionId: auctionId),
                       ),
                     );
                   },
@@ -176,7 +176,8 @@ class WonAuctionCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RateDealerView(auctionId: auctionId),
+                          builder: (context) =>
+                              RateDealerView(auctionId: auctionId),
                         ),
                       );
                     },
@@ -188,7 +189,8 @@ class WonAuctionCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PaymentProcessView(auctionId: auctionId),
+                          builder: (context) =>
+                              PaymentProcessView(auctionId: auctionId),
                         ),
                       );
                     },
