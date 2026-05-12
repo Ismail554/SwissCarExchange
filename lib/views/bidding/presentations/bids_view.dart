@@ -19,6 +19,7 @@ import 'package:rionydo/models/transactions/analytics_response.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/controllers/premium_analytics_provider.dart';
 import 'package:rionydo/models/profile/user_profile_response.dart';
+import 'package:rionydo/models/analytics/spending_analytics_response.dart';
 import 'package:rionydo/views/bidding/widgets/sales_by_category_section.dart';
 
 class BidsView extends StatefulWidget {
@@ -36,10 +37,22 @@ class _BidsViewState extends State<BidsView> {
   List<Transaction> _transactions = [];
   bool _txLoading = false;
 
+  // Spending chart data from API
+  List<SpendingTrend> _spendingTrends = [];
+  bool _chartLoading = false;
+
+  static const Map<String, int> _periodDays = {
+    '7D': 7,
+    '30D': 30,
+    '90D': 90,
+    '1Y': 365,
+  };
+
   @override
   void initState() {
     super.initState();
     _fetchBidderStats();
+    _fetchSpendingTrends('30D');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final globalState = context.read<GlobalState>();
       _fetchTransactions(globalState.userType);
@@ -175,6 +188,38 @@ class _BidsViewState extends State<BidsView> {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Spending Trends Chart
+  // ---------------------------------------------------------------------------
+
+  Future<void> _fetchSpendingTrends(String periodLabel) async {
+    if (!mounted) return;
+    setState(() => _chartLoading = true);
+
+    final days = _periodDays[periodLabel] ?? 30;
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.spendingOverviewTends(days),
+        method: Methods.get,
+      );
+
+      response.fold(
+        (error) => debugPrint('Failed to load spending trends: $error'),
+        (data) {
+          if (data != null && mounted) {
+            final parsed =
+                SpendingData.fromJson(data as Map<String, dynamic>);
+            setState(() => _spendingTrends = parsed.spendingTrends);
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('Error fetching spending trends: $e');
+    } finally {
+      if (mounted) setState(() => _chartLoading = false);
+    }
+  }
+
   String _formatAvgBid(String avgBidStr) {
     final parsed = double.tryParse(avgBidStr);
     if (parsed != null) {
@@ -210,10 +255,10 @@ class _BidsViewState extends State<BidsView> {
     );
   }
 
-  List<double> get _chartPoints => kChartData[_selectedPeriod]!;
-  List<String> get _chartLabels => kChartLabels[_selectedPeriod]!;
-
-  void _selectPeriod(String period) => setState(() => _selectedPeriod = period);
+  void _selectPeriod(String period) {
+    setState(() => _selectedPeriod = period);
+    _fetchSpendingTrends(period);
+  }
 
   void _openAllTransactions() {
     if (_transactions.isEmpty) return;
@@ -308,7 +353,9 @@ class _BidsViewState extends State<BidsView> {
                 decoration: BoxDecoration(
                   color: AppColors.sceChartBg,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.grey.withOpacity(0.15)),
+                  border: Border.all(
+                    color: AppColors.grey.withValues(alpha: 0.15),
+                  ),
                 ),
                 padding: EdgeInsets.all(16.w),
                 child: Column(
@@ -320,10 +367,21 @@ class _BidsViewState extends State<BidsView> {
                     ),
                     SizedBox(height: 8.h),
                     Expanded(
-                      child: SpendingChart(
-                        points: _chartPoints,
-                        xLabels: _chartLabels,
-                      ),
+                      child: _chartLoading
+                          ? Center(
+                              child: SizedBox(
+                                width: 20.sp,
+                                height: 20.sp,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.sceTeal,
+                                ),
+                              ),
+                            )
+                          : SpendingChart(
+                              trends: _spendingTrends,
+                              period: _selectedPeriod,
+                            ),
                     ),
                   ],
                 ),

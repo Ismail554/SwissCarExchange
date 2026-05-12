@@ -94,7 +94,7 @@ class ApiService {
       "$baseUrl/api/analytics/dealer-transactions/"; // GET
   // Analytics
   static String spendingOverviewTends(int period) =>
-      "$baseUrl/api/analytics/spending-trends/?period=$period"; // GET
+      "$baseUrl/api/analytics/spending-trends/?period=$period"; // GET // Response: { "spending_trends": [ { "label": "May 2026", "amount": "120450.00" } ] }
 
   // Premium analytics
   static String get premiumStats => "$baseUrl/api/analytics/stats/"; // GET
