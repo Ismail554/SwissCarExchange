@@ -8,7 +8,8 @@ import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/views/won_auction/presentations/rate_dealer_view.dart';
 
 class TransactionCompleteView extends StatelessWidget {
-  const TransactionCompleteView({super.key});
+  final String auctionId;
+  const TransactionCompleteView({super.key, required this.auctionId});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class TransactionCompleteView extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>RateDealerView()),
+                      MaterialPageRoute(builder: (context) => RateDealerView(auctionId: auctionId)),
                     );
                   },
                 ),

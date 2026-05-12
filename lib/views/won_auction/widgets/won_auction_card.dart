@@ -176,7 +176,7 @@ class WonAuctionCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RateDealerView(),
+                          builder: (context) => RateDealerView(auctionId: auctionId),
                         ),
                       );
                     },

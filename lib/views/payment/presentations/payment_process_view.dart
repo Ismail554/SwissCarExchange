@@ -370,7 +370,7 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                const TransactionCompletedView(),
+                                TransactionCompletedView(auctionId: widget.auctionId),
                           ),
                         );
                       } else if (provider.error != null && mounted) {

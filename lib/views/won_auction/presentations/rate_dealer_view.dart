@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
+import 'package:rionydo/controllers/rate_dealer_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
@@ -10,7 +12,8 @@ import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/won_auction/presentations/review_submitted_view.dart';
 
 class RateDealerView extends StatefulWidget {
-  const RateDealerView({super.key});
+  final String auctionId;
+  const RateDealerView({super.key, required this.auctionId});
 
   @override
   State<RateDealerView> createState() => _RateDealerViewState();
@@ -29,7 +32,7 @@ class _RateDealerViewState extends State<RateDealerView> {
     super.dispose();
   }
 
-  void _submitReview() {
+  Future<void> _submitReview() async {
     if (_overallRating == 0 ||
         _communicationRating == 0 ||
         _accuracyRating == 0 ||
@@ -41,13 +44,25 @@ class _RateDealerViewState extends State<RateDealerView> {
       return;
     }
 
-    // Logic to submit the review
-    AppSnackBar.success(context, "Review submitted successfully!");
-    // Navigator.pop(context); // Go back to Home or previous screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ReviewSubmittedView()),
+    final provider = Provider.of<RateDealerProvider>(context, listen: false);
+    final success = await provider.submitReview(
+      auctionId: widget.auctionId,
+      overallRating: _overallRating,
+      communicationRating: _communicationRating,
+      accuracyRating: _accuracyRating,
+      reliabilityRating: _reliabilityRating,
+      reviewText: _reviewCtrl.text.trim(),
     );
+
+    if (success && mounted) {
+      AppSnackBar.success(context, "Review submitted successfully!");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const ReviewSubmittedView()),
+      );
+    } else if (provider.errorMessage != null && mounted) {
+      AppSnackBar.error(context, provider.errorMessage!);
+    }
   }
 
   @override
@@ -74,13 +89,6 @@ class _RateDealerViewState extends State<RateDealerView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- Overall Experience ---
-            _OverallRatingCard(
-              rating: _overallRating,
-              onRatingChanged: (val) => setState(() => _overallRating = val),
-            ),
-            AppSpacing.h24,
-
             // --- Specific Aspects ---
             Text(
               'RATE SPECIFIC ASPECTS',
@@ -118,7 +126,18 @@ class _RateDealerViewState extends State<RateDealerView> {
             AppSpacing.h32,
 
             // --- Submit Button ---
-            CustomButton(text: 'Submit Review', onPressed: _submitReview),
+            Consumer<RateDealerProvider>(
+              builder: (context, provider, _) {
+                return provider.isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(color: AppColors.sceTeal),
+                      )
+                    : CustomButton(
+                        text: 'Submit Review',
+                        onPressed: _submitReview,
+                      );
+              },
+            ),
             AppSpacing.h10,
             Center(
               child: Text(
@@ -129,46 +148,6 @@ class _RateDealerViewState extends State<RateDealerView> {
             AppSpacing.h40,
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _OverallRatingCard extends StatelessWidget {
-  final int rating;
-  final Function(int) onRatingChanged;
-
-  const _OverallRatingCard({
-    required this.rating,
-    required this.onRatingChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E140C), // Dark brown/orange tint
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.sceOnboardingGold.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'OVERALL EXPERIENCE',
-            style: FontManager.labelMedium(
-              color: AppColors.sceOnboardingGold,
-            ).copyWith(fontWeight: FontWeight.bold),
-          ),
-          AppSpacing.h16,
-          _StarRatingBar(
-            rating: rating,
-            onRatingChanged: onRatingChanged,
-            size: 36.sp,
-          ),
-        ],
       ),
     );
   }

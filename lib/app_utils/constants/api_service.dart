@@ -108,7 +108,8 @@ class ApiService {
   static String get allReviews => "$baseUrl/api/auctions/me/reviews/";
   static String get overallRating =>
       "$baseUrl/api/auctions/me/overall-rating/"; // response: { "overall_rating": 2.0, "total_review_count": 1 }
-      static String get reviewAndRating => "$baseUrl/api/auctions/:auction_id/review/";
+  static String reviewAndRating(String auctionId) =>
+      "$baseUrl/api/auctions/$auctionId/review/"; // Body: { "communication_rating": 4, "transaction_reliability_rating": 3, "vehicle_accuracy_rating": 4, "review_text": "Ismail To superuser" }
 
   // Auction Management
   static String get auctionManagement =>

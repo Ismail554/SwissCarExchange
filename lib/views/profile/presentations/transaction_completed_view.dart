@@ -10,7 +10,8 @@ import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/views/won_auction/presentations/rate_dealer_view.dart';
 
 class TransactionCompletedView extends StatelessWidget {
-  const TransactionCompletedView({super.key});
+  final String auctionId;
+  const TransactionCompletedView({super.key, required this.auctionId});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,7 @@ class TransactionCompletedView extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 8.w),
           child: Column(
-            mainAxisAlignment: .center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Lottie.asset(JsonAssets.successmark, height: 150, repeat: false),
               Text(
@@ -39,7 +40,7 @@ class TransactionCompletedView extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const RateDealerView(),
+                      builder: (context) => RateDealerView(auctionId: auctionId),
                     ),
                   );
                 },
