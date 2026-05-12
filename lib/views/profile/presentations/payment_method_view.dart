@@ -16,8 +16,13 @@ import 'package:rionydo/views/won_auction/presentations/auction_contact_view.dar
 /// Screen to collect Switzerland offline bank transfer information (IBAN/SEPA).
 class PaymentMethodView extends StatefulWidget {
   final bool isPaymentFlow;
+  final String? auctionId;
 
-  const PaymentMethodView({super.key, this.isPaymentFlow = false});
+  const PaymentMethodView({
+    super.key,
+    this.isPaymentFlow = false,
+    this.auctionId,
+  });
 
   @override
   State<PaymentMethodView> createState() => _PaymentMethodViewState();
@@ -80,7 +85,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  const PaySuccessful(nextScreen: AuctionContactView()),
+                  PaySuccessful(nextScreen: AuctionContactView(auctionId: widget.auctionId ?? "")),
             ),
           );
         } else {
@@ -232,7 +237,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          const PaySuccessful(nextScreen: AuctionContactView()),
+                          PaySuccessful(nextScreen: AuctionContactView(auctionId: widget.auctionId ?? "")),
                     ),
                   );
                 },

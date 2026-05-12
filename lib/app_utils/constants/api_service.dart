@@ -91,5 +91,9 @@ static String get deleteBankDetails => "$baseUrl/api/users/me/bank-account/delet
 static String get wonAuction => "$baseUrl/api/auctions/me/bid/?filter=won";
 
 
+// Dealer Contact
+static String dealerContact(String auctionId) => "$baseUrl/api/auctions/$auctionId/dealer-contact/"; 
+
+
 
 }

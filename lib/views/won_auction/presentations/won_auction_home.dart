@@ -141,6 +141,7 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
         final isPaymentCompleted = ['paid', 'payment_completed'].contains(auction.status.toLowerCase());
 
         return WonAuctionCard(
+          auctionId: auction.id.toString(),
           imageUrl: imageUrl,
           title: auction.title,
           date: _formatDate(auction.endsAt),

@@ -3,23 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
-import 'package:rionydo/models/premium/auction_management_response.dart';
+import 'package:rionydo/models/won_auction/dealer_contact_response.dart';
 
-class WonAuctionProvider extends ChangeNotifier {
-  AuctionManagementResponse? _response;
+class DealerContactProvider extends ChangeNotifier {
+  DealerContactResponse? _contactData;
   bool _isLoading = false;
   String? _errorMessage;
   Map<String, dynamic>? _cachedRawData;
 
-  AuctionManagementResponse? get response => _response;
-  List<Auction> get auctions => _response?.results ?? [];
+  DealerContactResponse? get contactData => _contactData;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchWonAuctions({bool forceRefresh = false}) async {
-    // Only set loading to true and trigger shimmer if we don't have any cached data,
-    // or if a force refresh is explicitly requested.
-    if (_response == null || forceRefresh) {
+  Future<void> fetchDealerContact(String auctionId, {bool forceRefresh = false}) async {
+    if (_contactData == null || forceRefresh) {
       _isLoading = true;
       _errorMessage = null;
       notifyListeners();
@@ -27,35 +24,33 @@ class WonAuctionProvider extends ChangeNotifier {
 
     try {
       final result = await DioManager.apiRequest(
-        url: ApiService.wonAuction,
+        url: ApiService.dealerContact(auctionId),
         method: Methods.get,
       );
 
       result.fold(
         (error) {
-          // If we have cached data, we keep showing it rather than replacing with an error screen,
-          // but if we have no cached data, we must show the error.
-          if (_response == null) {
+          if (_contactData == null) {
             _errorMessage = error;
-            _response = null;
+            _contactData = null;
           }
         },
         (data) {
           final newDataMap = data as Map<String, dynamic>;
-          // Deep compare the incoming data map with our cached raw data using JSON serialization
-          final hasChanges = _cachedRawData == null || jsonEncode(_cachedRawData) != jsonEncode(newDataMap);       
+          final hasChanges = _cachedRawData == null || jsonEncode(_cachedRawData) != jsonEncode(newDataMap);
+
           if (hasChanges) {
             _cachedRawData = newDataMap;
-            _response = AuctionManagementResponse.fromJson(newDataMap);
+            _contactData = DealerContactResponse.fromJson(newDataMap);
             _errorMessage = null;
             notifyListeners();
           }
         },
       );
     } catch (e) {
-      if (_response == null) {
+      if (_contactData == null) {
         _errorMessage = e.toString();
-        _response = null;
+        _contactData = null;
       }
     } finally {
       if (_isLoading) {
@@ -66,7 +61,7 @@ class WonAuctionProvider extends ChangeNotifier {
   }
 
   void clear() {
-    _response = null;
+    _contactData = null;
     _isLoading = false;
     _errorMessage = null;
     _cachedRawData = null;

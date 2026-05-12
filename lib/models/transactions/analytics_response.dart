@@ -1,38 +1,9 @@
-// --- Bidder Stats ---
-class BidderStats {
-  final int auctionsWon;
-  final int auctionsParticipated;
-  final String avgBid;
-  final double winRate;
-
-  BidderStats({
-    required this.auctionsWon,
-    required this.auctionsParticipated,
-    required this.avgBid,
-    required this.winRate,
-  });
-
-  factory BidderStats.fromJson(Map<String, dynamic> json) => BidderStats(
-        auctionsWon: json["auctions_won"] ?? 0,
-        auctionsParticipated: json["auctions_participated"] ?? 0,
-        avgBid: json["avg_bid"] ?? "0.00",
-        winRate: (json["win_rate"] ?? 0.0).toDouble(),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "auctions_won": auctionsWon,
-        "auctions_participated": auctionsParticipated,
-        "avg_bid": avgBid,
-        "win_rate": winRate,
-      };
-}
-
 // --- Bidder Transaction Response ---
 class BidderTransactionResponse {
   final int count;
   final String? next;
   final String? previous;
-  final List<dynamic> results; 
+  final List<BidderTransactionItem> results;
 
   BidderTransactionResponse({
     required this.count,
@@ -41,18 +12,58 @@ class BidderTransactionResponse {
     required this.results,
   });
 
-  factory BidderTransactionResponse.fromJson(Map<String, dynamic> json) => BidderTransactionResponse(
+  factory BidderTransactionResponse.fromJson(Map<String, dynamic> json) =>
+      BidderTransactionResponse(
         count: json["count"] ?? 0,
-        next: json["next"],
-        previous: json["previous"],
-        results: json["results"] == null ? [] : List<dynamic>.from(json["results"].map((x) => x)),
+        next: json["next"] as String?,
+        previous: json["previous"] as String?,
+        results: json["results"] == null
+            ? []
+            : List<BidderTransactionItem>.from(json["results"]
+                .map((x) => BidderTransactionItem.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "count": count,
         "next": next,
         "previous": previous,
-        "results": List<dynamic>.from(results.map((x) => x)),
+        "results": List<dynamic>.from(results.map((x) => x.toJson())),
+      };
+}
+
+// --- Bidder Transaction Item ---
+class BidderTransactionItem {
+  final int? auctionId;
+  final String auctionTitle;
+  final String amount;
+  final String status;
+  final DateTime? auctionDate;
+
+  BidderTransactionItem({
+    this.auctionId,
+    required this.auctionTitle,
+    required this.amount,
+    required this.status,
+    this.auctionDate,
+  });
+
+  factory BidderTransactionItem.fromJson(Map<String, dynamic> json) =>
+      BidderTransactionItem(
+        auctionId: json["auction_id"] as int?,
+        auctionTitle: json["auction_title"] ?? "",
+        amount: json["amount"] ?? "0.00",
+        status: json["status"] ?? "",
+        auctionDate: json["auction_date"] != null
+            ? DateTime.tryParse(json["auction_date"])
+            : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+        "auction_id": auctionId,
+        "auction_title": auctionTitle,
+        "amount": amount,
+        "status": status,
+        "auction_date": auctionDate?.toIso8601String(),
       };
 }
 
@@ -61,7 +72,7 @@ class DealerTransactionResponse {
   final int count;
   final String? next;
   final String? previous;
-  final List<TransactionItem> results; // Updated to use the TransactionItem model
+  final List<DealerTransactionItem> results;
   final double pendingAmount;
   final double receivedAmount;
 
@@ -74,15 +85,17 @@ class DealerTransactionResponse {
     required this.receivedAmount,
   });
 
-  factory DealerTransactionResponse.fromJson(Map<String, dynamic> json) => DealerTransactionResponse(
+  factory DealerTransactionResponse.fromJson(Map<String, dynamic> json) =>
+      DealerTransactionResponse(
         count: json["count"] ?? 0,
-        next: json["next"],
-        previous: json["previous"],
-        results: json["results"] == null 
-            ? [] 
-            : List<TransactionItem>.from(json["results"].map((x) => TransactionItem.fromJson(x))),
-        pendingAmount: (json["pending_amount"] ?? 0.0).toDouble(),
-        receivedAmount: (json["received_amount"] ?? 0.0).toDouble(),
+        next: json["next"] as String?,
+        previous: json["previous"] as String?,
+        results: json["results"] == null
+            ? []
+            : List<DealerTransactionItem>.from(json["results"]
+                .map((x) => DealerTransactionItem.fromJson(x))),
+        pendingAmount: (json["pending_amount"] as num?)?.toDouble() ?? 0.0,
+        receivedAmount: (json["received_amount"] as num?)?.toDouble() ?? 0.0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -95,27 +108,28 @@ class DealerTransactionResponse {
       };
 }
 
-// --- Transaction Item (NEW) ---
-class TransactionItem {
+// --- Dealer Transaction Item ---
+class DealerTransactionItem {
   final String auctionTitle;
   final String amount;
   final String status;
-  final DateTime soldAt;
+  final DateTime? soldAt;
   final String buyerCompany;
 
-  TransactionItem({
+  DealerTransactionItem({
     required this.auctionTitle,
     required this.amount,
     required this.status,
-    required this.soldAt,
+    this.soldAt,
     required this.buyerCompany,
   });
 
-  factory TransactionItem.fromJson(Map<String, dynamic> json) => TransactionItem(
+  factory DealerTransactionItem.fromJson(Map<String, dynamic> json) =>
+      DealerTransactionItem(
         auctionTitle: json["auction_title"] ?? "",
         amount: json["amount"] ?? "0.00",
         status: json["status"] ?? "",
-        soldAt: DateTime.parse(json["sold_at"]),
+        soldAt: json["sold_at"] != null ? DateTime.tryParse(json["sold_at"]) : null,
         buyerCompany: json["buyer_company"] ?? "",
       );
 
@@ -123,7 +137,7 @@ class TransactionItem {
         "auction_title": auctionTitle,
         "amount": amount,
         "status": status,
-        "sold_at": soldAt.toIso8601String(),
+        "sold_at": soldAt?.toIso8601String(),
         "buyer_company": buyerCompany,
       };
 }
