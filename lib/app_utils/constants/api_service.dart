@@ -16,7 +16,7 @@ class ApiService {
       "$baseUrl/api/auth/verify-email/"; // body: {"code": "994405", "email": ""}
   static String get authStatus =>
       "$baseUrl/api/auth/status/"; // validate with access token // response : {"approval_status": "approved"} or {"approval_status": "pending"} or {"approval_status": "suspended"}
-
+  static String get logout => "$baseUrl/api/auth/logout/"; // POST // body: { "refresh": "" }
   // Forgot Password
   static String get forgotPassword =>
       "$baseUrl/api/auth/reset-password/request/"; // body: {"email": ""}
