@@ -305,29 +305,46 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   ),
                   SizedBox(height: 16.h),
 
-                  // Current Bid
-                  Text(
-                    "CURRENT BID",
-                    style: FontManager.labelSmall(
-                      color: AppColors.textHint,
-                    ).copyWith(letterSpacing: 0.5),
-                  ),
-                  SizedBox(height: 4.h),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        "CHF ",
-                        style: FontManager.heading2(color: Colors.white),
-                      ),
-                      Text(
-                        _formatCurrency(_currentBid),
-                        style: FontManager.heading1(
-                          color: AppColors.sceTeal,
-                        ).copyWith(fontSize: 32.sp),
-                      ),
-                    ],
+                  Consumer<AuctionsDetailProvider>(
+                    builder: (context, provider, _) {
+                      final noBidsYet =
+                          provider.bidHistory.isEmpty &&
+                          !provider.isBidHistoryLoading;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Label switches between "BIDS START FROM" and "CURRENT BID"
+                          Text(
+                            noBidsYet ? "BIDS START FROM" : "CURRENT BID",
+                            style: FontManager.labelSmall(
+                              color: AppColors.textHint,
+                            ).copyWith(letterSpacing: 0.5),
+                          ),
+                          SizedBox(height: 4.h),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                "CHF ",
+                                style: FontManager.heading2(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                noBidsYet
+                                    ? _formatCurrency(_minIncrement) // 150
+                                    : _formatCurrency(_currentBid),
+                                style: FontManager.heading1(
+                                  color: AppColors.sceTeal,
+                                ).copyWith(fontSize: 32.sp),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   SizedBox(height: 16.h),
 
@@ -486,7 +503,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     decoration: BoxDecoration(
                       color: AppColors.sceCardBg,
                       borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,7 +595,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                         (_userBid - _minIncrement >=
                                             _currentBid + _minIncrement)
                                         ? AppColors.sceTeal
-                                        : AppColors.sceTeal.withValues(alpha: 0.3),
+                                        : AppColors.sceTeal.withValues(
+                                            alpha: 0.3,
+                                          ),
                                     borderRadius: BorderRadius.circular(8.r),
                                   ),
                                   child: Icon(
@@ -654,10 +675,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                 await provider.deleteAutoBid(_auctionId);
                                 if (!context.mounted) return;
                                 setState(() => _isAutoBidEnabled = false);
-                                AppSnackBar.info(
-                                  context,
-                                  "Auto bid disabled.",
-                                );
+                                AppSnackBar.info(context, "Auto bid disabled.");
                               } else {
                                 setState(() => _isAutoBidEnabled = true);
                               }
@@ -684,7 +702,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                   activeColor: AppColors.sceTeal,
                                   checkColor: Colors.white,
                                   side: BorderSide(
-                                    color: AppColors.sceTeal.withValues(alpha: 0.5),
+                                    color: AppColors.sceTeal.withValues(
+                                      alpha: 0.5,
+                                    ),
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4.r),
@@ -750,7 +770,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                       color: AppColors.textHint,
                                     ),
                                     filled: true,
-                                    fillColor: Colors.white.withValues(alpha: 0.05),
+                                    fillColor: Colors.white.withValues(
+                                      alpha: 0.05,
+                                    ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8.r),
                                       borderSide: BorderSide.none,
