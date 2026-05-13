@@ -90,6 +90,8 @@ class ApiService {
   static String get notificationCount =>
       "$baseUrl/api/notifications/unread-count/"; // GET // response: { "unread_count": 1 }
   static String get notifications => "$baseUrl/api/notifications/"; // GET
+  static String deleteNotification(String notificationId) =>
+      "$baseUrl/api/notifications/$notificationId/delete"; // DELETE
 
   // Transaction
   // non premium user

@@ -37,7 +37,7 @@ class MyShippingRequest {
 class ShippingResult {
   final int auctionId;
   final String auctionTitle;
-  final String buyerEmail;
+  final Buyer buyer;
   final String amount;
   final String shippingMethod;
   final String status;
@@ -46,7 +46,7 @@ class ShippingResult {
   ShippingResult({
     required this.auctionId,
     required this.auctionTitle,
-    required this.buyerEmail,
+    required this.buyer,
     required this.amount,
     required this.shippingMethod,
     required this.status,
@@ -57,7 +57,9 @@ class ShippingResult {
     return ShippingResult(
       auctionId: json['auction_id'] ?? 0,
       auctionTitle: json['auction_title'] ?? '',
-      buyerEmail: json['buyer_email'] ?? '',
+      buyer: json['buyer'] != null
+          ? Buyer.fromJson(json['buyer'])
+          : Buyer.empty(),
       amount: json['amount'] ?? '0.00',
       shippingMethod: json['shipping_method'] ?? '',
       status: json['status'] ?? '',
@@ -68,10 +70,49 @@ class ShippingResult {
   Map<String, dynamic> toJson() => {
     'auction_id': auctionId,
     'auction_title': auctionTitle,
-    'buyer_email': buyerEmail,
+    'buyer': buyer.toJson(),
     'amount': amount,
     'shipping_method': shippingMethod,
     'status': status,
     'created_at': createdAt.toIso8601String(),
+  };
+}
+
+class Buyer {
+  final String email;
+  final String fullName;
+  final String phone;
+  final String address;
+  final String company;
+
+  Buyer({
+    required this.email,
+    required this.fullName,
+    required this.phone,
+    required this.address,
+    required this.company,
+  });
+
+  factory Buyer.fromJson(Map<String, dynamic> json) {
+    return Buyer(
+      email: json['email'] ?? '',
+      fullName: json['full_name'] ?? '',
+      phone: json['phone'] ?? '',
+      address: json['address'] ?? '',
+      company: json['company'] ?? '',
+    );
+  }
+
+  // Helper factory for null safety fallback
+  factory Buyer.empty() {
+    return Buyer(email: '', fullName: '', phone: '', address: '', company: '');
+  }
+
+  Map<String, dynamic> toJson() => {
+    'email': email,
+    'full_name': fullName,
+    'phone': phone,
+    'address': address,
+    'company': company,
   };
 }

@@ -101,6 +101,45 @@ class _NotificationViewState extends State<NotificationView> {
     }
   }
 
+  void _deleteNotification(int index) {
+    final item = _notifications[index];
+    setState(() {
+      _notifications.removeAt(index);
+    });
+
+    bool undo = false;
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text("Notification deleted"),
+        action: SnackBarAction(
+          label: "Undo",
+          textColor: AppColors.sceTeal,
+          onPressed: () {
+            undo = true;
+            if (mounted) {
+              setState(() {
+                _notifications.insert(index, item);
+              });
+            }
+          },
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    ).closed.then((reason) async {
+      if (!undo) {
+        try {
+          await DioManager.apiRequest(
+            url: ApiService.deleteNotification(item.id.toString()),
+            method: Methods.delete,
+          );
+        } catch (e) {
+          debugPrint("Error deleting notification: $e");
+        }
+      }
+    });
+  }
+
   String _timeAgo(DateTime dt) {
     final diff = DateTime.now().difference(dt);
     if (diff.inSeconds < 60) return '${diff.inSeconds}s ago';
@@ -210,9 +249,26 @@ class _NotificationViewState extends State<NotificationView> {
       itemCount: _notifications.length,
       separatorBuilder: (_, _) => AppSpacing.h12,
       itemBuilder: (context, index) {
-        return _NotificationCard(
-          item: _notifications[index],
-          timeAgo: _timeAgo(_notifications[index].createdAt),
+        final item = _notifications[index];
+        return Dismissible(
+          key: Key('notification_${item.id}'),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            alignment: Alignment.centerRight,
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            decoration: BoxDecoration(
+              color: AppColors.errorRed,
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Icon(Icons.delete_outline, color: Colors.white, size: 28.sp),
+          ),
+          onDismissed: (direction) {
+            _deleteNotification(index);
+          },
+          child: _NotificationCard(
+            item: item,
+            timeAgo: _timeAgo(item.createdAt),
+          ),
         );
       },
     );

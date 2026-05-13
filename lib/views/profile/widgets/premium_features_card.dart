@@ -5,6 +5,7 @@ import 'package:rionydo/views/premium/presentations/advance_statistics.dart';
 import 'package:rionydo/views/premium/presentations/auction_management_view.dart';
 import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
 import 'package:rionydo/views/premium/presentations/recieve_payments_view.dart';
+import 'package:rionydo/views/profile/presentations/my_shipping_request_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 
 class PremiumFeaturesCard extends StatelessWidget {
@@ -97,19 +98,19 @@ class PremiumFeaturesCard extends StatelessWidget {
                 },
               ),
               ProfileDivider(),
-              // ProfileListTile(
-              //   Icons.reviews_outlined,
-              //   'Dealer Reviews',
-              //   isPremiumFeature: true,
-              //   onTap: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) => DealerReviewsView(),
-              //       ),
-              //     );
-              //   },
-              // ),
+              ProfileListTile(
+                Icons.local_shipping_outlined,
+                'My Shipping',
+                isPremiumFeature: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyShippingRequestView(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

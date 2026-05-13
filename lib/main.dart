@@ -24,7 +24,6 @@ import 'package:rionydo/controllers/home_stats_provider.dart';
 import 'package:rionydo/controllers/payment_process_provider.dart';
 import 'package:rionydo/controllers/rate_dealer_provider.dart';
 import 'package:rionydo/controllers/profile/my_shipping_provider.dart';
-import 'package:rionydo/services/firebase_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,9 +38,6 @@ Future<void> main() async {
 
   final globalState = GlobalState();
   await globalState.rehydrate();
-
-  // Fire and forget FCM initialization to avoid blocking runApp
-  FirebaseService.initFirebaseMessaging();
 
   runApp(
     MultiProvider(

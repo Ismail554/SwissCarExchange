@@ -110,18 +110,18 @@ class _ProfileViewState extends State<ProfileView> {
                   );
                 },
               ),
-              MyBidsTile(
-                title: 'My Shipping Request',
-                icon: Icons.feed_outlined,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MyShippingRequestView(),
-                    ),
-                  );
-                },
-              ),
+              // MyBidsTile(
+              //   title: 'My Shipping Request',
+              //   icon: Icons.feed_outlined,
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const MyShippingRequestView(),
+              //       ),
+              //     );
+              //   },
+              // ),
               AppSpacing.h24,
               const ProfileSectionTitle('DEALER RATING'),
               AppSpacing.h12,

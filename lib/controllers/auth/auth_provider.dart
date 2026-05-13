@@ -20,6 +20,7 @@ import 'package:rionydo/views/auth/login/login_views.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/before_subs_view.dart';
 import 'package:rionydo/models/subscription/subscription_plan.dart';
+import 'package:rionydo/services/firebase_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
@@ -150,6 +151,8 @@ class AuthProvider extends ChangeNotifier {
         await Firebase.initializeApp(
           options: DefaultFirebaseOptions.currentPlatform,
         );
+        // Init FCM after login with valid token — fire and forget.
+        FirebaseService.initFirebaseMessaging();
         await SecureStorageHelper.saveSubscriptionPlan(plan);
 
         if (!context.mounted) return;
@@ -225,6 +228,11 @@ class AuthProvider extends ChangeNotifier {
         final plan = loginData.subscription?.plan ?? SubscriptionPlanId.basic;
         context.read<GlobalState>().isPremium =
             (plan == SubscriptionPlanId.premium);
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+        // Init FCM after 2FA login with valid token — fire and forget.
+        FirebaseService.initFirebaseMessaging();
         await SecureStorageHelper.saveSubscriptionPlan(plan);
 
         if (!context.mounted) return;
@@ -311,7 +319,7 @@ class AuthProvider extends ChangeNotifier {
           AppSnackBar.error(context, error);
         }
       },
-      (data) {
+      (data) async {
         debugPrint('AUTH: ✅ verifyOtp API success! Response: $data');
         if (context.mounted) {
           final message = data['message']?.toString();
@@ -324,6 +332,12 @@ class AuthProvider extends ChangeNotifier {
           final approvalStatus = data['approval_status']?.toString();
 
           if (approvalStatus == 'approved') {
+            await Firebase.initializeApp(
+              options: DefaultFirebaseOptions.currentPlatform,
+            );
+            // Init FCM after OTP-verified login — fire and forget.
+            FirebaseService.initFirebaseMessaging();
+            if (!context.mounted) return;
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -650,4 +664,3 @@ class AuthProvider extends ChangeNotifier {
     return success;
   }
 }
-
