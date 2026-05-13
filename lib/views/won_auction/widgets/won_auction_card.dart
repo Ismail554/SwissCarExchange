@@ -15,6 +15,7 @@ class WonAuctionCard extends StatelessWidget {
   final String date;
   final String price;
   final String transactionStatus;
+  final bool hasReviewed;
 
   const WonAuctionCard({
     super.key,
@@ -24,6 +25,7 @@ class WonAuctionCard extends StatelessWidget {
     required this.date,
     required this.price,
     this.transactionStatus = '',
+    this.hasReviewed = false,
   });
 
   static const _hiddenStatuses = {
@@ -263,7 +265,7 @@ class WonAuctionCard extends StatelessWidget {
                   icon: Icons.chat_bubble_outline,
                 ),
                 AppSpacing.h10,
-                if (transactionStatus == 'completed')
+                if (transactionStatus == 'completed' && !hasReviewed)
                   _RateDealerButton(
                     onPressed: () {
                       Navigator.push(

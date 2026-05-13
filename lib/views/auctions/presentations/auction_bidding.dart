@@ -162,6 +162,36 @@ class _AuctionBiddingState extends State<AuctionBidding> {
     return str;
   }
 
+  Future<void> _executeBid() async {
+    setState(() => _isBidding = true);
+    final provider = context.read<AuctionsDetailProvider>();
+    final success = await provider.placeBid(_auctionId, _userBid);
+
+    if (!context.mounted) return;
+    setState(() => _isBidding = false);
+    if (success) {
+      AppSnackBar.success(context, "Bid placed successfully!");
+      provider.fetchBidHistory(_auctionId);
+    } else {
+      AppSnackBar.error(context, "Failed to place bid.");
+    }
+  }
+
+  void _showBidConfirmation() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => _BidConfirmationDialog(
+        bidAmount: _userBid,
+        formattedAmount: _formatCurrency(_userBid),
+        onConfirm: () {
+          Navigator.of(dialogContext).pop();
+          _executeBid();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,17 +273,31 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.1),
                     ),
-                    child: () {
-                      final images =
-                          widget.detailData?.images ??
-                          widget.initialData.images;
-                      return Image.network(
-                        images.isNotEmpty
-                            ? images.first.url
-                            : "https://images.unsplash.com/photo-1620314764415-195d63e1c2a7",
-                        fit: BoxFit.cover,
-                      );
-                    }(),
+                    child:
+                        (widget.detailData?.images ?? widget.initialData.images)
+                            .isNotEmpty
+                        ? Image.network(
+                            (widget.detailData?.images ??
+                                    widget.initialData.images)
+                                .first
+                                .url,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  color: Colors.white10,
+                                  child: const Icon(
+                                    Icons.image_not_supported_outlined,
+                                    color: Colors.white24,
+                                  ),
+                                ),
+                          )
+                        : Container(
+                            color: Colors.white10,
+                            child: const Icon(
+                              Icons.image_not_supported_outlined,
+                              color: Colors.white24,
+                            ),
+                          ),
                   ),
                   if (_isAutoBidEnabled)
                     Positioned(
@@ -637,26 +681,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     text: _isAuctionEnded ? "AUCTION ENDED" : "PLACE BID",
                     isLoading: _isBidding,
                     isActive: !_isAuctionEnded,
-                    onPressed: () async {
-                      setState(() => _isBidding = true);
-                      final provider = context.read<AuctionsDetailProvider>();
-                      final success = await provider.placeBid(
-                        _auctionId,
-                        _userBid,
-                      );
-
-                      if (!context.mounted) return;
-                      setState(() => _isBidding = false);
-                      if (success) {
-                        AppSnackBar.success(
-                          context,
-                          "Bid placed successfully!",
-                        );
-                        provider.fetchBidHistory(_auctionId);
-                      } else {
-                        AppSnackBar.error(context, "Failed to place bid.");
-                      }
-                    },
+                    onPressed: _showBidConfirmation,
                   ),
                   SizedBox(height: 24.h),
 

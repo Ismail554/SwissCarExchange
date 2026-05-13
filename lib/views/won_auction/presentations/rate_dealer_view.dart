@@ -33,8 +33,7 @@ class _RateDealerViewState extends State<RateDealerView> {
   }
 
   Future<void> _submitReview() async {
-    if (_overallRating == 0 ||
-        _communicationRating == 0 ||
+    if (_communicationRating == 0 ||
         _accuracyRating == 0 ||
         _reliabilityRating == 0) {
       AppSnackBar.warning(
@@ -47,7 +46,6 @@ class _RateDealerViewState extends State<RateDealerView> {
     final provider = Provider.of<RateDealerProvider>(context, listen: false);
     final success = await provider.submitReview(
       auctionId: widget.auctionId,
-      overallRating: _overallRating,
       communicationRating: _communicationRating,
       accuracyRating: _accuracyRating,
       reliabilityRating: _reliabilityRating,
@@ -130,7 +128,9 @@ class _RateDealerViewState extends State<RateDealerView> {
               builder: (context, provider, _) {
                 return provider.isLoading
                     ? const Center(
-                        child: CircularProgressIndicator(color: AppColors.sceTeal),
+                        child: CircularProgressIndicator(
+                          color: AppColors.sceTeal,
+                        ),
                       )
                     : CustomButton(
                         text: 'Submit Review',
@@ -195,10 +195,7 @@ class _StarRatingBar extends StatelessWidget {
   final int rating;
   final Function(int) onRatingChanged;
 
-  const _StarRatingBar({
-    required this.rating,
-    required this.onRatingChanged,
-  });
+  const _StarRatingBar({required this.rating, required this.onRatingChanged});
 
   @override
   Widget build(BuildContext context) {

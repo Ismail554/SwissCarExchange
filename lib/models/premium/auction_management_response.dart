@@ -48,6 +48,7 @@ class Auction {
   final int viewCount;
   final int watchlistCount;
   final String transactionStatus;
+  final bool hasReviewed;
 
   Auction({
     required this.id,
@@ -64,6 +65,7 @@ class Auction {
     required this.viewCount,
     required this.watchlistCount,
     required this.transactionStatus,
+   this.hasReviewed=false,
   });
 
   factory Auction.fromJson(Map<String, dynamic> json) {
@@ -87,6 +89,7 @@ class Auction {
       viewCount: json['view_count'] ?? 0,
       watchlistCount: json['watchlist_count'] ?? 0,
       transactionStatus: json['transaction_status'] ?? "",
+hasReviewed: json['has_reviewed'] ?? false,
     );
   }
 
@@ -106,6 +109,7 @@ class Auction {
       'view_count': viewCount,
       'watchlist_count': watchlistCount,
       'transaction_status': transactionStatus,
+      'has_reviewed': hasReviewed,
     };
   }
 }

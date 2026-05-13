@@ -10,9 +10,9 @@ class SpendingChart extends StatelessWidget {
 
   const SpendingChart({super.key, required this.trends, required this.period});
 
-  static const double _yAxisWidth = 58.0;
+  static const double _yAxisWidth = 34.0;
   static const double _xLabelHeight = 20.0;
-  static const double _pointWidth = 36.0; // px per point when scrollable
+  static const double _pointWidth = 20.0; // px per point when scrollable
 
   bool get _isDayLabel => period == '7D' || period == '30D';
   bool get _shouldScroll => trends.length > 14;

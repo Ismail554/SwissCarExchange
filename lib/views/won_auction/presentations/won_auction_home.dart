@@ -28,8 +28,18 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
 
   String _formatDate(DateTime date) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
@@ -52,8 +62,8 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
                   style: FontManager.titleText(color: AppColors.white),
                 ),
                 Text(
-                  provider.isLoading 
-                      ? 'Loading...' 
+                  provider.isLoading
+                      ? 'Loading...'
                       : '$totalCount vehicles won',
                   style: FontManager.bodySmall(color: AppColors.sceGreyA0),
                 ),
@@ -99,7 +109,10 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
-                child: Text('Retry', style: FontManager.labelLarge(color: Colors.white)),
+                child: Text(
+                  'Retry',
+                  style: FontManager.labelLarge(color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -112,7 +125,11 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.emoji_events_outlined, color: AppColors.sceOnboardingGold, size: 64.sp),
+            Icon(
+              Icons.emoji_events_outlined,
+              color: AppColors.sceOnboardingGold,
+              size: 64.sp,
+            ),
             SizedBox(height: 16.h),
             Text(
               'No won auctions yet',
@@ -133,7 +150,7 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
       itemCount: auctions.length,
       itemBuilder: (context, index) {
         final auction = auctions[index];
-        
+
         final imageUrl = auction.images.isNotEmpty
             ? auction.images.first.url
             : ImageAssets.car1;
@@ -145,6 +162,7 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
           date: _formatDate(auction.endsAt),
           price: "CHF ${auction.currentHighestBid ?? auction.reservePrice}",
           transactionStatus: auction.transactionStatus,
+          hasReviewed: auction.hasReviewed,
         );
       },
     );
@@ -172,7 +190,9 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(16.r),
+                    ),
                   ),
                 ),
                 Padding(
@@ -180,13 +200,25 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(height: 20.h, width: 200.w, color: Colors.white),
+                      Container(
+                        height: 20.h,
+                        width: 200.w,
+                        color: Colors.white,
+                      ),
                       SizedBox(height: 12.h),
                       Row(
                         children: [
-                          Container(height: 14.h, width: 80.w, color: Colors.white),
+                          Container(
+                            height: 14.h,
+                            width: 80.w,
+                            color: Colors.white,
+                          ),
                           SizedBox(width: 16.w),
-                          Container(height: 14.h, width: 80.w, color: Colors.white),
+                          Container(
+                            height: 14.h,
+                            width: 80.w,
+                            color: Colors.white,
+                          ),
                         ],
                       ),
                       SizedBox(height: 16.h),

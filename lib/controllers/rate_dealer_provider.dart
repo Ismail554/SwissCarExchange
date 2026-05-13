@@ -16,7 +16,6 @@ class RateDealerProvider extends ChangeNotifier {
 
   Future<bool> submitReview({
     required String auctionId,
-    required int overallRating,
     required int communicationRating,
     required int accuracyRating,
     required int reliabilityRating,
@@ -32,7 +31,6 @@ class RateDealerProvider extends ChangeNotifier {
         method: Methods.post,
         skipAuth: false,
         body: {
-          "overall_rating": overallRating,
           "communication_rating": communicationRating,
           "vehicle_accuracy_rating": accuracyRating,
           "transaction_reliability_rating": reliabilityRating,
