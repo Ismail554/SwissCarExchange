@@ -8,7 +8,7 @@ import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
-import 'package:rionydo/models/notification/notification_response.dart';
+import 'package:rionydo/models/notification%20&%20wishlist/notification_response.dart';
 
 class NotificationView extends StatefulWidget {
   const NotificationView({super.key});

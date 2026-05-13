@@ -62,7 +62,7 @@ class ApiService {
   // Review & Wishlist
   static String createWishlist(String auctionId) =>
       "$baseUrl/api/auctions/$auctionId/watchlist/";
-  static String get myWishlists => "$baseUrl/api/auctions/watchlist/";
+  static String get myWishlists => "$baseUrl/api/auctions/me/watchlist/";
 
   // Bid
   static String placeBid(String auctionId) =>

@@ -4,6 +4,7 @@ import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/models/auctions/auctions_detail_response.dart';
 import 'package:rionydo/models/bid/bid_history_response.dart';
+import 'package:rionydo/models/notification%20&%20wishlist/my_wishlist_response.dart';
 
 class AuctionsDetailProvider extends ChangeNotifier {
   AuctionDetailResponse? _auctionDetail;
@@ -14,11 +15,17 @@ class AuctionsDetailProvider extends ChangeNotifier {
   List<BidItem> _bidHistory = [];
   bool _isBidHistoryLoading = false;
 
+  // Wishlist
+  List<WishListItem> _wishlist = [];
+  bool _isWishlistLoading = false;
+
   AuctionDetailResponse? get auctionDetail => _auctionDetail;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   List<BidItem> get bidHistory => _bidHistory;
   bool get isBidHistoryLoading => _isBidHistoryLoading;
+  List<WishListItem> get wishlist => _wishlist;
+  bool get isWishlistLoading => _isWishlistLoading;
 
   Future<void> fetchAuctionDetail(String auctionId) async {
     _isLoading = true;
@@ -143,11 +150,36 @@ class AuctionsDetailProvider extends ChangeNotifier {
     }, (data) => true);
   }
 
+  Future<void> fetchWishlist() async {
+    _isWishlistLoading = true;
+    notifyListeners();
+
+    final result = await DioManager.apiRequest(
+      url: ApiService.myWishlists,
+      method: Methods.get,
+    );
+
+    result.fold(
+      (error) {
+        debugPrint("Wishlist error: $error");
+        _isWishlistLoading = false;
+        notifyListeners();
+      },
+      (data) {
+        final response = MyWishListResponse.fromJson(data);
+        _wishlist = response.results;
+        _isWishlistLoading = false;
+        notifyListeners();
+      },
+    );
+  }
+
   void clearData() {
     _auctionDetail = null;
     _errorMessage = null;
     _isLoading = false;
     _bidHistory = [];
+    _wishlist = [];
     notifyListeners();
   }
 }

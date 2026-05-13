@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/views/auctions/presentations/auction_details.dart';
+import 'package:rionydo/views/auctions/presentations/my_wishlist_view.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AuctionsView extends StatefulWidget {
@@ -74,12 +75,26 @@ class _AuctionsViewState extends State<AuctionsView> {
   Widget build(BuildContext context) {
     return CommonBackground(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bookmarks_rounded),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MyWishlistView(),
+                ),
+              );
+            },
+          ),
+        ],
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         title: Text(
           "Auction",
           style: FontManager.heading1(color: Colors.white),
         ),
+        
         centerTitle: false,
       ),
       child: Padding(
