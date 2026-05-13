@@ -33,7 +33,7 @@ class AppSnackBar {
               border: Border.all(color: cfg.borderColor, width: 1),
               boxShadow: [
                 BoxShadow(
-                  color: cfg.glowColor.withOpacity(0.25),
+                  color: cfg.glowColor.withValues(alpha: 0.25),
                   blurRadius: 18,
                   offset: const Offset(0, 6),
                 ),
@@ -143,38 +143,38 @@ class AppSnackBar {
       case SnackBarType.success:
         return _SnackBarConfig(
           bgColor: AppColors.sceSuccessDarkBg,
-          borderColor: AppColors.sceTeal.withOpacity(0.4),
+          borderColor: AppColors.sceTeal.withValues(alpha: 0.4),
           glowColor: AppColors.sceTeal,
           icon: Icons.check_circle_outline_rounded,
           iconColor: AppColors.sceTeal,
-          iconBgColor: AppColors.sceTeal.withOpacity(0.12),
+          iconBgColor: AppColors.sceTeal.withValues(alpha: 0.12),
         );
       case SnackBarType.error:
         return _SnackBarConfig(
           bgColor: AppColors.sceErrorDarkBg,
-          borderColor: AppColors.errorRed.withOpacity(0.4),
+          borderColor: AppColors.errorRed.withValues(alpha: 0.4),
           glowColor: AppColors.errorRed,
           icon: Icons.error_outline_rounded,
           iconColor: AppColors.errorRed,
-          iconBgColor: AppColors.errorRed.withOpacity(0.12),
+          iconBgColor: AppColors.errorRed.withValues(alpha: 0.12),
         );
       case SnackBarType.warning:
         return _SnackBarConfig(
           bgColor: AppColors.sceWarningDarkBg,
-          borderColor: AppColors.sceRegistrationGold.withOpacity(0.4),
+          borderColor: AppColors.sceRegistrationGold.withValues(alpha: 0.4),
           glowColor: AppColors.sceRegistrationGold,
           icon: Icons.warning_amber_rounded,
           iconColor: AppColors.sceRegistrationGold,
-          iconBgColor: AppColors.sceRegistrationGold.withOpacity(0.12),
+          iconBgColor: AppColors.sceRegistrationGold.withValues(alpha: 0.12),
         );
       case SnackBarType.info:
         return _SnackBarConfig(
           bgColor: AppColors.sceInfoDarkBg,
-          borderColor: AppColors.info.withOpacity(0.4),
+          borderColor: AppColors.info.withValues(alpha: 0.4),
           glowColor: AppColors.info,
           icon: Icons.info_outline_rounded,
           iconColor: AppColors.info,
-          iconBgColor: AppColors.info.withOpacity(0.12),
+          iconBgColor: AppColors.info.withValues(alpha: 0.12),
         );
     }
   }

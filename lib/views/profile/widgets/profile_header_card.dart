@@ -95,22 +95,28 @@ class ProfileHeaderCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ProfileStatItem(
-                stats.auctionParticipate.toString(),
-                'Auctions',
+                stats.winRate,
+                'Win Rate',
                 AppColors.sceTeal,
               ),
               ProfileStatItem(
-                stats.auctionsWon.toString(),
+                stats.auctionsWon,
                 'Won',
-                AppColors.sceGold,
+                AppColors.white,
               ),
               ProfileStatItem(
-                stats.winRate.toString(),
-                'Success Rate',
-                AppColors.sceTeal,
+                stats.avgBid,
+                'Avg Bid',
+                AppColors.white,
+              ),
+              ProfileStatItem(
+                stats.auctionParticipate,
+                'Auctions',
+                AppColors.sceGold,
               ),
             ],
           ),
+
         ],
       ),
     );

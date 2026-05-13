@@ -25,6 +25,11 @@ class ApiService {
       "$baseUrl/api/auth/reset-password/verify/"; // body: {"email": "", "code": ""}
   static String get resetPassword =>
       "$baseUrl/api/auth/reset-password/reset/"; // body: {"email": "", "new_password": "", "password_reset_token": ""}
+  static String get changePassword => "$baseUrl/api/users/me/change-password/"; //POST body: { "current_password": "", "new_password": "" }
+
+  // Delete Account
+  static String get deleteAccount =>
+      "$baseUrl/api/users/me/delete-account/"; // POST body: { "password": "string" }
 
   // 2FA
   static String get verify2fa =>

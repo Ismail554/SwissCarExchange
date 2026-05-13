@@ -155,8 +155,8 @@ class _DealerRatingCardState extends State<DealerRatingCard> {
 
   Widget _buildShimmerBox({double? width, double? height}) {
     return Shimmer.fromColors(
-      baseColor: Colors.white.withOpacity(0.05),
-      highlightColor: Colors.white.withOpacity(0.1),
+      baseColor: Colors.white.withValues(alpha: 0.05),
+      highlightColor: Colors.white.withValues(alpha: 0.1),
       child: Container(
         width: width,
         height: height,

@@ -195,14 +195,14 @@ class OnboardignCommonScaff extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: isActive
                                   ? const Color(0xFFD4AF37)
-                                  : const Color(0xFFFFFFFF).withOpacity(0.08),
+                                  : const Color(0xFFFFFFFF).withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(2),
                               boxShadow: isActive
                                   ? [
                                       BoxShadow(
                                         color: const Color(
                                           0xFFD4AF37,
-                                        ).withOpacity(0.3),
+                                        ).withValues(alpha: 0.3),
                                         blurRadius: 10,
                                         offset: const Offset(0, 0),
                                       ),
@@ -248,12 +248,12 @@ class OnboardignCommonScaff extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: AppColors.sceGlowGreenLight.withOpacity(0.3),
+            color: AppColors.sceGlowGreenLight.withValues(alpha: 0.3),
             blurRadius: 60,
             spreadRadius: 20,
           ),
           BoxShadow(
-            color: AppColors.sceGlowGreenDark.withOpacity(0.2),
+            color: AppColors.sceGlowGreenDark.withValues(alpha: 0.2),
             blurRadius: 100,
             spreadRadius: 40,
           ),

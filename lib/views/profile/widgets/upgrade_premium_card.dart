@@ -22,7 +22,7 @@ class UpgradePremiumCard extends StatelessWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.sceGold.withOpacity(0.3), width: 1),
+        border: Border.all(color: AppColors.sceGold.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +54,7 @@ class UpgradePremiumCard extends StatelessWidget {
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: AppColors.scePremiumDealerBg,
-              side: BorderSide(color: AppColors.sceGold.withOpacity(0.5)),
+              side: BorderSide(color: AppColors.sceGold.withValues(alpha: 0.5)),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.r),
               ),

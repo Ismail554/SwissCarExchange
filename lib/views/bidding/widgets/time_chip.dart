@@ -29,7 +29,7 @@ class BidsTimeChip extends StatelessWidget {
           border: Border.all(
             color: isSelected
                 ? AppColors.sceTeal
-                : AppColors.grey.withOpacity(0.25),
+                : AppColors.grey.withValues(alpha: 0.25),
           ),
         ),
         child: Text(

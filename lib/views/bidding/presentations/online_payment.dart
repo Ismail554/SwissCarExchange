@@ -187,9 +187,9 @@ class _PaymentSummaryCard extends StatelessWidget {
       width: double.maxFinite,
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
       decoration: BoxDecoration(
-        color: AppColors.sceTeal.withOpacity(0.08),
+        color: AppColors.sceTeal.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.sceTeal.withOpacity(0.25)),
+        border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,7 +283,7 @@ class _CardTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: FontManager.bodyMedium(
-          color: AppColors.grey.withOpacity(0.5),
+          color: AppColors.grey.withValues(alpha: 0.5),
         ),
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon, color: AppColors.grey, size: 20.sp)
@@ -293,11 +293,11 @@ class _CardTextField extends StatelessWidget {
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(color: AppColors.grey.withValues(alpha: 0.2)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(color: AppColors.grey.withValues(alpha: 0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

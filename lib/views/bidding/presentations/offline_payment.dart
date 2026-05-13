@@ -61,7 +61,7 @@ class OfflinePaymentView extends StatelessWidget {
           'Copied to clipboard',
           style: FontManager.bodySmall(color: AppColors.white),
         ),
-        backgroundColor: AppColors.sceTeal.withOpacity(0.85),
+        backgroundColor: AppColors.sceTeal.withValues(alpha: 0.85),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -138,9 +138,9 @@ class _PaymentSummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
       decoration: BoxDecoration(
-        color: AppColors.sceTeal.withOpacity(0.08),
+        color: AppColors.sceTeal.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.sceTeal.withOpacity(0.25)),
+        border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,7 +193,7 @@ class _BankDetailsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.grey.withOpacity(0.15)),
+        border: Border.all(color: AppColors.grey.withValues(alpha: 0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,7 +289,7 @@ class _BankDetailRow extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10.h),
-          Divider(color: AppColors.grey.withOpacity(0.12), height: 1),
+          Divider(color: AppColors.grey.withValues(alpha: 0.12), height: 1),
         ],
       ),
     );
@@ -311,9 +311,9 @@ class _WarningBox extends StatelessWidget {
       width: double.maxFinite,
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: AppColors.sceGold.withOpacity(0.08),
+        color: AppColors.sceGold.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.sceGold.withOpacity(0.35)),
+        border: Border.all(color: AppColors.sceGold.withValues(alpha: 0.35)),
       ),
       child: RichText(
         text: TextSpan(
@@ -326,7 +326,7 @@ class _WarningBox extends StatelessWidget {
               text:
                   'Please include the reference number in your bank transfer to ensure proper processing.',
               style: FontManager.labelSmall(
-                color: AppColors.sceGold.withOpacity(0.85),
+                color: AppColors.sceGold.withValues(alpha: 0.85),
               ),
             ),
           ],

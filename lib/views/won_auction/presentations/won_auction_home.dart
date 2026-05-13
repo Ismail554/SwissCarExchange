@@ -159,7 +159,7 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
           baseColor: AppColors.sceCardBg,
-          highlightColor: AppColors.sceGreyA0.withOpacity(0.2),
+          highlightColor: AppColors.sceGreyA0.withValues(alpha: 0.2),
           child: Container(
             margin: EdgeInsets.only(bottom: 20.h),
             decoration: BoxDecoration(

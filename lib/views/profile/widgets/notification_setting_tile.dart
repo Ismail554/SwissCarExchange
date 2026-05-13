@@ -46,8 +46,8 @@ class NotificationSettingTile extends StatelessWidget {
           ),
           CupertinoSwitch(
             value: value,
-            activeColor: AppColors.sceTeal,
-            trackColor: Colors.white10,
+            activeTrackColor: AppColors.sceTeal,
+            inactiveTrackColor: Colors.white10,
             onChanged: onChanged,
           ),
         ],

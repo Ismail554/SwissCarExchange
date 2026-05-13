@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rionydo/views/auth/login/login_views.dart';
-import 'package:rionydo/views/home/presentation/home_view.dart';
 import '../onboardign_common_scaff.dart';
 
 class Step3Onboarding extends StatelessWidget {

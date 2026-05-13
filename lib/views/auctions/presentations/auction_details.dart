@@ -11,7 +11,6 @@ import 'package:rionydo/views/auctions/widgets/auction_countdown.dart';
 import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/models/auctions/auctions_detail_response.dart';
-import 'package:rionydo/models/auctions/auction_image.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 
 class AuctionDetails extends StatefulWidget {
@@ -113,7 +112,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                         children: [
                           // Image Carousel
                           Container(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             child: () {
                               final images =
                                   detail?.images ?? widget.data.images;
@@ -169,8 +168,8 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                                               shape: BoxShape.circle,
                                               color: _currentPage == index
                                                   ? AppColors.sceTeal
-                                                  : Colors.white.withOpacity(
-                                                      0.5,
+                                                  : Colors.white.withValues(
+                                                      alpha: 0.5,
                                                     ),
                                             ),
                                           ),
@@ -193,7 +192,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                                   begin: Alignment.bottomCenter,
                                   end: Alignment.topCenter,
                                   colors: [
-                                    Colors.black.withOpacity(0.9),
+                                    Colors.black.withValues(alpha: 0.9),
                                     Colors.transparent,
                                   ],
                                 ),
@@ -216,7 +215,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  "Lot #${detail?.id ?? widget.data.id} • ${detail?.totalBidders ?? widget.data.totalBidders} Gebote",
+                                  "${detail?.totalBidders ?? widget.data.totalBidders} Bidders",
                                   style: FontManager.bodyMedium(
                                     color: AppColors.textHint,
                                   ),
@@ -299,7 +298,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
       decoration: BoxDecoration(
         color: AppColors.sceTealStatBg,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.sceTeal.withOpacity(0.3)),
+        border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -379,7 +378,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Text(
         description ?? "Keine Beschreibung verfügbar.",
@@ -396,7 +395,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -442,8 +441,8 @@ class _AuctionDetailsState extends State<AuctionDetails> {
 
   Widget _buildShimmerBox({double? height}) {
     return Shimmer.fromColors(
-      baseColor: Colors.white.withOpacity(0.05),
-      highlightColor: Colors.white.withOpacity(0.1),
+      baseColor: Colors.white.withValues(alpha: 0.05),
+      highlightColor: Colors.white.withValues(alpha: 0.1),
       child: Container(
         height: height,
         decoration: BoxDecoration(
@@ -463,7 +462,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
           end: Alignment.topCenter,
           colors: [
             AppColors.primaryColor,
-            AppColors.primaryColor.withOpacity(0.0),
+            AppColors.primaryColor.withValues(alpha: 0.0),
           ],
         ),
       ),
@@ -493,7 +492,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
         decoration: BoxDecoration(
           color: AppColors.sceCardBg,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: AppColors.errorRed.withOpacity(0.3)),
+          border: Border.all(color: AppColors.errorRed.withValues(alpha: 0.3)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

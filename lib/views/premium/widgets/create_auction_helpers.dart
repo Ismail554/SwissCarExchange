@@ -55,9 +55,9 @@ class CreateAuctionHelpers {
         width: double.infinity,
         padding: EdgeInsets.symmetric(vertical: 14.h),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         ),
         child: Column(
           children: [
@@ -102,14 +102,14 @@ class CreateAuctionHelpers {
         decoration: BoxDecoration(
           color: AppColors.sceTealStatBg,
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: AppColors.sceTeal.withOpacity(0.2)),
+          border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
             Container(
               padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
-                color: AppColors.sceTeal.withOpacity(0.15),
+                color: AppColors.sceTeal.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Icon(icon, color: AppColors.sceTeal, size: 22.sp),
@@ -140,7 +140,7 @@ class CreateAuctionHelpers {
               child: Container(
                 padding: EdgeInsets.all(6.w),
                 decoration: BoxDecoration(
-                  color: AppColors.errorRed.withOpacity(0.15),
+                  color: AppColors.errorRed.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

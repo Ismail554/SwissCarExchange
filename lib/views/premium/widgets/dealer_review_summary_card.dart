@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
-import 'package:rionydo/views/premium/widgets/sce_star_rating.dart';
 
 class DealerReviewSummaryCard extends StatelessWidget {
   final double overallRating;
@@ -23,9 +22,9 @@ class DealerReviewSummaryCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(24.r),
       decoration: BoxDecoration(
-        color: AppColors.sceGoldStatBg.withOpacity(0.8),
+        color: AppColors.sceGoldStatBg.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(color: AppColors.sceGold.withOpacity(0.2)),
+        border: Border.all(color: AppColors.sceGold.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -72,29 +71,8 @@ class DealerReviewSummaryCard extends StatelessWidget {
               ),
             ],
           ),
-          // SizedBox(height: 24.h),
-          // Divider(color: AppColors.sceGold.withOpacity(0.1)),
-          // SizedBox(height: 16.h),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     _buildRatingColumn("Communication", communication),
-          //     _buildRatingColumn("Accuracy", accuracy),
-          //     _buildRatingColumn("Reliability", reliability),
-          //   ],
-          // ),
         ],
       ),
-    );
-  }
-
-  Widget _buildRatingColumn(String label, double rating) {
-    return Column(
-      children: [
-        Text(label, style: FontManager.labelSmall(color: AppColors.sceGreyA0)),
-        SizedBox(height: 8.h),
-        SceStarRating(rating: rating, size: 14),
-      ],
     );
   }
 }

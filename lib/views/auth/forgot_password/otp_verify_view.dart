@@ -78,15 +78,21 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
     if (!_canResend || _isResending) return;
 
     setState(() => _isResending = true);
-    final success = widget.isForgotPassword
-        ? await context.read<AuthProvider>().requestPasswordReset(
-            context,
-            email: widget.email,
-          )
-        : await context.read<AuthProvider>().resendOtp(
-            context,
-            email: widget.email,
-          );
+    final authProvider = context.read<AuthProvider>();
+    bool success = false;
+    if (widget.isForgotPassword) {
+      if (!context.mounted) return;
+      success = await authProvider.requestPasswordReset(
+        context,
+        email: widget.email,
+      );
+    } else {
+      if (!context.mounted) return;
+      success = await authProvider.resendOtp(
+        context,
+        email: widget.email,
+      );
+    }
     if (mounted) {
       setState(() => _isResending = false);
       if (success) {
@@ -113,11 +119,11 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
         fontWeight: FontWeight.w600,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(
-          0.04,
+        color: Colors.white.withValues(
+          alpha: 0.04,
         ), // Consistent with CustomTextField
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
     );
 
@@ -136,7 +142,7 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (didPop, dynamic result) async {
         if (didPop) return;
         if (context.mounted) {
           if (Navigator.canPop(context)) {

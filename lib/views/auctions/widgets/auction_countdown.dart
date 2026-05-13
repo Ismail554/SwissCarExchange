@@ -72,9 +72,9 @@ class _AuctionCountdownState extends State<AuctionCountdown> {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
         decoration: BoxDecoration(
-          color: AppColors.errorRed.withOpacity(0.1),
+          color: AppColors.errorRed.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: AppColors.errorRed.withOpacity(0.3)),
+          border: Border.all(color: AppColors.errorRed.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -190,10 +190,10 @@ class _TimeSegment extends StatelessWidget {
   Widget build(BuildContext context) {
     final urgentColor = AppColors.errorRed;
     final borderColor = isUrgent
-        ? urgentColor.withOpacity(0.35)
-        : Colors.white.withOpacity(0.07);
+        ? urgentColor.withValues(alpha: 0.35)
+        : Colors.white.withValues(alpha: 0.07);
     final bgColor = isUrgent
-        ? urgentColor.withOpacity(0.07)
+        ? urgentColor.withValues(alpha: 0.07)
         : AppColors.sceCardBg;
     final valueColor = isUrgent ? urgentColor : Colors.white;
 
@@ -224,7 +224,7 @@ class _TimeSegment extends StatelessWidget {
                 labelStyle ??
                 FontManager.labelSmall(
                   color: isUrgent
-                      ? urgentColor.withOpacity(0.7)
+                      ? urgentColor.withValues(alpha: 0.7)
                       : AppColors.textHint,
                 ).copyWith(fontSize: 8.sp, letterSpacing: 0.4),
           ),
@@ -249,7 +249,7 @@ class _Separator extends StatelessWidget {
         ':',
         style: FontManager.heading3(
           color: isUrgent
-              ? AppColors.errorRed.withOpacity(0.6)
+              ? AppColors.errorRed.withValues(alpha: 0.6)
               : AppColors.textHint,
         ).copyWith(fontSize: 18.sp, height: 1),
       ),

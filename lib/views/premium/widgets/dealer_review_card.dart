@@ -31,7 +31,7 @@ class DealerReviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +43,7 @@ class DealerReviewCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 20.r,
-                    backgroundColor: AppColors.sceTeal.withOpacity(0.1),
+                    backgroundColor: AppColors.sceTeal.withValues(alpha: 0.1),
                     child: Icon(Icons.person_outline_rounded, color: AppColors.sceTeal, size: 20.sp),
                   ),
                   SizedBox(width: 12.w),

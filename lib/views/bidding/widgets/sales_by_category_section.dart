@@ -36,7 +36,7 @@ class SalesByCategorySection extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.sceChartBg,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.grey.withOpacity(0.15)),
+          border: Border.all(color: AppColors.grey.withValues(alpha: 0.15)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +125,7 @@ class _CategoryBar extends StatelessWidget {
                     height: 6.h,
                     width: constraints.maxWidth,
                     decoration: BoxDecoration(
-                      color: AppColors.grey.withOpacity(0.15),
+                      color: AppColors.grey.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -139,7 +139,7 @@ class _CategoryBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                       boxShadow: [
                         BoxShadow(
-                          color: barColor.withOpacity(0.4),
+                          color: barColor.withValues(alpha: 0.4),
                           blurRadius: 6,
                         ),
                       ],
@@ -172,7 +172,7 @@ class _CategorySkeleton extends StatelessWidget {
                 height: 12.h,
                 width: 120.w,
                 decoration: BoxDecoration(
-                  color: AppColors.grey.withOpacity(0.2),
+                  color: AppColors.grey.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -181,7 +181,7 @@ class _CategorySkeleton extends StatelessWidget {
                 height: 6.h,
                 width: double.maxFinite,
                 decoration: BoxDecoration(
-                  color: AppColors.grey.withOpacity(0.1),
+                  color: AppColors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),

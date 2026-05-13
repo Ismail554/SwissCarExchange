@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:rionydo/app_helper/s3_upload_helper.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
@@ -111,7 +113,7 @@ class _ChatSupportViewState extends State<ChatSupportView> {
   /// Re-fetch every 30 seconds without blocking UI.
   void _startPolling() {
     _pollTimer?.cancel();
-    _pollTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+    _pollTimer = Timer.periodic(const Duration(seconds: 10), (_) {
       _pollHistory();
     });
   }
@@ -460,11 +462,7 @@ class _ChatSupportViewState extends State<ChatSupportView> {
           /// MESSAGE LIST
           Expanded(
             child: _initialLoading
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.sceTeal,
-                    ),
-                  )
+                ? const _ChatShimmer()
                 : _messages.isEmpty
                     ? Center(
                         child: Column(
@@ -506,7 +504,7 @@ class _ChatSupportViewState extends State<ChatSupportView> {
                           if (msg.attachments.isNotEmpty &&
                               msg.body.isEmpty) {
                             return _ImageBubble(
-                              imageUrl: msg.attachments.first.publicUrl,
+                              attachment: msg.attachments.first,
                               time: _formatTime(msg.createdAt),
                               isSupport: msg.isSupport,
                             );
@@ -688,18 +686,21 @@ class _ChatBubble extends StatelessWidget {
               ...attachments.map(
                 (a) => Padding(
                   padding: EdgeInsets.only(bottom: 8.h),
-                  child: _isImageType(a.contentType)
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8.r),
-                          child: Image.network(
-                            a.publicUrl,
-                            width: double.infinity,
-                            height: 140.h,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, e, st) => _filePlaceholder(a),
-                          ),
-                        )
-                      : _filePlaceholder(a),
+                  child: InkWell(
+                    onTap: () => _showAttachmentDialog(context, a),
+                    child: _isImageType(a.contentType)
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8.r),
+                            child: Image.network(
+                              a.publicUrl,
+                              width: double.infinity,
+                              height: 140.h,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, e, st) => _filePlaceholder(a),
+                            ),
+                          )
+                        : _filePlaceholder(a),
+                  ),
                 ),
               ),
             if (message.isNotEmpty)
@@ -749,12 +750,12 @@ class _ChatBubble extends StatelessWidget {
 }
 
 class _ImageBubble extends StatelessWidget {
-  final String imageUrl;
+  final ChatAttachment attachment;
   final String time;
   final bool isSupport;
 
   const _ImageBubble({
-    required this.imageUrl,
+    required this.attachment,
     required this.time,
     required this.isSupport,
   });
@@ -763,78 +764,160 @@ class _ImageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: isSupport ? Alignment.centerLeft : Alignment.centerRight,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 16.h),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.65,
-        ),
-        decoration: BoxDecoration(
-          color: isSupport
-              ? AppColors.sceCardBg
-              : AppColors.sceTeal.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16.r),
-            topRight: Radius.circular(16.r),
-            bottomLeft: Radius.circular(isSupport ? 0 : 16.r),
-            bottomRight: Radius.circular(isSupport ? 16.r : 0),
+      child: InkWell(
+        onTap: () => _showAttachmentDialog(context, attachment),
+        child: Container(
+          margin: EdgeInsets.only(bottom: 16.h),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.65,
           ),
-          border: Border.all(
+          decoration: BoxDecoration(
             color: isSupport
-                ? Colors.white.withValues(alpha: 0.05)
-                : AppColors.sceTeal.withValues(alpha: 0.2),
+                ? AppColors.sceCardBg
+                : AppColors.sceTeal.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16.r),
+              topRight: Radius.circular(16.r),
+              bottomLeft: Radius.circular(isSupport ? 0 : 16.r),
+              bottomRight: Radius.circular(isSupport ? 16.r : 0),
+            ),
+            border: Border.all(
+              color: isSupport
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : AppColors.sceTeal.withValues(alpha: 0.2),
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15.r),
-                topRight: Radius.circular(15.r),
-              ),
-              child: Image.network(
-                imageUrl,
-                width: double.infinity,
-                height: 180.h,
-                fit: BoxFit.cover,
-                loadingBuilder: (_, child, progress) {
-                  if (progress == null) return child;
-                  return SizedBox(
-                    height: 180.h,
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.sceTeal,
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  );
-                },
-                errorBuilder: (_, e, st) => SizedBox(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15.r),
+                  topRight: Radius.circular(15.r),
+                ),
+                child: Image.network(
+                  attachment.publicUrl,
+                  width: double.infinity,
                   height: 180.h,
-                  child: Center(
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      color: AppColors.sceGrey99,
-                      size: 40.sp,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (_, child, progress) {
+                    if (progress == null) return child;
+                    return SizedBox(
+                      height: 180.h,
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.sceTeal,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (_, e, st) => SizedBox(
+                    height: 180.h,
+                    child: Center(
+                      child: Icon(
+                        Icons.broken_image_outlined,
+                        color: AppColors.sceGrey99,
+                        size: 40.sp,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-              child: Text(
-                time,
-                style: FontManager.bodySmall(
-                  color: AppColors.sceGrey99,
-                ).copyWith(fontSize: 10.sp),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                child: Text(
+                  time,
+                  style: FontManager.bodySmall(
+                    color: AppColors.sceGrey99,
+                  ).copyWith(fontSize: 10.sp),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+void _showAttachmentDialog(BuildContext context, ChatAttachment a) {
+  final isImage = a.contentType.startsWith('image/');
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: AppColors.sceCardBg,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+      title: Text(
+        isImage ? 'View Image' : 'Download File',
+        style: FontManager.bodyMedium(color: AppColors.white).copyWith(fontWeight: FontWeight.bold),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isImage)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.r),
+              child: Image.network(
+                a.publicUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Icon(Icons.broken_image, color: AppColors.sceGrey99, size: 50.sp),
+              ),
+            )
+          else
+            Container(
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.insert_drive_file, color: AppColors.sceTeal, size: 30.sp),
+                  AppSpacing.w12,
+                  Expanded(
+                    child: Text(
+                      a.fileName,
+                      style: FontManager.bodySmall(color: AppColors.white),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          AppSpacing.h16,
+          Text(
+            'Size: ${_formatSize(a.sizeBytes)}',
+            style: FontManager.bodySmall(color: AppColors.sceGrey99),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Close', style: FontManager.bodySmall(color: AppColors.sceGrey99)),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            final uri = Uri.parse(a.publicUrl);
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.sceTeal,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+          ),
+          child: Text('Download', style: FontManager.bodySmall(color: AppColors.white)),
+        ),
+      ],
+    ),
+  );
+}
+
+String _formatSize(int bytes) {
+  if (bytes < 1024) return '$bytes B';
+  if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
+  return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
 }
 
 class _ChatIconButton extends StatelessWidget {
@@ -967,6 +1050,42 @@ class _TypingIndicatorState extends State<_TypingIndicator>
             );
           }),
         ),
+      ),
+    );
+  }
+}
+
+class _ChatShimmer extends StatelessWidget {
+  const _ChatShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.sceCardBg,
+      highlightColor: Colors.white.withValues(alpha: 0.05),
+      child: ListView.builder(
+        padding: EdgeInsets.all(20.w),
+        itemCount: 5,
+        itemBuilder: (context, index) {
+          final isLeft = index % 2 == 0;
+          return Align(
+            alignment: isLeft ? Alignment.centerLeft : Alignment.centerRight,
+            child: Container(
+              margin: EdgeInsets.only(bottom: 16.h),
+              width: (index == 0 || index == 3) ? 120.w : 200.w,
+              height: (index == 1) ? 100.h : 60.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16.r),
+                  topRight: Radius.circular(16.r),
+                  bottomLeft: Radius.circular(isLeft ? 0 : 16.r),
+                  bottomRight: Radius.circular(isLeft ? 16.r : 0),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

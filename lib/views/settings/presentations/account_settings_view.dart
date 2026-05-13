@@ -190,7 +190,7 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                 _FieldLabel('Profile Photo'),
                 AppSpacing.h8,
                 Consumer<UserProfileProvider>(
-                  builder: (_, provider, __) {
+                  builder: (_, provider, _) {
                     final existingUrl = (provider.userProfile is PrivateUserProfile)
                         ? (provider.userProfile as PrivateUserProfile).photoUrl
                         : null;

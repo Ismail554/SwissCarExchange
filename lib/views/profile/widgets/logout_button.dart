@@ -54,8 +54,8 @@ class _LogoutButtonState extends State<LogoutButton> {
       child: OutlinedButton(
         onPressed: _isLoading ? null : _handleLogout,
         style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.error.withOpacity(0.05),
-          side: BorderSide(color: AppColors.error.withOpacity(0.3)),
+          backgroundColor: AppColors.error.withValues(alpha: 0.05),
+          side: BorderSide(color: AppColors.error.withValues(alpha: 0.3)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
           ),

@@ -29,7 +29,7 @@ class StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isWatchlist ? AppColors.sceGoldStatBg : AppColors.sceTealStatBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: accentColor.withOpacity(0.15)),
+        border: Border.all(color: accentColor.withValues(alpha: 0.15)),
       ),
       child: Stack(
         children: [
@@ -40,7 +40,7 @@ class StatCard extends StatelessWidget {
               Text(
                 label,
                 style: FontManager.labelMedium(
-                  color: accentColor.withOpacity(0.8),
+                  color: accentColor.withValues(alpha: 0.8),
                   fontSize: 10.sp,
                 ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 0.5),
               ),
@@ -56,7 +56,7 @@ class StatCard extends StatelessWidget {
                 Text(
                   subValue!,
                   style: FontManager.bodySmall(
-                    color: AppColors.sceTeal.withOpacity(0.6),
+                    color: AppColors.sceTeal.withValues(alpha: 0.6),
                     fontSize: 10.sp,
                   ),
                 ),

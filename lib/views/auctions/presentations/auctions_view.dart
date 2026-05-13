@@ -25,11 +25,11 @@ class _AuctionsViewState extends State<AuctionsView> {
     "Active",
     "Sold",
     "Unsold",
-    "Withdrawn",
-    "Payment Expired",
-    "Shipping Expired",
+    // "Withdrawn",
+    // "Payment Expired",
+    // "Shipping Expired",
     "Scheduled",
-    "Removed",
+    // "Removed",
   ];
 
   @override
@@ -48,16 +48,16 @@ class _AuctionsViewState extends State<AuctionsView> {
         return "sold";
       case "Unsold":
         return "unsold";
-      case "Withdrawn":
-        return "withdrawn";
-      case "Payment Expired":
-        return "payment_expired";
-      case "Shipping Expired":
-        return "shipping_expired";
+      // case "Withdrawn":
+      //   return "withdrawn";
+      // case "Payment Expired":
+      //   return "payment_expired";
+      // case "Shipping Expired":
+      //   return "shipping_expired";
       case "Scheduled":
         return "scheduled";
-      case "Removed":
-        return "removed";
+      // case "Removed":
+      //   return "removed";
       default:
         return "all";
     }
@@ -117,7 +117,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                           border: Border.all(
                             color: isSelected
                                 ? AppColors.sceTeal
-                                : Colors.white.withOpacity(0.1),
+                                : Colors.white.withValues(alpha: 0.1),
                           ),
                         ),
                         child: Row(
@@ -253,7 +253,7 @@ class _AuctionsViewState extends State<AuctionsView> {
         decoration: BoxDecoration(
           color: AppColors.sceCardBg,
           borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         clipBehavior: Clip
             .hardEdge, // Prevents image from bleeding outside rounded corners
@@ -271,7 +271,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                       ? Image.network(
                           auction.images.first.url,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
+                          errorBuilder: (_, _, _) =>
                               _buildImagePlaceholder(),
                           loadingBuilder: (_, child, progress) =>
                               progress == null
@@ -289,7 +289,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.25),
+                            Colors.black.withValues(alpha: 0.25),
                           ],
                         ),
                       ),
@@ -307,7 +307,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                           vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.85),
+                          color: Colors.green.withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(20.r),
                         ),
                         child: Row(
@@ -376,7 +376,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Divider(
-                          color: Colors.white.withOpacity(0.07),
+                          color: Colors.white.withValues(alpha: 0.07),
                           height: 1,
                           thickness: 1,
                         ),
@@ -413,7 +413,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                               vertical: 3.h,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.07),
+                              color: Colors.white.withValues(alpha: 0.07),
                               borderRadius: BorderRadius.circular(6.r),
                             ),
                             child: Row(
@@ -453,7 +453,7 @@ class _AuctionsViewState extends State<AuctionsView> {
 
   Widget _buildImagePlaceholder({bool loading = false}) {
     return Container(
-      color: Colors.white.withOpacity(0.07),
+      color: Colors.white.withValues(alpha: 0.07),
       child: Center(
         child: loading
             ? SizedBox(
@@ -461,12 +461,12 @@ class _AuctionsViewState extends State<AuctionsView> {
                 height: 20.h,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: AppColors.sceTeal.withOpacity(0.6),
+                  color: AppColors.sceTeal.withValues(alpha: 0.6),
                 ),
               )
             : Icon(
                 Icons.directions_car_outlined,
-                color: AppColors.textHint.withOpacity(0.4),
+                color: AppColors.textHint.withValues(alpha: 0.4),
                 size: 32.sp,
               ),
       ),
@@ -527,7 +527,7 @@ class _AuctionsViewState extends State<AuctionsView> {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       clipBehavior: Clip.hardEdge,
       child: Column(
@@ -557,7 +557,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Divider(
-                        color: Colors.white.withOpacity(0.07),
+                        color: Colors.white.withValues(alpha: 0.07),
                         height: 1,
                         thickness: 1,
                       ),
@@ -588,8 +588,8 @@ class _AuctionsViewState extends State<AuctionsView> {
     BorderRadiusGeometry? borderRadius,
   }) {
     return Shimmer.fromColors(
-      baseColor: Colors.white.withOpacity(0.05),
-      highlightColor: Colors.white.withOpacity(0.1),
+      baseColor: Colors.white.withValues(alpha: 0.05),
+      highlightColor: Colors.white.withValues(alpha: 0.1),
       child: Container(
         width: width,
         height: height,

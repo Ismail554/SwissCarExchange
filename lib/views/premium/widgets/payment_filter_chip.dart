@@ -29,7 +29,7 @@ class PaymentFilterChip extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.scePremiumOrange.withOpacity(0.3),
+                    color: AppColors.scePremiumOrange.withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),

@@ -71,7 +71,6 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         debugPrint('LOGIN: ✅ API response: $data');
-        print("Login response: $data");
 
         final loginData = LoginResponse.fromJson(data);
 
@@ -153,6 +152,8 @@ class AuthProvider extends ChangeNotifier {
         );
         await SecureStorageHelper.saveSubscriptionPlan(plan);
 
+        if (!context.mounted) return;
+
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -225,6 +226,8 @@ class AuthProvider extends ChangeNotifier {
         context.read<GlobalState>().isPremium =
             (plan == SubscriptionPlanId.premium);
         await SecureStorageHelper.saveSubscriptionPlan(plan);
+
+        if (!context.mounted) return;
 
         Navigator.pushAndRemoveUntil(
           context,
@@ -599,4 +602,52 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     return success;
   }
+
+  // ----------------------------------------------------------------
+  // CHANGE PASSWORD (Settings)
+  // ----------------------------------------------------------------
+  Future<bool> changePassword(
+    BuildContext context, {
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final payload = {
+      'current_password': currentPassword,
+      'new_password': newPassword,
+    };
+    debugPrint('AUTH: ▶️ Calling changePassword API with payload: $payload');
+
+    final response = await DioManager.apiRequest(
+      url: ApiService.changePassword,
+      method: Methods.post,
+      body: payload,
+    );
+
+    bool success = false;
+    response.fold(
+      (error) {
+        debugPrint('AUTH: ❌ changePassword API error: $error');
+        AppSnackBar.error(context, error);
+      },
+      (data) {
+        debugPrint('AUTH: ✅ changePassword API success! Response: $data');
+        if (context.mounted) {
+          final message = data['message']?.toString();
+          AppSnackBar.success(
+            context,
+            message ?? 'Password has been changed successfully.',
+          );
+        }
+        success = true;
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
 }
+

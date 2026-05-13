@@ -112,7 +112,7 @@ class _AdvanceStatisticsState extends State<AdvanceStatistics> {
             StatCard(
               label: "WIN RATE",
               value: "${stats.winRate.toStringAsFixed(1)}%",
-              accentColor: Colors.white.withOpacity(0.9),
+              accentColor: Colors.white.withValues(alpha: 0.9),
             ),
           ],
         ),
@@ -132,7 +132,7 @@ class _AdvanceStatisticsState extends State<AdvanceStatistics> {
           decoration: BoxDecoration(
             color: AppColors.sceCardBg,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Column(
             children: [
@@ -201,7 +201,7 @@ class _AdvanceStatisticsState extends State<AdvanceStatistics> {
     return Divider(
       height: 1,
       thickness: 1,
-      color: Colors.white.withOpacity(0.05),
+      color: Colors.white.withValues(alpha: 0.05),
       indent: 20.w,
       endIndent: 20.w,
     );
@@ -237,7 +237,7 @@ class _AdvanceStatisticsState extends State<AdvanceStatistics> {
           decoration: BoxDecoration(
             color: AppColors.sceCardBg,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Column(
             children: [
@@ -278,8 +278,8 @@ class _AdvanceStatisticsState extends State<AdvanceStatistics> {
     BorderRadius? borderRadius,
   }) {
     return Shimmer.fromColors(
-      baseColor: Colors.white.withOpacity(0.05),
-      highlightColor: Colors.white.withOpacity(0.1),
+      baseColor: Colors.white.withValues(alpha: 0.05),
+      highlightColor: Colors.white.withValues(alpha: 0.1),
       child: Container(
         width: width,
         height: height,
@@ -301,7 +301,7 @@ class _AdvanceStatisticsState extends State<AdvanceStatistics> {
             Container(
               padding: EdgeInsets.all(16.r),
               decoration: BoxDecoration(
-                color: AppColors.errorRed.withOpacity(0.1),
+                color: AppColors.errorRed.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(

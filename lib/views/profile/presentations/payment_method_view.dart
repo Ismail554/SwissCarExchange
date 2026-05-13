@@ -200,7 +200,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
               decoration: BoxDecoration(
                 color: AppColors.sceCardBg,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +265,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14.h),
-                      side: BorderSide(color: AppColors.grey.withOpacity(0.3)),
+                      side: BorderSide(color: AppColors.grey.withValues(alpha: 0.3)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.r),
                       ),
@@ -290,7 +290,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 14.h),
                       side: BorderSide(
-                        color: AppColors.errorRed.withOpacity(0.3),
+                        color: AppColors.errorRed.withValues(alpha: 0.3),
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.r),
@@ -337,7 +337,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
               decoration: BoxDecoration(
                 color: AppColors.sceCardBg,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,8 +414,8 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
     BorderRadius? borderRadius,
   }) {
     return Shimmer.fromColors(
-      baseColor: AppColors.sceCardBg.withOpacity(0.6),
-      highlightColor: AppColors.grey.withOpacity(0.15),
+      baseColor: AppColors.sceCardBg.withValues(alpha: 0.6),
+      highlightColor: AppColors.grey.withValues(alpha: 0.15),
       child: Container(
         width: width,
         height: height,
@@ -581,9 +581,9 @@ class _InfoBanner extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: AppColors.sceTeal.withOpacity(0.08),
+        color: AppColors.sceTeal.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.sceTeal.withOpacity(0.3)),
+        border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -654,7 +654,6 @@ class _BankTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
-  final bool obscureText;
   final TextCapitalization textCapitalization;
   final String? Function(String?)? validator;
 
@@ -665,7 +664,6 @@ class _BankTextField extends StatelessWidget {
     required this.keyboardType,
     this.inputFormatters,
     this.maxLength,
-    this.obscureText = false,
     this.textCapitalization = TextCapitalization.none,
     this.validator,
   });
@@ -677,7 +675,6 @@ class _BankTextField extends StatelessWidget {
       keyboardType: keyboardType,
       inputFormatters: inputFormatters,
       maxLength: maxLength,
-      obscureText: obscureText,
       textCapitalization: textCapitalization,
       validator: validator,
       style: FontManager.bodyMedium(color: AppColors.white),
@@ -687,7 +684,7 @@ class _BankTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: FontManager.bodyMedium(
-          color: AppColors.grey.withOpacity(0.5),
+          color: AppColors.grey.withValues(alpha: 0.5),
         ),
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon, color: AppColors.grey, size: 20.sp)
@@ -697,11 +694,11 @@ class _BankTextField extends StatelessWidget {
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(color: AppColors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(color: AppColors.grey.withValues(alpha: 0.2)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(color: AppColors.grey.withOpacity(0.2)),
+          borderSide: BorderSide(color: AppColors.grey.withValues(alpha: 0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.r),

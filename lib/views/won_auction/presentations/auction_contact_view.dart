@@ -8,7 +8,6 @@ import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/views/profile/presentations/transaction_completed_view.dart';
 import 'package:rionydo/controllers/auctions/dealer_contact_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -121,7 +120,7 @@ class _AuctionContactViewState extends State<AuctionContactView> {
                   if (detailTiles.isNotEmpty) {
                     detailTiles.add(
                       Divider(
-                        color: AppColors.white.withOpacity(0.05),
+                        color: AppColors.white.withValues(alpha: 0.05),
                         height: 1,
                       ),
                     );
@@ -143,7 +142,7 @@ class _AuctionContactViewState extends State<AuctionContactView> {
                   if (detailTiles.isNotEmpty) {
                     detailTiles.add(
                       Divider(
-                        color: AppColors.white.withOpacity(0.05),
+                        color: AppColors.white.withValues(alpha: 0.05),
                         height: 1,
                       ),
                     );
@@ -165,7 +164,7 @@ class _AuctionContactViewState extends State<AuctionContactView> {
                   if (detailTiles.isNotEmpty) {
                     detailTiles.add(
                       Divider(
-                        color: AppColors.white.withOpacity(0.05),
+                        color: AppColors.white.withValues(alpha: 0.05),
                         height: 1,
                       ),
                     );
@@ -184,7 +183,7 @@ class _AuctionContactViewState extends State<AuctionContactView> {
                   if (detailTiles.isNotEmpty) {
                     detailTiles.add(
                       Divider(
-                        color: AppColors.white.withOpacity(0.05),
+                        color: AppColors.white.withValues(alpha: 0.05),
                         height: 1,
                       ),
                     );
@@ -214,7 +213,7 @@ class _AuctionContactViewState extends State<AuctionContactView> {
                         color: AppColors.sceCardBg,
                         borderRadius: BorderRadius.circular(16.r),
                         border: Border.all(
-                          color: AppColors.white.withOpacity(0.05),
+                          color: AppColors.white.withValues(alpha: 0.05),
                         ),
                       ),
                       child: Column(children: detailTiles),
@@ -267,7 +266,7 @@ class _AuctionContactViewState extends State<AuctionContactView> {
                     //     color: const Color(0xFF0F1B1A), // Dark teal tint
                     //     borderRadius: BorderRadius.circular(12.r),
                     //     border: Border.all(
-                    //       color: AppColors.sceTeal.withOpacity(0.3),
+                    //       color: AppColors.sceTeal.withValues(alpha: 0.3),
                     //     ),
                     //   ),
                     //   child: Material(
@@ -307,8 +306,8 @@ class _AuctionContactViewState extends State<AuctionContactView> {
 
   Widget _buildShimmerLoading() {
     return Shimmer.fromColors(
-      baseColor: Colors.white.withOpacity(0.05),
-      highlightColor: Colors.white.withOpacity(0.1),
+      baseColor: Colors.white.withValues(alpha: 0.05),
+      highlightColor: Colors.white.withValues(alpha: 0.1),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -370,7 +369,7 @@ class _AuctionContactViewState extends State<AuctionContactView> {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.red.withOpacity(0.2)),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -404,7 +403,7 @@ class _AuctionContactViewState extends State<AuctionContactView> {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.white.withOpacity(0.05)),
+        border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -444,7 +443,7 @@ class _ContactDetailTile extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(10.w),
             decoration: BoxDecoration(
-              color: AppColors.white.withOpacity(0.05),
+              color: AppColors.white.withValues(alpha: 0.05),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: AppColors.sceTeal, size: 20.sp),
@@ -464,74 +463,6 @@ class _ContactDetailTile extends StatelessWidget {
                   style: FontManager.bodyMedium(
                     color: isTealSubtitle ? AppColors.sceTeal : AppColors.white,
                   ).copyWith(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DeliveryMethodCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final bool isSelected;
-
-  const _DeliveryMethodCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.isSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: AppColors.sceCardBg,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: isSelected
-              ? AppColors.sceTeal
-              : AppColors.white.withOpacity(0.05),
-          width: isSelected ? 1.5 : 1.0,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(10.w),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.sceTeal.withOpacity(0.1)
-                  : AppColors.white.withOpacity(0.05),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: isSelected ? AppColors.sceTeal : AppColors.sceGreyA0,
-              size: 20.sp,
-            ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: FontManager.bodyMedium(
-                    color: AppColors.white,
-                  ).copyWith(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  subtitle,
-                  style: FontManager.bodySmall(color: AppColors.sceGreyA0),
                 ),
               ],
             ),

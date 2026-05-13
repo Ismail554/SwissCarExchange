@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -132,8 +131,9 @@ class _SignUpStep3State extends State<SignUpStep3> {
     final path = provider.licensePickedFile?.path;
     if (path == null) return;
     if (!File(path).existsSync()) {
-      if (mounted)
+      if (mounted) {
         AppSnackBar.error(context, 'File not found. Please pick it again.');
+      }
       return;
     }
     await OpenFilex.open(path);
@@ -285,13 +285,13 @@ class _SignUpStep3State extends State<SignUpStep3> {
                               duration: const Duration(milliseconds: 300),
                               decoration: BoxDecoration(
                                 color: provider.licensePickedFile != null
-                                    ? teal.withOpacity(0.06)
-                                    : Colors.white.withOpacity(0.04),
+                                    ? teal.withValues(alpha: 0.06)
+                                    : Colors.white.withValues(alpha: 0.04),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: provider.licensePickedFile != null
-                                      ? teal.withOpacity(0.5)
-                                      : Colors.white.withOpacity(0.15),
+                                      ? teal.withValues(alpha: 0.5)
+                                      : Colors.white.withValues(alpha: 0.15),
                                   width: 1.5,
                                 ),
                               ),
@@ -307,7 +307,7 @@ class _SignUpStep3State extends State<SignUpStep3> {
                                             width: 44.w,
                                             height: 44.w,
                                             decoration: BoxDecoration(
-                                              color: teal.withOpacity(0.12),
+                                              color: teal.withValues(alpha: 0.12),
                                               borderRadius: BorderRadius.circular(10),
                                             ),
                                             child: Icon(
@@ -431,7 +431,7 @@ class _SignUpStep3State extends State<SignUpStep3> {
                             margin: EdgeInsets.only(top: 2.h),
                             decoration: BoxDecoration(
                               color: _isTermsAccepted
-                                  ? teal.withOpacity(0.15)
+                                  ? teal.withValues(alpha: 0.15)
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
@@ -529,9 +529,9 @@ class _ReadonlyDocRow extends StatelessWidget {
         height: 52.h,
         padding: EdgeInsets.symmetric(horizontal: 14.w),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.red.withOpacity(0.4), width: 1.2),
+          border: Border.all(color: Colors.red.withValues(alpha: 0.4), width: 1.2),
         ),
         child: Row(
           children: [
@@ -551,9 +551,9 @@ class _ReadonlyDocRow extends StatelessWidget {
       height: 52.h,
       padding: EdgeInsets.symmetric(horizontal: 14.w),
       decoration: BoxDecoration(
-        color: teal.withOpacity(0.08),
+        color: teal.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: teal.withOpacity(0.4), width: 1.2),
+        border: Border.all(color: teal.withValues(alpha: 0.4), width: 1.2),
       ),
       child: Row(
         children: [
@@ -602,7 +602,7 @@ class _DocActionBtn extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.08),
+            color: color.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 18),

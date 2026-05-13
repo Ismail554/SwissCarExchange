@@ -44,13 +44,13 @@ class PhotoPickerField extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(
               color: (hasLocalFile || hasNetworkPhoto)
-                  ? teal.withOpacity(0.45)
-                  : Colors.white.withOpacity(0.12),
+                  ? teal.withValues(alpha: 0.45)
+                  : Colors.white.withValues(alpha: 0.12),
               width: 1.5,
             ),
             color: (hasLocalFile || hasNetworkPhoto)
-                ? teal.withOpacity(0.05)
-                : Colors.white.withOpacity(0.03),
+                ? teal.withValues(alpha: 0.05)
+                : Colors.white.withValues(alpha: 0.03),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(19.r),
@@ -195,8 +195,8 @@ class UploadPrompt extends StatelessWidget {
             height: 56.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: teal.withOpacity(0.1),
-              border: Border.all(color: teal.withOpacity(0.25), width: 1.2),
+              color: teal.withValues(alpha: 0.1),
+              border: Border.all(color: teal.withValues(alpha: 0.25), width: 1.2),
             ),
             child: Icon(Icons.add_a_photo_outlined, color: teal, size: 24.sp),
           ),
@@ -204,7 +204,7 @@ class UploadPrompt extends StatelessWidget {
           Text(
             'Tap to upload profile photo',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.75),
+              color: Colors.white.withValues(alpha: 0.75),
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
             ),
@@ -266,7 +266,7 @@ class _PhotoPreviewState extends State<PhotoPreview> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.transparent, Colors.black.withOpacity(_showOverlay ? 0.65 : 0.3)],
+              colors: [Colors.transparent, Colors.black.withValues(alpha: _showOverlay ? 0.65 : 0.3)],
               stops: const [0.4, 1.0],
             ),
           ),
@@ -310,7 +310,7 @@ class _PhotoPreviewState extends State<PhotoPreview> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(99),
               border: Border.all(color: Colors.white12),
             ),
@@ -361,7 +361,7 @@ class _NetworkPhotoPreviewState extends State<NetworkPhotoPreview> {
           Image.network(
             widget.photoUrl,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Center(
+            errorBuilder: (_, _, _) => Center(
               child: Icon(Icons.broken_image_outlined, color: Colors.white38, size: 40.sp),
             ),
           ),
@@ -371,7 +371,7 @@ class _NetworkPhotoPreviewState extends State<NetworkPhotoPreview> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(_showOverlay ? 0.65 : 0.3)],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: _showOverlay ? 0.65 : 0.3)],
                   stops: const [0.4, 1.0],
                 ),
               ),
@@ -413,7 +413,7 @@ class _NetworkPhotoPreviewState extends State<NetworkPhotoPreview> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
+                  color: Colors.black.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(99),
                   border: Border.all(color: Colors.white12),
                 ),
@@ -459,9 +459,9 @@ class MethodPill extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 12.h),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.04),
+            color: Colors.white.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
           ),
           child: Column(
             children: [
@@ -507,9 +507,9 @@ class _OverlayActionBtn extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 9.h),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(99),
-              border: Border.all(color: color.withOpacity(0.35), width: 1),
+              border: Border.all(color: color.withValues(alpha: 0.35), width: 1),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -583,7 +583,7 @@ class _SheetOption extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 16.h),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.06),
+            color: Colors.white.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(color: Colors.white12),
           ),

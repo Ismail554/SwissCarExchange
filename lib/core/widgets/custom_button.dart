@@ -34,7 +34,7 @@ class CustomButton extends StatelessWidget {
       height: 54.h,
       decoration: BoxDecoration(
         color: isPrimary
-            ? (isActive ? null : AppColors.cardBG.withOpacity(0.1))
+            ? (isActive ? null : AppColors.cardBG.withValues(alpha: 0.1))
             : Colors.transparent,
         gradient: isPrimary && isActive
             ? LinearGradient(
@@ -43,12 +43,12 @@ class CustomButton extends StatelessWidget {
                 colors: isDanger
                     ? [
                         AppColors.errorRed,
-                        AppColors.errorRed.withOpacity(0.8),
+                        AppColors.errorRed.withValues(alpha: 0.8),
                       ]
                     : [
                         AppColors.sceTeal,
-                        AppColors.sceTeal.withOpacity(0.8),
-                        AppColors.sceTeal.withOpacity(0.6),
+                        AppColors.sceTeal.withValues(alpha: 0.8),
+                        AppColors.sceTeal.withValues(alpha: 0.6),
                       ],
               )
             : null,
@@ -63,7 +63,7 @@ class CustomButton extends StatelessWidget {
         boxShadow: isPrimary && isActive
             ? [
                 BoxShadow(
-                  color: (isDanger ? AppColors.errorRed : AppColors.sceTeal).withOpacity(0.25),
+                  color: (isDanger ? AppColors.errorRed : AppColors.sceTeal).withValues(alpha: 0.25),
                   blurRadius: 15,
                   offset: const Offset(0, 4),
                 ),

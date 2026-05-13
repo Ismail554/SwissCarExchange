@@ -75,8 +75,8 @@ class _SignUpViewState extends State<SignUpView> {
                             color: AppColors.sceRegistrationGoldBg,
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(
-                              color: AppColors.sceRegistrationGold.withOpacity(
-                                0.4,
+                              color: AppColors.sceRegistrationGold.withValues(
+                                alpha: 0.4,
                               ),
                             ),
                           ),
@@ -295,10 +295,10 @@ class _SecurityBadge extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: AppColors.sceRegistrationGold.withOpacity(0.3),
+          color: AppColors.sceRegistrationGold.withValues(alpha: 0.3),
         ),
       ),
       child: Row(

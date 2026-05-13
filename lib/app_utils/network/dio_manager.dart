@@ -87,9 +87,9 @@ class DioManager {
     final token = await TokenManager.getValidToken();
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token'; // Changed back to Bearer since JWT didn't work. We will log the exact header.
-      print('AUTH HEADER ATTACHED: Bearer ${token.substring(0, 15)}...');
+      appLog('AUTH HEADER ATTACHED: Bearer ${token.substring(0, 15)}...', tag: 'AUTH');
     } else {
-      print('AUTH HEADER ATTACHED: NONE');
+      appLog('AUTH HEADER ATTACHED: NONE', tag: 'AUTH');
       appLog('⚠️ No token, proceeding unauthenticated', tag: 'AUTH');
     }
   }

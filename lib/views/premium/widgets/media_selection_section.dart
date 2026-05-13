@@ -82,10 +82,10 @@ class MediaSelectionSection extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.12),
+                  color: Colors.white.withValues(alpha: 0.12),
                   width: 1.5,
                 ),
-                color: Colors.white.withOpacity(0.04),
+                color: Colors.white.withValues(alpha: 0.04),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +117,7 @@ class MediaSelectionSection extends StatelessWidget {
             height: 72.h,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: Image.file(file, fit: BoxFit.cover),
           ),

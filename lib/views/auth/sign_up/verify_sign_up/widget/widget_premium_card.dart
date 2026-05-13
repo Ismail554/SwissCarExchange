@@ -40,12 +40,12 @@ class WidgetPremiumCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.sceDarkBgAlternative.withOpacity(0.4),
+            color: AppColors.sceDarkBgAlternative.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isPremium
-                  ? AppColors.sceRegistrationGold.withOpacity(0.3)
-                  : Colors.white.withOpacity(0.1),
+                  ? AppColors.sceRegistrationGold.withValues(alpha: 0.3)
+                  : Colors.white.withValues(alpha: 0.1),
               width: 1,
             ),
           ),
@@ -128,12 +128,12 @@ class WidgetPremiumCard extends StatelessWidget {
                       onPressed: onSelect,
                       style: OutlinedButton.styleFrom(
                         backgroundColor: isPremium
-                            ? AppColors.sceRegistrationGold.withOpacity(0.1)
-                            : Colors.white.withOpacity(0.05),
+                            ? AppColors.sceRegistrationGold.withValues(alpha: 0.1)
+                            : Colors.white.withValues(alpha: 0.05),
                         side: BorderSide(
                           color: isPremium
-                              ? AppColors.sceRegistrationGold.withOpacity(0.5)
-                              : Colors.white.withOpacity(0.2),
+                              ? AppColors.sceRegistrationGold.withValues(alpha: 0.5)
+                              : Colors.white.withValues(alpha: 0.2),
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),

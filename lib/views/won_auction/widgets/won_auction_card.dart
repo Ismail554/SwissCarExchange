@@ -33,7 +33,7 @@ class WonAuctionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.white.withOpacity(0.05)),
+        border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,7 +218,7 @@ class _RateDealerButton extends StatelessWidget {
           0xFF1E140C,
         ), // Dark brown / orange tint as per design
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.sceOnboardingGold.withOpacity(0.3)),
+        border: Border.all(color: AppColors.sceOnboardingGold.withValues(alpha: 0.3)),
       ),
       child: Material(
         color: Colors.transparent,

@@ -41,6 +41,10 @@ dependencies:
   firebase_messaging: ^16.2.0
   cached_network_image: ^3.4.1
 
+  http: any
+  web_socket_channel: any
+  logger: ^2.7.0
+  easy_localization: ^3.0.8
 dev_dependencies:
   flutter_test:
     sdk: flutter

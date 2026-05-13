@@ -15,9 +15,9 @@ class PremiumDealerCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: isPremium ? AppColors.sceTeal.withOpacity(0.1) : AppColors.scePremiumDealerBg,
+        color: isPremium ? AppColors.sceTeal.withValues(alpha: 0.1) : AppColors.scePremiumDealerBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: isPremium ? AppColors.sceTeal : AppColors.sceGold.withOpacity(0.3)),
+        border: Border.all(color: isPremium ? AppColors.sceTeal : AppColors.sceGold.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

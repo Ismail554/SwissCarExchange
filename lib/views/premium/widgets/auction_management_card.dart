@@ -38,8 +38,8 @@ class AuctionManagementCard extends StatelessWidget {
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   Color get _subStatusColor => subStatus.toUpperCase() == 'LIVE'
-      ? AppColors.errorRed.withOpacity(0.85)
-      : Colors.blue.withOpacity(0.85);
+      ? AppColors.errorRed.withValues(alpha: 0.85)
+      : Colors.blue.withValues(alpha: 0.85);
 
   bool get _isSold => status.toLowerCase() == 'unsold';
 
@@ -52,10 +52,10 @@ class AuctionManagementCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withOpacity(0.07)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -94,7 +94,7 @@ class AuctionManagementCard extends StatelessWidget {
                 SizedBox(height: 14.h),
 
                 // ── Divider ──
-                Divider(color: Colors.white.withOpacity(0.06), height: 1),
+                Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
                 SizedBox(height: 14.h),
 
                 // ── Price Row ──
@@ -111,7 +111,7 @@ class AuctionManagementCard extends StatelessWidget {
                 ],
 
                 // ── Divider ──
-                Divider(color: Colors.white.withOpacity(0.06), height: 1),
+                Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
                 SizedBox(height: 12.h),
 
                 // ── Footer ──
@@ -156,9 +156,9 @@ class _ImageSection extends StatelessWidget {
             height: 170.h,
             width: double.infinity,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
+            errorBuilder: (_, _, _) => Container(
               height: 170.h,
-              color: Colors.white.withOpacity(0.04),
+              color: Colors.white.withValues(alpha: 0.04),
               child: Center(
                 child: Icon(
                   Icons.image_not_supported_outlined,
@@ -179,7 +179,7 @@ class _ImageSection extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.center,
-                  colors: [Colors.black.withOpacity(0.45), Colors.transparent],
+                  colors: [Colors.black.withValues(alpha: 0.45), Colors.transparent],
                 ),
               ),
             ),
@@ -322,9 +322,9 @@ class _StatChip extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 9.h, horizontal: 6.w),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -425,9 +425,9 @@ class _ReserveMetPill extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 7.h, horizontal: 12.w),
       decoration: BoxDecoration(
-        color: AppColors.sceTeal.withOpacity(0.08),
+        color: AppColors.sceTeal.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.sceTeal.withOpacity(0.25)),
+        border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -461,9 +461,9 @@ class _ReserveNotMetPill extends StatelessWidget {
       width: double.maxFinite,
       padding: EdgeInsets.symmetric(vertical: 7.h, horizontal: 12.w),
       decoration: BoxDecoration(
-        color: AppColors.errorRed.withOpacity(0.08),
+        color: AppColors.errorRed.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.errorRed.withOpacity(0.25)),
+        border: Border.all(color: AppColors.errorRed.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -556,7 +556,7 @@ class _SoldActions extends StatelessWidget {
             padding: EdgeInsets.all(2.r),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColors.sceTeal.withOpacity(0.5)),
+              border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.5)),
             ),
             child: Text(
               'Sold',
@@ -572,7 +572,7 @@ class _SoldActions extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.errorRed.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColors.errorRed.withOpacity(0.5)),
+              border: Border.all(color: AppColors.errorRed.withValues(alpha: 0.5)),
             ),
             child: Text(
               'Withdraw',

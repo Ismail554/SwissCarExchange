@@ -91,8 +91,8 @@ class _CustomDropdownFieldState extends State<CustomDropdownField>
                 borderRadius: BorderRadius.circular(14.r),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.sceOnboardingGold.withOpacity(
-                      0.18 * _glowAnimation.value,
+                    color: AppColors.sceOnboardingGold.withValues(
+                      alpha: 0.18 * _glowAnimation.value,
                     ),
                     blurRadius: 16,
                     spreadRadius: 1,
@@ -105,7 +105,7 @@ class _CustomDropdownFieldState extends State<CustomDropdownField>
           child: Focus(
             onFocusChange: _onFocusChange,
             child: DropdownButtonFormField<String>(
-              value: widget.items.contains(widget.value) ? widget.value : null,
+              initialValue: widget.items.contains(widget.value) ? widget.value : null,
               items: widget.items.map((item) {
                 final isSelected = item == widget.value;
                 return DropdownMenuItem<String>(
@@ -195,16 +195,16 @@ class _CustomDropdownFieldState extends State<CustomDropdownField>
                 filled: true,
                 // Subtle gradient-like layered fill
                 fillColor: _isFocused
-                    ? AppColors.sceOnboardingGold.withOpacity(0.05)
-                    : Colors.white.withOpacity(0.04),
+                    ? AppColors.sceOnboardingGold.withValues(alpha: 0.05)
+                    : Colors.white.withValues(alpha: 0.04),
 
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 20.w,
                   vertical: 16.h,
                 ),
 
-                border: _buildBorder(Colors.white.withOpacity(0.1)),
-                enabledBorder: _buildBorder(Colors.white.withOpacity(0.08)),
+                border: _buildBorder(Colors.white.withValues(alpha: 0.1)),
+                enabledBorder: _buildBorder(Colors.white.withValues(alpha: 0.08)),
                 focusedBorder: _buildBorder(
                   AppColors.sceOnboardingGold,
                   width: 1.5,

@@ -185,7 +185,7 @@ class _PendingViewState extends State<PendingView> {
   Widget _buildDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Divider(color: Colors.white.withOpacity(0.05), thickness: 1),
+      child: Divider(color: Colors.white.withValues(alpha: 0.05), thickness: 1),
     );
   }
 }

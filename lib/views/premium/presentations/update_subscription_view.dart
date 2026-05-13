@@ -143,7 +143,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.scePremiumGlow.withOpacity(0.3),
+                      color: AppColors.scePremiumGlow.withValues(alpha: 0.3),
                       blurRadius: 40,
                       spreadRadius: 10,
                       offset: const Offset(0, 0),
@@ -201,7 +201,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                     color: AppColors.sceDarkBg,
                     borderRadius: BorderRadius.circular(16.r),
                     border: Border.all(
-                      color: AppColors.scePremiumDealerBg.withOpacity(0.3),
+                      color: AppColors.scePremiumDealerBg.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                   ),
@@ -219,7 +219,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                     color: AppColors.sceDarkBg,
                     borderRadius: BorderRadius.circular(16.r),
                     border: Border.all(
-                      color: Colors.redAccent.withOpacity(0.3),
+                      color: Colors.redAccent.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                   ),
@@ -248,7 +248,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                           style: TextStyle(color: AppColors.scePremiumGold),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: AppColors.scePremiumGold.withOpacity(0.5)),
+                          side: BorderSide(color: AppColors.scePremiumGold.withValues(alpha: 0.5)),
                         ),
                       ),
                     ],
@@ -267,7 +267,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.scePremiumDealerBg.withOpacity(0.5),
+                        color: AppColors.scePremiumDealerBg.withValues(alpha: 0.5),
                         blurRadius: 20,
                         spreadRadius: -5,
                         offset: const Offset(0, 0),
@@ -320,9 +320,9 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                           decoration: BoxDecoration(
-                            color: AppColors.sceTeal.withOpacity(0.15),
+                            color: AppColors.sceTeal.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(20.r),
-                            border: Border.all(color: AppColors.sceTeal.withOpacity(0.3)),
+                            border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.3)),
                           ),
                           child: Text(
                             'ACTIVE PLAN',
@@ -362,9 +362,9 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                       vertical: 16.h,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.sceCardBg.withOpacity(0.5),
+                      color: AppColors.sceCardBg.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Row(
                       children: [
@@ -373,7 +373,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                           height: 44.w,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppColors.scePremiumGold.withOpacity(0.15),
+                            color: AppColors.scePremiumGold.withValues(alpha: 0.15),
                           ),
                           child: Center(
                             child: Icon(
@@ -438,18 +438,18 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                             ],
                           ),
                     color: isPremium || subProvider.isLoading || subProvider.errorMessage != null
-                        ? AppColors.sceCardBg.withOpacity(0.5)
+                        ? AppColors.sceCardBg.withValues(alpha: 0.5)
                         : null,
                     border: isPremium
-                        ? Border.all(color: AppColors.scePremiumGold.withOpacity(0.3))
+                        ? Border.all(color: AppColors.scePremiumGold.withValues(alpha: 0.3))
                         : (subProvider.isLoading || subProvider.errorMessage != null
-                            ? Border.all(color: AppColors.sceGrey99.withOpacity(0.2))
+                            ? Border.all(color: AppColors.sceGrey99.withValues(alpha: 0.2))
                             : null),
                     boxShadow: isPremium || subProvider.isLoading || subProvider.errorMessage != null
                         ? null
                         : [
                             BoxShadow(
-                              color: AppColors.scePremiumOrange.withOpacity(0.3),
+                              color: AppColors.scePremiumOrange.withValues(alpha: 0.3),
                               blurRadius: 15,
                               offset: const Offset(0, 4),
                             ),

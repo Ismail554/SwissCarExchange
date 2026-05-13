@@ -68,7 +68,7 @@ class _ProfileViewState extends State<ProfileView> {
                       ),
                       Switch(
                         value: isPremium,
-                        activeColor: AppColors.sceGold,
+                        activeThumbColor: AppColors.sceGold,
                         inactiveTrackColor: AppColors.darkGrey,
                         onChanged: (val) {
                           context.read<GlobalState>().isPremium = val;

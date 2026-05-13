@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rionydo/services/firebase_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
@@ -209,7 +208,7 @@ class _NotificationViewState extends State<NotificationView> {
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       itemCount: _notifications.length,
-      separatorBuilder: (_, __) => AppSpacing.h12,
+      separatorBuilder: (_, _) => AppSpacing.h12,
       itemBuilder: (context, index) {
         return _NotificationCard(
           item: _notifications[index],
@@ -239,8 +238,8 @@ class _NotificationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
           color: isUnread
-              ? AppColors.sceTeal.withOpacity(0.15)
-              : Colors.white.withOpacity(0.05),
+              ? AppColors.sceTeal.withValues(alpha: 0.15)
+              : Colors.white.withValues(alpha: 0.05),
         ),
       ),
       child: Row(
@@ -251,7 +250,7 @@ class _NotificationCard extends StatelessWidget {
             height: 44.w,
             width: 44.w,
             decoration: BoxDecoration(
-              color: config.color.withOpacity(0.1),
+              color: config.color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(config.icon, color: config.color, size: 22.sp),

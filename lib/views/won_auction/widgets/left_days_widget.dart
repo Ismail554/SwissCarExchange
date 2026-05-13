@@ -6,7 +6,7 @@
 //                 color: const Color(0xFF1E140C), // Dark brown/orange tint
 //                 borderRadius: BorderRadius.circular(16.r),
 //                 border: Border.all(
-//                   color: AppColors.sceOnboardingGold.withOpacity(0.3),
+//                   color: AppColors.sceOnboardingGold.withValues(alpha: 0.3),
 //                 ),
 //               ),
 //               child: Column(

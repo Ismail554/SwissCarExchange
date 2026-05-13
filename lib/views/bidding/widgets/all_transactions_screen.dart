@@ -33,8 +33,8 @@ class AllTransactionsScreen extends StatelessWidget {
       body: ListView.separated(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
         itemCount: transactions.length,
-        separatorBuilder: (_, __) =>
-            Divider(color: AppColors.grey.withOpacity(0.15), height: 1),
+        separatorBuilder: (_, _) =>
+            Divider(color: AppColors.grey.withValues(alpha: 0.15), height: 1),
         itemBuilder: (context, index) {
           return TransactionRow(transaction: transactions[index]);
         },

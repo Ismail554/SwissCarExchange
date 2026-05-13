@@ -29,7 +29,7 @@ class PaymentTransactionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +39,7 @@ class PaymentTransactionCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20.r,
-                backgroundColor: AppColors.sceTeal.withOpacity(0.1),
+                backgroundColor: AppColors.sceTeal.withValues(alpha: 0.1),
                 child: Icon(
                   Icons.person_outline_rounded,
                   color: AppColors.sceTeal,
@@ -120,7 +120,7 @@ class PaymentTransactionCard extends StatelessWidget {
           ),
           if (status == "COMPLETED") ...[
             SizedBox(height: 4.h),
-            Divider(color: Colors.white.withOpacity(0.1), thickness: 1),
+            Divider(color: Colors.white.withValues(alpha: 0.1), thickness: 1),
             SizedBox(height: 2.h),
             SizedBox(
               width: double.maxFinite,

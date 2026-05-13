@@ -11,7 +11,6 @@ import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/controllers/payment_process_provider.dart';
 
-
 class PaymentProcessView extends StatefulWidget {
   final String auctionId;
 
@@ -96,7 +95,8 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
             });
           }
 
-          if (provider.paymentInfo == null && !provider.paymentAlreadyProcessed) {
+          if (provider.paymentInfo == null &&
+              !provider.paymentAlreadyProcessed) {
             return const SizedBox.shrink();
           }
 
@@ -108,7 +108,8 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
                 children: [
                   _buildStepper(),
                   AppSpacing.h32,
-                  if (_currentStep == 0 && provider.paymentInfo != null) _buildPaymentStep(provider),
+                  if (_currentStep == 0 && provider.paymentInfo != null)
+                    _buildPaymentStep(provider),
                   if (_currentStep == 1) _buildShippingStep(provider),
                   if (_currentStep == 2) _buildReceivedStep(provider),
                 ],
@@ -145,7 +146,7 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
             border: Border.all(
               color: isActive
                   ? AppColors.sceTeal
-                  : AppColors.sceGreyA0.withOpacity(0.3),
+                  : AppColors.sceGreyA0.withValues(alpha: 0.3),
             ),
           ),
           child: Center(
@@ -194,7 +195,7 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
           decoration: BoxDecoration(
             color: AppColors.sceCardBg,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,7 +231,7 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
                 child: CircularProgressIndicator(color: AppColors.sceTeal),
               )
             : CustomButton(
-                text: 'Mark Payment as Sent',
+                text: "I've made the payment",
                 onPressed: () async {
                   final success = await provider.markPayment(widget.auctionId);
                   if (success && mounted) {
@@ -315,7 +316,7 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
           decoration: BoxDecoration(
             color: AppColors.sceCardBg,
             borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,7 +356,9 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF0F1B1A), // Dark teal tint
                   borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: AppColors.sceTeal.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColors.sceTeal.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -369,8 +372,9 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                TransactionCompletedView(auctionId: widget.auctionId),
+                            builder: (context) => TransactionCompletedView(
+                              auctionId: widget.auctionId,
+                            ),
                           ),
                         );
                       } else if (provider.error != null && mounted) {
@@ -408,8 +412,8 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Shimmer.fromColors(
-            baseColor: AppColors.sceCardBg.withOpacity(0.6),
-            highlightColor: AppColors.grey.withOpacity(0.15),
+            baseColor: AppColors.sceCardBg.withValues(alpha: 0.6),
+            highlightColor: AppColors.grey.withValues(alpha: 0.15),
             child: Container(
               width: double.infinity,
               height: 150.h,
@@ -421,8 +425,8 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
           ),
           AppSpacing.h32,
           Shimmer.fromColors(
-            baseColor: AppColors.sceCardBg.withOpacity(0.6),
-            highlightColor: AppColors.grey.withOpacity(0.15),
+            baseColor: AppColors.sceCardBg.withValues(alpha: 0.6),
+            highlightColor: AppColors.grey.withValues(alpha: 0.15),
             child: Container(
               width: double.infinity,
               height: 54.h,
@@ -461,13 +465,13 @@ class _DeliveryMethodCard extends StatelessWidget {
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.sceTeal.withOpacity(0.1)
+              ? AppColors.sceTeal.withValues(alpha: 0.1)
               : AppColors.sceCardBg,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isSelected
                 ? AppColors.sceTeal
-                : AppColors.white.withOpacity(0.05),
+                : AppColors.white.withValues(alpha: 0.05),
           ),
         ),
         child: Row(
@@ -475,7 +479,7 @@ class _DeliveryMethodCard extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
-                color: AppColors.white.withOpacity(0.05),
+                color: AppColors.white.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
               child: Icon(

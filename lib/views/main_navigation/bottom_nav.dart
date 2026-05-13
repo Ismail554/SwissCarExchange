@@ -4,10 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
-import 'package:rionydo/views/auctions/presentations/add_auction_view.dart';
-import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';
 import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
-import 'package:rionydo/views/premium/presentations/update_subscription_view.dart';
 import 'package:rionydo/views/settings/presentations/manage_subscription_view.dart';
 
 /// The app-wide scaffold with custom bottom navigation.
@@ -122,7 +119,7 @@ class _BottomNavBar extends StatelessWidget {
         color: Colors.transparent,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -280,7 +277,7 @@ class _PremiumFab extends StatelessWidget {
           boxShadow: isPremium
               ? [
                   BoxShadow(
-                    color: teal.withOpacity(0.35),
+                    color: teal.withValues(alpha: 0.35),
                     blurRadius: 18,
                     spreadRadius: 2,
                   ),

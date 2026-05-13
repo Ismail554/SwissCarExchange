@@ -168,7 +168,6 @@ class _SignUpStep2State extends State<SignUpStep2> {
   // ── Build ──────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    final teal = AppColors.sceTeal;
     return CommonBackground(
       child: SafeArea(
         child: Column(
@@ -391,9 +390,9 @@ class _RoleToggle extends StatelessWidget {
     return Container(
       height: 52.h,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
       ),
       child: Stack(
         children: [
@@ -414,7 +413,7 @@ class _RoleToggle extends StatelessWidget {
                   gradient: LinearGradient(
                     colors: [
                       AppColors.sceTeal,
-                      AppColors.sceTeal.withOpacity(0.8),
+                      AppColors.sceTeal.withValues(alpha: 0.8),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -422,7 +421,7 @@ class _RoleToggle extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.sceTeal.withOpacity(0.3),
+                      color: AppColors.sceTeal.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -692,12 +691,12 @@ class _FilePickerField extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 14.w),
             decoration: BoxDecoration(
               color: hasFile
-                  ? AppColors.sceTeal.withOpacity(0.10)
-                  : Colors.white.withOpacity(0.06),
+                  ? AppColors.sceTeal.withValues(alpha: 0.10)
+                  : Colors.white.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
                 color: hasFile
-                    ? AppColors.sceTeal.withOpacity(0.5)
+                    ? AppColors.sceTeal.withValues(alpha: 0.5)
                     : Colors.white24,
                 width: 1.2,
               ),
@@ -784,7 +783,7 @@ class _FilePickerField extends StatelessWidget {
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          Colors.black.withOpacity(0.55),
+                          Colors.black.withValues(alpha: 0.55),
                           Colors.transparent,
                         ],
                       ),
@@ -917,7 +916,7 @@ class _SheetOption extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 16.h),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.06),
+            color: Colors.white.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(color: Colors.white12),
           ),

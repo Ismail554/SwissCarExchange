@@ -11,9 +11,9 @@ class PaymentInfoCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: AppColors.sceTealStatBg.withOpacity(0.5),
+        color: AppColors.sceTealStatBg.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.sceTeal.withOpacity(0.1)),
+        border: Border.all(color: AppColors.sceTeal.withValues(alpha: 0.1)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

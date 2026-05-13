@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 /// App Strings for ScoreLivePro
 /// Supports 6 languages: English, Spanish, French, Arabic, Portuguese, German
@@ -98,8 +97,8 @@ class AppStrings {
 
   // ==================== Home Screen ====================
 
-  static const String welcome_back = "Welcome Back";
-  static const String date_today = "Sunday, 25 Dec 2025";
+  static const String welcomeBack = "Welcome Back";
+  static const String dateToday = "Sunday, 25 Dec 2025";
 
   /// top are newly added
   static const String home = "Home";

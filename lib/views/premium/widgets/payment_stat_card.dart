@@ -23,7 +23,7 @@ class PaymentStatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: accentColor.withOpacity(0.2)),
+        border: Border.all(color: accentColor.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +31,7 @@ class PaymentStatCard extends StatelessWidget {
           Text(
             label,
             style: FontManager.labelSmall(
-              color: accentColor.withOpacity(0.6),
+              color: accentColor.withValues(alpha: 0.6),
             ).copyWith(letterSpacing: 1.2, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8.h),
@@ -43,7 +43,7 @@ class PaymentStatCard extends StatelessWidget {
           ),
           Text(
             "CHF",
-            style: FontManager.labelSmall(color: accentColor.withOpacity(0.4)),
+            style: FontManager.labelSmall(color: accentColor.withValues(alpha: 0.4)),
           ),
         ],
       ),

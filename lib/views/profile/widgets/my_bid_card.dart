@@ -55,7 +55,7 @@ class MyBidCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +70,7 @@ class MyBidCard extends StatelessWidget {
                   height: 180.h,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (_, _, _) => Container(
                     height: 180.h,
                     color: Colors.white10,
                     child: const Icon(Icons.image_not_supported_outlined, color: Colors.white24),
@@ -84,7 +84,7 @@ class MyBidCard extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.9),
+                    color: statusColor.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Row(

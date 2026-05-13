@@ -34,7 +34,7 @@ class CommonBackground extends StatelessWidget {
                   height: 384.h,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.sceTeal.withOpacity(0.1),
+                    color: AppColors.sceTeal.withValues(alpha: 0.1),
                   ),
                 ),
               ),

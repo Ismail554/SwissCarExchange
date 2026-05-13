@@ -297,7 +297,7 @@ class _BidsViewState extends State<BidsView> {
         minHeight: 56.h,
         maxHeight: 56.h,
         child: Container(
-          color: AppColors.sceDarkBg.withOpacity(0.92),
+          color: AppColors.sceDarkBg.withValues(alpha: 0.92),
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Align(
             alignment: Alignment.centerLeft,
@@ -490,7 +490,7 @@ class _BidsViewState extends State<BidsView> {
         delegate: SliverChildBuilderDelegate((context, index) {
           if (index.isOdd) {
             return Divider(
-              color: AppColors.grey.withOpacity(0.15),
+              color: AppColors.grey.withValues(alpha: 0.15),
               height: 1.h,
             );
           }

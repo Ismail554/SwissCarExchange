@@ -6,7 +6,7 @@ import 'package:rionydo/app_utils/network/token_manager.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import 'package:rionydo/app_utils/network/network_logger.dart';
 class SocketService {
   WebSocketChannel? _channel;
   ValueNotifier<bool> isConnected = ValueNotifier(false);
@@ -117,8 +117,9 @@ class SocketService {
     try {
       if (message is String) {
         final data = jsonDecode(message);
-        print(
+        appLog(
           "📌 WebSocket Message: ${message.length > 200 ? '${message.substring(0, 200)}...' : message}",
+          tag: 'SOCKET',
         );
 
         if (data is Map<String, dynamic>) {

@@ -20,7 +20,7 @@ class RateDealerView extends StatefulWidget {
 }
 
 class _RateDealerViewState extends State<RateDealerView> {
-  int _overallRating = 0;
+  final int _overallRating = 0;
   int _communicationRating = 0;
   int _accuracyRating = 0;
   int _reliabilityRating = 0;
@@ -172,7 +172,7 @@ class _AspectRatingCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.white.withOpacity(0.05)),
+        border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,12 +194,10 @@ class _AspectRatingCard extends StatelessWidget {
 class _StarRatingBar extends StatelessWidget {
   final int rating;
   final Function(int) onRatingChanged;
-  final double? size;
 
   const _StarRatingBar({
     required this.rating,
     required this.onRatingChanged,
-    this.size,
   });
 
   @override
@@ -215,8 +213,8 @@ class _StarRatingBar extends StatelessWidget {
               starValue <= rating ? Icons.star : Icons.star_outline,
               color: starValue <= rating
                   ? AppColors.sceOnboardingGold
-                  : AppColors.sceGreyA0.withOpacity(0.5),
-              size: size ?? 28.sp,
+                  : AppColors.sceGreyA0.withValues(alpha: 0.5),
+              size: 28.sp,
             ),
           ),
         );
@@ -238,18 +236,18 @@ class _ReviewTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: 'Share your experience with this dealer...',
         hintStyle: FontManager.bodyMedium(
-          color: AppColors.sceGreyA0.withOpacity(0.5),
+          color: AppColors.sceGreyA0.withValues(alpha: 0.5),
         ),
         filled: true,
         fillColor: AppColors.sceCardBg,
         contentPadding: EdgeInsets.all(20.w),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.r),
-          borderSide: BorderSide(color: AppColors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: AppColors.white.withValues(alpha: 0.1)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.r),
-          borderSide: BorderSide(color: AppColors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: AppColors.white.withValues(alpha: 0.1)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.r),

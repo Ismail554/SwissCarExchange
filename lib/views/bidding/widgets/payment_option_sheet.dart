@@ -45,7 +45,7 @@ class _PaymentOptionSheet extends StatelessWidget {
               width: 40.w,
               height: 4.h,
               decoration: BoxDecoration(
-                color: AppColors.grey.withOpacity(0.4),
+                color: AppColors.grey.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -69,7 +69,7 @@ class _PaymentOptionSheet extends StatelessWidget {
           // In-App Payment option
           _PaymentOptionTile(
             icon: Icons.credit_card_rounded,
-            iconBgColor: AppColors.sceTeal.withOpacity(0.15),
+            iconBgColor: AppColors.sceTeal.withValues(alpha: 0.15),
             iconColor: AppColors.sceTeal,
             title: 'In-App Payment',
             subtitle: 'Pay securely with card or wallet',
@@ -89,7 +89,7 @@ class _PaymentOptionSheet extends StatelessWidget {
           // Bank Transfer / Offline option
           _PaymentOptionTile(
             icon: Icons.account_balance_rounded,
-            iconBgColor: AppColors.sceGold.withOpacity(0.15),
+            iconBgColor: AppColors.sceGold.withValues(alpha: 0.15),
             iconColor: AppColors.sceGold,
             title: 'Bank Transfer / Offline',
             subtitle: 'Pay via bank or in person',
@@ -153,7 +153,7 @@ class _PaymentOptionTile extends StatelessWidget {
             color: AppColors.sceTileBg,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: AppColors.grey.withOpacity(0.15),
+              color: AppColors.grey.withValues(alpha: 0.15),
               width: 1,
             ),
           ),

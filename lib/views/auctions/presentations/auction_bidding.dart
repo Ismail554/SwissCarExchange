@@ -186,7 +186,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
               decoration: BoxDecoration(
                 border: Border.all(color: AppColors.sceGold, width: 1),
                 borderRadius: BorderRadius.circular(20.r),
-                color: AppColors.sceCardBg.withOpacity(0.8),
+                color: AppColors.sceCardBg.withValues(alpha: 0.8),
               ),
               child: Text(
                 "3. LIVE BIDDING",
@@ -198,7 +198,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
               Padding(
                 padding: EdgeInsets.only(right: 16.w, top: 8.h, bottom: 8.h),
                 child: CircleAvatar(
-                  backgroundColor: AppColors.sceCardBg.withOpacity(0.8),
+                  backgroundColor: AppColors.sceCardBg.withValues(alpha: 0.8),
                   child: Consumer<AuctionsDetailProvider>(
                     builder: (context, provider, child) {
                       final detail = provider.auctionDetail;
@@ -241,7 +241,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   Container(
                     margin: EdgeInsets.only(bottom: 20.h),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                     ),
                     child: () {
                       final images =
@@ -302,11 +302,6 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   Text(
                     widget.detailData?.title ?? widget.initialData.title,
                     style: FontManager.heading2(color: Colors.white),
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    "Lot €4557",
-                    style: FontManager.bodySmall(color: AppColors.textHint),
                   ),
                   SizedBox(height: 16.h),
 
@@ -439,7 +434,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                     amount,
                                     gradient,
                                   );
-                                }).toList(),
+                                }),
                                 if (showSeeAll) ...[
                                   Align(
                                     alignment: Alignment.center,
@@ -491,7 +486,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     decoration: BoxDecoration(
                       color: AppColors.sceCardBg,
                       borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,8 +504,8 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                             Text(
                               _formatCurrency(_userBid),
                               style: FontManager.heading1(
-                                color: Colors.white,
-                              ).copyWith(color: Colors.white.withOpacity(0.4)),
+                                color: AppColors.sceGold,
+                              ),
                             ),
                             GestureDetector(
                               onTap: () {
@@ -540,7 +535,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                             color: AppColors.sceTealStatBg,
                             borderRadius: BorderRadius.circular(8.r),
                             border: Border.all(
-                              color: AppColors.sceTeal.withOpacity(0.2),
+                              color: AppColors.sceTeal.withValues(alpha: 0.2),
                             ),
                           ),
                           child: Row(
@@ -581,7 +576,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                         (_userBid - _minIncrement >=
                                             _currentBid + _minIncrement)
                                         ? AppColors.sceTeal
-                                        : AppColors.sceTeal.withOpacity(0.3),
+                                        : AppColors.sceTeal.withValues(alpha: 0.3),
                                     borderRadius: BorderRadius.circular(8.r),
                                   ),
                                   child: Icon(
@@ -629,17 +624,16 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                         _userBid,
                       );
 
-                      if (mounted) {
-                        setState(() => _isBidding = false);
-                        if (success) {
-                          AppSnackBar.success(
-                            context,
-                            "Bid placed successfully!",
-                          );
-                          provider.fetchBidHistory(_auctionId);
-                        } else {
-                          AppSnackBar.error(context, "Failed to place bid.");
-                        }
+                      if (!context.mounted) return;
+                      setState(() => _isBidding = false);
+                      if (success) {
+                        AppSnackBar.success(
+                          context,
+                          "Bid placed successfully!",
+                        );
+                        provider.fetchBidHistory(_auctionId);
+                      } else {
+                        AppSnackBar.error(context, "Failed to place bid.");
                       }
                     },
                   ),
@@ -658,13 +652,12 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                 final provider = context
                                     .read<AuctionsDetailProvider>();
                                 await provider.deleteAutoBid(_auctionId);
-                                if (mounted) {
-                                  setState(() => _isAutoBidEnabled = false);
-                                  AppSnackBar.info(
-                                    context,
-                                    "Auto bid disabled.",
-                                  );
-                                }
+                                if (!context.mounted) return;
+                                setState(() => _isAutoBidEnabled = false);
+                                AppSnackBar.info(
+                                  context,
+                                  "Auto bid disabled.",
+                                );
                               } else {
                                 setState(() => _isAutoBidEnabled = true);
                               }
@@ -673,10 +666,10 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                       child: Ink(
                         padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
-                          color: AppColors.sceTealStatBg.withOpacity(0.5),
+                          color: AppColors.sceTealStatBg.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(12.r),
                           border: Border.all(
-                            color: AppColors.sceTeal.withOpacity(0.2),
+                            color: AppColors.sceTeal.withValues(alpha: 0.2),
                           ),
                         ),
                         child: Row(
@@ -691,7 +684,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                   activeColor: AppColors.sceTeal,
                                   checkColor: Colors.white,
                                   side: BorderSide(
-                                    color: AppColors.sceTeal.withOpacity(0.5),
+                                    color: AppColors.sceTeal.withValues(alpha: 0.5),
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4.r),
@@ -718,10 +711,10 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     Container(
                       padding: EdgeInsets.all(16.w),
                       decoration: BoxDecoration(
-                        color: AppColors.sceCardBg.withOpacity(0.5),
+                        color: AppColors.sceCardBg.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(12.r),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                         ),
                       ),
                       child: Column(
@@ -757,7 +750,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                       color: AppColors.textHint,
                                     ),
                                     filled: true,
-                                    fillColor: Colors.white.withOpacity(0.05),
+                                    fillColor: Colors.white.withValues(alpha: 0.05),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8.r),
                                       borderSide: BorderSide.none,
@@ -802,19 +795,18 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                 _auctionId,
                                 maxAmount,
                               );
-                              if (mounted) {
-                                setState(() => _isSettingAutoBid = false);
-                                if (success) {
-                                  AppSnackBar.success(
-                                    context,
-                                    "Auto bid set up to CHF ${_formatCurrency(maxAmount)}",
-                                  );
-                                } else {
-                                  AppSnackBar.error(
-                                    context,
-                                    "Failed to set auto bid.",
-                                  );
-                                }
+                              if (!context.mounted) return;
+                              setState(() => _isSettingAutoBid = false);
+                              if (success) {
+                                AppSnackBar.success(
+                                  context,
+                                  "Auto bid set up to CHF ${_formatCurrency(maxAmount)}",
+                                );
+                              } else {
+                                AppSnackBar.error(
+                                  context,
+                                  "Failed to set auto bid.",
+                                );
                               }
                             },
                           ),
@@ -844,7 +836,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -888,7 +880,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
         padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         alignment: Alignment.center,
         child: Text(

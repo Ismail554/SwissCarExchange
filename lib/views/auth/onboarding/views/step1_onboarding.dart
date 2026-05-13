@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rionydo/views/home/presentation/home_view.dart';
 
 import '../onboardign_common_scaff.dart';
 import 'step2_onborading.dart';

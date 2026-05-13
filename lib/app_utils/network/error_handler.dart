@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'dart:io';
+import 'network_logger.dart';
 
 /// Converts raw Dio / HTTP errors into user-friendly strings.
 class ErrorHandler {
@@ -42,8 +43,8 @@ class ErrorHandler {
 
   static String _parseErrorMap(Map<String, dynamic> data, int status) {
     // We already have 'import 'dart:developer';' at the top of other files?
-    // Let's use print instead if dart:developer is not imported here, or just print it.
-    print('API_ERROR_MAP (status $status): $data');
+    // Let's use appLog instead if dart:developer is not imported here, or just print it.
+    appLog('API_ERROR_MAP (status $status): $data', tag: 'ERROR');
 
     // Special error code handling
     final errorCodes = data['error_code'];

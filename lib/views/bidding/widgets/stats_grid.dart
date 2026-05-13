@@ -78,7 +78,7 @@ class StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.sceChartBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.grey.withOpacity(0.12)),
+        border: Border.all(color: AppColors.grey.withValues(alpha: 0.12)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

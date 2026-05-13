@@ -21,44 +21,40 @@ class HelpSupportView extends StatefulWidget {
 }
 
 class _HelpSupportViewState extends State<HelpSupportView> {
-  bool _isLoading = true;
-  String _supportEmail = "support@swisscarexchange.ch";
-  String _supportPhone = "+41 44 123 45 67";
+  final ValueNotifier<String> _supportEmailNotifier = ValueNotifier("support@swisscarexchange.ch");
+  final ValueNotifier<String> _supportPhoneNotifier = ValueNotifier("+41 44 123 45 67");
 
   @override
   void initState() {
     super.initState();
-    _fetchContactInfo();
+    _fetchSupportContact();
   }
 
-  Future<void> _fetchContactInfo() async {
+  Future<void> _fetchSupportContact() async {
     try {
       final response = await DioManager.apiRequest(
         url: ApiService.getSupportContact,
         method: Methods.get,
       );
-
       response.fold(
         (error) {
           debugPrint('Failed to load support contact: $error');
-          if (mounted) setState(() => _isLoading = false);
         },
         (data) {
           debugPrint('Response from ${ApiService.getSupportContact}: $data');
           if (mounted && data != null) {
             final contactData = SupportContactResponse.fromJson(data);
-            setState(() {
-              _supportEmail = contactData.supportEmail.isNotEmpty ? contactData.supportEmail : _supportEmail;
-              _supportPhone = contactData.supportPhone.isNotEmpty ? contactData.supportPhone : _supportPhone;
-              _isLoading = false;
-            });
-          } else {
-            if (mounted) setState(() => _isLoading = false);
+            if (contactData.supportEmail.isNotEmpty) {
+              _supportEmailNotifier.value = contactData.supportEmail;
+            }
+            if (contactData.supportPhone.isNotEmpty) {
+              _supportPhoneNotifier.value = contactData.supportPhone;
+            }
           }
         },
       );
     } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
+      debugPrint('Error fetching support contact: $e');
     }
   }
 
@@ -85,18 +81,9 @@ class _HelpSupportViewState extends State<HelpSupportView> {
               decoration: BoxDecoration(
                 color: AppColors.sceCardBg,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
-              child: _isLoading 
-                ? Padding(
-                    padding: EdgeInsets.symmetric(vertical: 40.h),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.sceTeal,
-                      ),
-                    ),
-                  )
-                : Column(
+              child: Column(
                 children: [
                   _ContactItem(
                     icon: Icons.chat_bubble_outline_rounded,
@@ -112,29 +99,39 @@ class _HelpSupportViewState extends State<HelpSupportView> {
                       );
                     },
                   ),
-                  Divider(color: Colors.white.withOpacity(0.05), height: 1),
-                  _ContactItem(
-                    icon: Icons.mail_outline_rounded,
-                    title: "Email Support",
-                    subtitle: _supportEmail,
-                    iconColor: AppColors.sceTeal,
-                    onTap: () {
-                      launchUrl(
-                        Uri.parse("mailto:$_supportEmail"),
-                        mode: LaunchMode.externalApplication,
+                  Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
+                  ValueListenableBuilder<String>(
+                    valueListenable: _supportEmailNotifier,
+                    builder: (context, email, _) {
+                      return _ContactItem(
+                        icon: Icons.mail_outline_rounded,
+                        title: "Email Support",
+                        subtitle: email,
+                        iconColor: AppColors.sceTeal,
+                        onTap: () {
+                          launchUrl(
+                            Uri.parse("mailto:$email"),
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
                       );
                     },
                   ),
-                  Divider(color: Colors.white.withOpacity(0.05), height: 1),
-                  _ContactItem(
-                    icon: Icons.phone_outlined,
-                    title: "Phone Support",
-                    subtitle: _supportPhone,
-                    iconColor: AppColors.sceTeal,
-                    onTap: () {
-                      launchUrl(
-                        Uri.parse("tel:$_supportPhone"),
-                        mode: LaunchMode.externalApplication,
+                  Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
+                  ValueListenableBuilder<String>(
+                    valueListenable: _supportPhoneNotifier,
+                    builder: (context, phone, _) {
+                      return _ContactItem(
+                        icon: Icons.phone_outlined,
+                        title: "Phone Support",
+                        subtitle: phone,
+                        iconColor: AppColors.sceTeal,
+                        onTap: () {
+                          launchUrl(
+                            Uri.parse("tel:$phone"),
+                            mode: LaunchMode.externalApplication,
+                          );
+                        },
                       );
                     },
                   ),
@@ -181,7 +178,7 @@ class _HelpSupportViewState extends State<HelpSupportView> {
               decoration: BoxDecoration(
                 color: AppColors.sceCardBg,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 children: [
@@ -190,13 +187,13 @@ class _HelpSupportViewState extends State<HelpSupportView> {
                     title: "Terms of Service",
                     onTap: () {},
                   ),
-                  Divider(color: Colors.white.withOpacity(0.05), height: 1),
+                  Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
                   _ResourceItem(
                     icon: Icons.privacy_tip_outlined,
                     title: "Privacy Policy",
                     onTap: () {},
                   ),
-                  Divider(color: Colors.white.withOpacity(0.05), height: 1),
+                  Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
                   _ResourceItem(
                     icon: Icons.menu_book_outlined,
                     title: "User Guide",
@@ -253,7 +250,7 @@ class _ContactItem extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(12.w),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: iconColor, size: 24.sp),
@@ -318,7 +315,7 @@ class _FAQItemState extends State<_FAQItem> {
       decoration: BoxDecoration(
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -349,7 +346,7 @@ class _FAQItemState extends State<_FAQItem> {
           ),
           expandedAlignment: Alignment.topLeft,
           children: [
-            Divider(color: Colors.white.withOpacity(0.05), height: 1),
+            Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
             AppSpacing.h12,
             Text(
               widget.answer,
