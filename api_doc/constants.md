@@ -39,9 +39,9 @@ AuctionStatus {
 }
 
 TransactionStatus {
-  PAYMENT_PENDING = 'payment_pending',
-  PAYMENT_DONE = 'payment_done',
-  SHIPPING_PENDING = 'shipping_pending',
+  PAYMENT_PENDING = 'payment_pending',// payment view
+  PAYMENT_DONE = 'payment_done', // shipping view
+  SHIPPING_PENDING = 'shipping_pending', //
   COMPLETED = 'completed',
   PAYMENT_EXPIRED = 'payment_expired',
   SHIPPING_EXPIRED = 'shipping_expired',

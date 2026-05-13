@@ -14,7 +14,7 @@ class WonAuctionCard extends StatelessWidget {
   final String title;
   final String date;
   final String price;
-  final bool isPaymentCompleted;
+  final String transactionStatus;
 
   const WonAuctionCard({
     super.key,
@@ -23,8 +23,73 @@ class WonAuctionCard extends StatelessWidget {
     required this.title,
     required this.date,
     required this.price,
-    this.isPaymentCompleted = false,
+    this.transactionStatus = '',
   });
+
+  static const _hiddenStatuses = {
+    'completed',
+    'payment_expired',
+    'shipping_expired',
+  };
+
+  String _buttonText() {
+    switch (transactionStatus) {
+      case 'payment_done':
+        return 'Choose Shipping';
+      case 'shipping_pending':
+        return 'Mark Received';
+      default:
+        return 'Complete Payment';
+    }
+  }
+
+  int _targetStep() {
+    switch (transactionStatus) {
+      case 'payment_done':
+        return 1;
+      case 'shipping_pending':
+        return 2;
+      default:
+        return 0;
+    }
+  }
+
+  Color _statusColor() {
+    switch (transactionStatus) {
+      case 'completed':
+        return Colors.greenAccent;
+      case 'payment_expired':
+      case 'shipping_expired':
+        return Colors.redAccent;
+      case 'payment_pending':
+        return Colors.orangeAccent;
+      case 'payment_done':
+        return Colors.blueAccent;
+      case 'shipping_pending':
+        return Colors.purpleAccent;
+      default:
+        return AppColors.sceGreyA0;
+    }
+  }
+
+  String _statusLabel() {
+    switch (transactionStatus) {
+      case 'payment_pending':
+        return 'Payment Pending';
+      case 'payment_done':
+        return 'Payment Done';
+      case 'shipping_pending':
+        return 'Shipping Pending';
+      case 'completed':
+        return 'Completed';
+      case 'payment_expired':
+        return 'Payment Expired';
+      case 'shipping_expired':
+        return 'Shipping Expired';
+      default:
+        return transactionStatus;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,18 +108,46 @@ class WonAuctionCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-                child: imageUrl.startsWith('http')
+                child: imageUrl.isEmpty
+                    ? Container(
+                        height: 180.h,
+                        width: double.infinity,
+                        color: Colors.white10,
+                        child: const Icon(
+                          Icons.image_not_supported_outlined,
+                          color: Colors.white24,
+                        ),
+                      )
+                    : imageUrl.startsWith('http')
                     ? Image.network(
                         imageUrl,
                         height: 180.h,
                         width: double.infinity,
                         fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Container(
+                          height: 180.h,
+                          width: double.infinity,
+                          color: Colors.white10,
+                          child: const Icon(
+                            Icons.image_not_supported_outlined,
+                            color: Colors.white24,
+                          ),
+                        ),
                       )
                     : Image.asset(
                         imageUrl,
                         height: 180.h,
-                        width: double.infinity,
+                        width: double.maxFinite,
                         fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Container(
+                          height: 180.h,
+                          width: double.maxFinite,
+                          color: Colors.white10,
+                          child: const Icon(
+                            Icons.image_not_supported_outlined,
+                            color: Colors.white24,
+                          ),
+                        ),
                       ),
               ),
               Positioned(
@@ -133,22 +226,22 @@ class WonAuctionCard extends StatelessWidget {
                 ),
                 AppSpacing.h12,
 
-                // --- Payment Status ---
-                if (isPaymentCompleted)
+                // --- Transaction Status Badge ---
+                if (transactionStatus.isNotEmpty)
                   Row(
                     children: [
                       Container(
                         width: 8.w,
                         height: 8.w,
-                        decoration: const BoxDecoration(
-                          color: Colors.greenAccent,
+                        decoration: BoxDecoration(
+                          color: _statusColor(),
                           shape: BoxShape.circle,
                         ),
                       ),
                       SizedBox(width: 8.w),
                       Text(
-                        "Payment Completed",
-                        style: FontManager.bodySmall(color: Colors.greenAccent),
+                        _statusLabel(),
+                        style: FontManager.bodySmall(color: _statusColor()),
                       ),
                     ],
                   ),
@@ -170,7 +263,7 @@ class WonAuctionCard extends StatelessWidget {
                   icon: Icons.chat_bubble_outline,
                 ),
                 AppSpacing.h10,
-                if (isPaymentCompleted)
+                if (transactionStatus == 'completed')
                   _RateDealerButton(
                     onPressed: () {
                       Navigator.push(
@@ -182,15 +275,17 @@ class WonAuctionCard extends StatelessWidget {
                       );
                     },
                   )
-                else
+                else if (!_hiddenStatuses.contains(transactionStatus))
                   CustomButton(
-                    text: 'Complete Payment',
+                    text: _buttonText(),
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              PaymentProcessView(auctionId: auctionId),
+                          builder: (context) => PaymentProcessView(
+                            auctionId: auctionId,
+                            initialStep: _targetStep(),
+                          ),
                         ),
                       );
                     },
@@ -218,7 +313,9 @@ class _RateDealerButton extends StatelessWidget {
           0xFF1E140C,
         ), // Dark brown / orange tint as per design
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.sceOnboardingGold.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: AppColors.sceOnboardingGold.withValues(alpha: 0.3),
+        ),
       ),
       child: Material(
         color: Colors.transparent,

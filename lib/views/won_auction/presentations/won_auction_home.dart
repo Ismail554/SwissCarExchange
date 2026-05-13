@@ -134,11 +134,9 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
       itemBuilder: (context, index) {
         final auction = auctions[index];
         
-        final imageUrl = auction.images.isNotEmpty 
-            ? auction.images.first.url 
-            : ImageAssets.car1; 
-
-        final isPaymentCompleted = ['paid', 'payment_completed'].contains(auction.status.toLowerCase());
+        final imageUrl = auction.images.isNotEmpty
+            ? auction.images.first.url
+            : ImageAssets.car1;
 
         return WonAuctionCard(
           auctionId: auction.id.toString(),
@@ -146,7 +144,7 @@ class _WonAuctionHomeState extends State<WonAuctionHome> {
           title: auction.title,
           date: _formatDate(auction.endsAt),
           price: "CHF ${auction.currentHighestBid ?? auction.reservePrice}",
-          isPaymentCompleted: isPaymentCompleted,
+          transactionStatus: auction.transactionStatus,
         );
       },
     );

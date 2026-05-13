@@ -14,8 +14,13 @@ import 'package:rionydo/views/won_auction/widgets/left_days_widget.dart';
 
 class PaymentProcessView extends StatefulWidget {
   final String auctionId;
+  final int initialStep;
 
-  const PaymentProcessView({super.key, required this.auctionId});
+  const PaymentProcessView({
+    super.key,
+    required this.auctionId,
+    this.initialStep = 0,
+  });
 
   @override
   State<PaymentProcessView> createState() => _PaymentProcessViewState();
@@ -28,6 +33,7 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
   @override
   void initState() {
     super.initState();
+    _currentStep = widget.initialStep;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PaymentProcessProvider>().fetchPaymentInfo(widget.auctionId);
     });
