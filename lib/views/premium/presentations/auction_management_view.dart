@@ -8,7 +8,8 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/models/auctions/auction_image.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
-import 'package:rionydo/models/premium/auction_management_response.dart' as premium;
+import 'package:rionydo/models/premium/auction_management_response.dart'
+    as premium;
 import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
 import 'package:rionydo/views/auctions/presentations/auction_details.dart';
 import '../widgets/auction_management_card.dart';
@@ -21,11 +22,16 @@ class AuctionManagement extends StatefulWidget {
 }
 
 class _AuctionManagementState extends State<AuctionManagement> {
-  static const _statusTabs = {
+  static const Map<String, String> _statusTabs = {
+    'all': 'All',
     'active': 'Active',
     'sold': 'Sold',
     'unsold': 'Unsold',
     'withdrawn': 'Withdrawn',
+    'payment_expired': 'Payment Expired',
+    'shipping_expired': 'Shipping Expired',
+    'scheduled': 'Scheduled',
+    'removed': 'Removed',
   };
 
   @override
@@ -138,18 +144,25 @@ class _AuctionManagementState extends State<AuctionManagement> {
                   );
                 }
 
-                if (provider.errorMessage != null && provider.auctions.isEmpty) {
+                if (provider.errorMessage != null &&
+                    provider.auctions.isEmpty) {
                   return Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20.w),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.error_outline, color: AppColors.errorRed, size: 48.sp),
+                          Icon(
+                            Icons.error_outline,
+                            color: AppColors.errorRed,
+                            size: 48.sp,
+                          ),
                           SizedBox(height: 12.h),
                           Text(
                             provider.errorMessage!,
-                            style: FontManager.bodyMedium(color: AppColors.sceGrey99),
+                            style: FontManager.bodyMedium(
+                              color: AppColors.sceGrey99,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 12.h),
@@ -157,7 +170,9 @@ class _AuctionManagementState extends State<AuctionManagement> {
                             onPressed: () => provider.fetchAuctions(),
                             child: Text(
                               "Retry",
-                              style: FontManager.bodyMedium(color: AppColors.sceTeal),
+                              style: FontManager.bodyMedium(
+                                color: AppColors.sceTeal,
+                              ),
                             ),
                           ),
                         ],
@@ -173,8 +188,12 @@ class _AuctionManagementState extends State<AuctionManagement> {
                     child: ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       children: [
-                        SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-                        _buildEmptyState(_statusTabs[provider.selectedStatus] ?? ""),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.15,
+                        ),
+                        _buildEmptyState(
+                          _statusTabs[provider.selectedStatus] ?? "",
+                        ),
                       ],
                     ),
                   );
@@ -222,11 +241,12 @@ class _AuctionManagementState extends State<AuctionManagement> {
         ),
         child: Text(
           label,
-          style: FontManager.labelMedium(
-            color: isSelected ? Colors.white : AppColors.sceGreyA0,
-          ).copyWith(
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
+          style:
+              FontManager.labelMedium(
+                color: isSelected ? Colors.white : AppColors.sceGreyA0,
+              ).copyWith(
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
         ),
       ),
     );
@@ -267,10 +287,10 @@ class _AuctionManagementState extends State<AuctionManagement> {
                 endsAt: auction.endsAt,
                 totalBidders: auction.totalBidders,
                 images: auction.images
-                    .map((img) => AuctionImage(
-                          url: img.url,
-                          position: img.position,
-                        ))
+                    .map(
+                      (img) =>
+                          AuctionImage(url: img.url, position: img.position),
+                    )
                     .toList(),
               ),
             ),
@@ -324,18 +344,13 @@ class _AuctionManagementState extends State<AuctionManagement> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.gavel_rounded,
-              color: AppColors.sceGrey99,
-              size: 64.sp,
-            ),
+            Icon(Icons.gavel_rounded, color: AppColors.sceGrey99, size: 64.sp),
             SizedBox(height: 16.h),
             Text(
               "No $status Listings",
-              style: FontManager.bodyMedium(color: AppColors.sceGrey99).copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
-              ),
+              style: FontManager.bodyMedium(
+                color: AppColors.sceGrey99,
+              ).copyWith(fontWeight: FontWeight.bold, fontSize: 16.sp),
             ),
             SizedBox(height: 8.h),
             Text(

@@ -9,6 +9,7 @@ import 'package:rionydo/controllers/auctions/create_auctions_provider.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
 import 'package:rionydo/controllers/auctions/auction_management_provider.dart';
 import 'package:rionydo/controllers/auctions/won_auction_provider.dart';
+import 'package:rionydo/controllers/auctions/my_bids_provider.dart';
 import 'package:rionydo/controllers/auctions/dealer_contact_provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 import 'package:rionydo/controllers/auth/register_provider.dart';
@@ -58,6 +59,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => AdvanceStatisticsProvider()),
         ChangeNotifierProvider(create: (_) => BankAccountProvider()),
         ChangeNotifierProvider(create: (_) => WonAuctionProvider()),
+        ChangeNotifierProvider(create: (_) => MyBidsProvider()),
         ChangeNotifierProvider(create: (_) => DealerContactProvider()),
         ChangeNotifierProvider(create: (_) => HomeStatsProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProcessProvider()),

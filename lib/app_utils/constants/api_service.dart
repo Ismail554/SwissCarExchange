@@ -25,7 +25,8 @@ class ApiService {
       "$baseUrl/api/auth/reset-password/verify/"; // body: {"email": "", "code": ""}
   static String get resetPassword =>
       "$baseUrl/api/auth/reset-password/reset/"; // body: {"email": "", "new_password": "", "password_reset_token": ""}
-  static String get changePassword => "$baseUrl/api/users/me/change-password/"; //POST body: { "current_password": "", "new_password": "" }
+  static String get changePassword =>
+      "$baseUrl/api/users/me/change-password/"; //POST body: { "current_password": "", "new_password": "" }
 
   // Delete Account
   static String get deleteAccount =>
@@ -133,6 +134,7 @@ class ApiService {
 
   // Won Auction
   static String get wonAuction => "$baseUrl/api/auctions/me/bid/?filter=won";
+  static String get myBidsAuction => "$baseUrl/api/auctions/me/bid/";
 
   // Dealer Contact
   static String dealerContact(String auctionId) =>

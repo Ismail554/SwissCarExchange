@@ -7,6 +7,7 @@ import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
+import 'package:rionydo/views/profile/presentations/my_bids_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/profile/widgets/profile_header_card.dart';
 import 'package:rionydo/views/bidding/widgets/bids_models.dart';
@@ -17,6 +18,8 @@ import 'package:rionydo/views/profile/widgets/premium_features_card.dart';
 import 'package:rionydo/views/profile/widgets/account_info_card.dart';
 import 'package:rionydo/views/profile/widgets/settings_card.dart';
 import 'package:rionydo/views/profile/widgets/logout_button.dart';
+import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
+import 'package:rionydo/views/won_auction/widgets/won_auction_card.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -32,8 +35,8 @@ class _ProfileViewState extends State<ProfileView> {
     // Fetch profile data on first load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserProfileProvider>().fetchProfile(
-            globalState: context.read<GlobalState>(),
-          );
+        globalState: context.read<GlobalState>(),
+      );
     });
   }
 
@@ -85,7 +88,28 @@ class _ProfileViewState extends State<ProfileView> {
                 profile: profileProvider.userProfile,
               ),
               AppSpacing.h16,
-              const MyBidsTile(),
+              MyBidsTile(
+                title: 'My Bids',
+                icon: Icons.feed_outlined,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MyBidsView()),
+                  );
+                },
+              ),
+              MyBidsTile(
+                title: 'Won Auctions',
+                icon: Icons.redeem,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WonAuctionHome(),
+                    ),
+                  );
+                },
+              ),
               AppSpacing.h24,
               const ProfileSectionTitle('DEALER RATING'),
               AppSpacing.h12,
