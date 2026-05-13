@@ -32,6 +32,7 @@ class AuctionDetailResponse {
   final bool isFlagged;
   final String adminNote;
   final bool isWatchlisted;
+  final String minBidIncrement;
 
   const AuctionDetailResponse({
     required this.id,
@@ -62,6 +63,7 @@ class AuctionDetailResponse {
     required this.isFlagged,
     required this.adminNote,
     required this.isWatchlisted,
+    this.minBidIncrement= "150",
   });
 
   factory AuctionDetailResponse.fromJson(Map<String, dynamic> json) {
@@ -105,6 +107,7 @@ class AuctionDetailResponse {
       isFlagged: json['is_flagged'] as bool? ?? false,
       adminNote: json['admin_note'] as String? ?? '',
       isWatchlisted: json['is_watchlisted'] as bool? ?? false,
+      minBidIncrement: json['min_bid_increment']?.toString() ?? '0.00',
     );
   }
 
@@ -137,6 +140,7 @@ class AuctionDetailResponse {
         'is_flagged': isFlagged,
         'admin_note': adminNote,
         'is_watchlisted': isWatchlisted,
+        'min_bid_increment': minBidIncrement,
       };
 
   AuctionDetailResponse copyWith({
@@ -201,4 +205,4 @@ class AuctionDetailResponse {
     );
   }
 }
-
+

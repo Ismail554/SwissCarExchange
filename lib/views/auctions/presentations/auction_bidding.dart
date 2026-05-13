@@ -30,7 +30,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
   bool _isAutoBidEnabled = false;
   late int _currentBid;
   late int _userBid;
-  final int _minIncrement = 150;
+  int _minIncrement = 150;
   StreamSubscription? _socketSubscription;
   bool _isBidding = false;
   bool _isAuctionEnded = false;
@@ -47,6 +47,11 @@ class _AuctionBiddingState extends State<AuctionBidding> {
   @override
   void initState() {
     super.initState();
+    // Initialise increment from pre-fetched detail if available, else 150
+    final rawIncrement = widget.detailData?.minBidIncrement ?? '150';
+    final parsed = _parseBid(rawIncrement).toInt();
+    _minIncrement = parsed > 0 ? parsed : 150;
+
     final bidStr =
         widget.detailData?.currentHighestBid ??
         widget.initialData.currentHighestBid ??
@@ -55,10 +60,27 @@ class _AuctionBiddingState extends State<AuctionBidding> {
     _currentBid = _parseBid(bidStr).toInt();
     _userBid = _currentBid + _minIncrement;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = context.read<AuctionsDetailProvider>();
-      provider.fetchAuctionDetail(_auctionId);
-      provider.fetchBidHistory(_auctionId);
+      await provider.fetchAuctionDetail(_auctionId);
+      await provider.fetchBidHistory(_auctionId);
+      if (!mounted) return;
+
+      final detail = provider.auctionDetail;
+      final noBidsYet = provider.bidHistory.isEmpty;
+
+      setState(() {
+        if (detail != null) {
+          final inc = _parseBid(detail.minBidIncrement).toInt();
+          if (inc > 0) _minIncrement = inc;
+        }
+
+        if (noBidsYet) {
+          _userBid = _minIncrement;
+        } else {
+          _userBid = _currentBid + _minIncrement;
+        }
+      });
     });
 
     // Connect to WebSocket and listen for events
@@ -165,19 +187,33 @@ class _AuctionBiddingState extends State<AuctionBidding> {
   Future<void> _executeBid() async {
     setState(() => _isBidding = true);
     final provider = context.read<AuctionsDetailProvider>();
+    final localContext = context;
     final success = await provider.placeBid(_auctionId, _userBid);
 
-    if (!context.mounted) return;
+    if (!localContext.mounted) return;
     setState(() => _isBidding = false);
     if (success) {
-      AppSnackBar.success(context, "Bid placed successfully!");
+      AppSnackBar.success(localContext, "Bid placed successfully!");
       provider.fetchBidHistory(_auctionId);
     } else {
-      AppSnackBar.error(context, "Failed to place bid.");
+      AppSnackBar.error(localContext, "Failed to place bid.");
     }
   }
 
   void _showBidConfirmation() {
+    final provider = context.read<AuctionsDetailProvider>();
+    final noBidsYet =
+        provider.bidHistory.isEmpty && !provider.isBidHistoryLoading;
+    final minAllowed = noBidsYet ? _minIncrement : _currentBid + _minIncrement;
+
+    if (_userBid < minAllowed) {
+      final msg = noBidsYet
+          ? "Be the first one to bid! Minimum is CHF ${_formatCurrency(_minIncrement)}"
+          : "Bid must be at least CHF ${_formatCurrency(minAllowed)}";
+      AppSnackBar.warning(context, msg);
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -355,54 +391,65 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                           provider.bidHistory.isEmpty &&
                           !provider.isBidHistoryLoading;
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Label switches between "BIDS START FROM" and "CURRENT BID"
-                          Text(
-                            noBidsYet ? "BIDS START FROM" : "CURRENT BID",
-                            style: FontManager.labelSmall(
-                              color: AppColors.textHint,
-                            ).copyWith(letterSpacing: 0.5),
+                      return Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(16.w),
+                        decoration: BoxDecoration(
+                          color: AppColors.sceTealStatBg,
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: AppColors.sceTeal.withValues(alpha: 0.3),
                           ),
-                          SizedBox(height: 4.h),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
-                            children: [
-                              Text(
-                                "CHF ",
-                                style: FontManager.heading2(
-                                  color: Colors.white,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              noBidsYet
+                                  ? "BIDS START FROM"
+                                  : "CURRENT HIGHEST BID",
+                              style: FontManager.labelSmall(
+                                color: AppColors.sceTeal,
+                              ).copyWith(letterSpacing: 1.2),
+                            ),
+                            SizedBox(height: 4.h),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                Text(
+                                  "CHF ",
+                                  style: FontManager.heading1(
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                noBidsYet
-                                    ? _formatCurrency(_minIncrement) // 150
-                                    : _formatCurrency(_currentBid),
-                                style: FontManager.heading1(
-                                  color: AppColors.sceTeal,
-                                ).copyWith(fontSize: 32.sp),
-                              ),
-                            ],
-                          ),
-                        ],
+                                Text(
+                                  noBidsYet
+                                      ? _formatCurrency(_minIncrement) // 150
+                                      : _formatCurrency(_currentBid),
+                                  style: FontManager.heading1(
+                                    color: AppColors.sceTeal,
+                                  ).copyWith(fontSize: 32.sp),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 16.h),
+                            Text(
+                              "TIME REMAINING",
+                              style: FontManager.labelSmall(
+                                color: AppColors.textHint,
+                              ).copyWith(letterSpacing: 1.2),
+                            ),
+                            SizedBox(height: 8.h),
+                            AuctionCountdown(
+                              endTime:
+                                  widget.detailData?.endsAt ??
+                                  widget.initialData.endsAt,
+                            ),
+                          ],
+                        ),
                       );
                     },
-                  ),
-                  SizedBox(height: 16.h),
-
-                  // Time Remaining
-                  Text(
-                    "TIME REMAINING",
-                    style: FontManager.labelSmall(
-                      color: AppColors.textHint,
-                    ).copyWith(letterSpacing: 0.5),
-                  ),
-                  SizedBox(height: 8.h),
-                  AuctionCountdown(
-                    endTime:
-                        widget.detailData?.endsAt ?? widget.initialData.endsAt,
                   ),
                   SizedBox(height: 24.h),
 
@@ -608,24 +655,39 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Minimum bid increment: CHF 150",
+                                    "Minimum bid increment: CHF ${_formatCurrency(_minIncrement)}",
                                     style: FontManager.bodySmall(
                                       color: AppColors.sceTeal,
                                     ).copyWith(fontSize: 11.sp),
                                   ),
                                   SizedBox(height: 2.h),
-                                  Text(
-                                    "Next minimum bid: CHF ${_formatCurrency(_currentBid + _minIncrement)}",
-                                    style: FontManager.bodySmall(
-                                      color: AppColors.textHint,
-                                    ).copyWith(fontSize: 11.sp),
+                                  Consumer<AuctionsDetailProvider>(
+                                    builder: (context, provider, _) {
+                                      final noBidsYet =
+                                          provider.bidHistory.isEmpty &&
+                                          !provider.isBidHistoryLoading;
+                                      return Text(
+                                        noBidsYet
+                                            ? "Next minimum bid: CHF ${_formatCurrency(_minIncrement)}"
+                                            : "Next minimum bid: CHF ${_formatCurrency(_currentBid + _minIncrement)}",
+                                        style: FontManager.bodySmall(
+                                          color: AppColors.textHint,
+                                        ).copyWith(fontSize: 11.sp),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  final minAllowed =
-                                      _currentBid + _minIncrement;
+                                  final provider = context
+                                      .read<AuctionsDetailProvider>();
+                                  final noBidsYet =
+                                      provider.bidHistory.isEmpty &&
+                                      !provider.isBidHistoryLoading;
+                                  final minAllowed = noBidsYet
+                                      ? _minIncrement
+                                      : _currentBid + _minIncrement;
                                   if (_userBid - _minIncrement >= minAllowed) {
                                     setState(() {
                                       _userBid -= _minIncrement;
@@ -637,7 +699,19 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                   decoration: BoxDecoration(
                                     color:
                                         (_userBid - _minIncrement >=
-                                            _currentBid + _minIncrement)
+                                            (context
+                                                        .read<
+                                                          AuctionsDetailProvider
+                                                        >()
+                                                        .bidHistory
+                                                        .isEmpty &&
+                                                    !context
+                                                        .read<
+                                                          AuctionsDetailProvider
+                                                        >()
+                                                        .isBidHistoryLoading
+                                                ? _minIncrement
+                                                : _currentBid + _minIncrement))
                                         ? AppColors.sceTeal
                                         : AppColors.sceTeal.withValues(
                                             alpha: 0.3,
@@ -667,11 +741,11 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   SizedBox(height: 12.h),
                   Row(
                     children: [
-                      Expanded(child: _buildQuickBidButton(150)),
+                      Expanded(child: _buildQuickBidButton(_minIncrement)),
                       SizedBox(width: 12.w),
-                      Expanded(child: _buildQuickBidButton(300)),
+                      Expanded(child: _buildQuickBidButton(_minIncrement * 2)),
                       SizedBox(width: 12.w),
-                      Expanded(child: _buildQuickBidButton(500)),
+                      Expanded(child: _buildQuickBidButton(_minIncrement * 3)),
                     ],
                   ),
                   SizedBox(height: 24.h),
@@ -813,7 +887,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                           ),
                           SizedBox(height: 12.h),
                           Text(
-                            "System will automatically bid up to this amount in CHF 150 increments",
+                            "System will automatically bid up to this amount in CHF ${_formatCurrency(_minIncrement)} increments",
                             style: FontManager.bodySmall(
                               color: AppColors.textHint,
                             ).copyWith(fontSize: 12.sp),
@@ -836,22 +910,22 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                 return;
                               }
                               setState(() => _isSettingAutoBid = true);
-                              final provider = context
-                                  .read<AuctionsDetailProvider>();
+                              final localContext = context;
+                              final provider = localContext.read<AuctionsDetailProvider>();
                               final success = await provider.createAutoBid(
                                 _auctionId,
                                 maxAmount,
                               );
-                              if (!context.mounted) return;
+                              if (!localContext.mounted) return;
                               setState(() => _isSettingAutoBid = false);
                               if (success) {
                                 AppSnackBar.success(
-                                  context,
+                                  localContext,
                                   "Auto bid set up to CHF ${_formatCurrency(maxAmount)}",
                                 );
                               } else {
                                 AppSnackBar.error(
-                                  context,
+                                  localContext,
                                   "Failed to set auto bid.",
                                 );
                               }
@@ -933,6 +1007,148 @@ class _AuctionBiddingState extends State<AuctionBidding> {
         child: Text(
           "+$increment",
           style: FontManager.labelMedium(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+class _BidConfirmationDialog extends StatefulWidget {
+  final int bidAmount;
+  final String formattedAmount;
+  final VoidCallback onConfirm;
+
+  const _BidConfirmationDialog({
+    required this.bidAmount,
+    required this.formattedAmount,
+    required this.onConfirm,
+  });
+
+  @override
+  State<_BidConfirmationDialog> createState() => _BidConfirmationDialogState();
+}
+
+class _BidConfirmationDialogState extends State<_BidConfirmationDialog>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  Timer? _autoCloseTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..forward();
+
+    _autoCloseTimer = Timer(const Duration(seconds: 5), () {
+      if (mounted) Navigator.of(context).pop();
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoCloseTimer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: AppColors.sceCardBg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.r),
+        side: BorderSide(color: AppColors.sceTeal.withValues(alpha: 0.2)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(24.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Countdown indicator
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 56.w,
+                      height: 56.w,
+                      child: CircularProgressIndicator(
+                        value: 1.0 - _controller.value,
+                        strokeWidth: 3,
+                        backgroundColor: Colors.white.withValues(alpha: 0.1),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColors.sceTeal,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${(5 - (_controller.value * 5)).ceil()}',
+                      style: FontManager.heading3(color: AppColors.sceTeal),
+                    ),
+                  ],
+                );
+              },
+            ),
+            SizedBox(height: 20.h),
+
+            Text(
+              'Confirm Your Bid',
+              style: FontManager.heading3(color: Colors.white),
+            ),
+            SizedBox(height: 8.h),
+
+            Text(
+              'You are about to place a bid of',
+              style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
+            ),
+            SizedBox(height: 12.h),
+
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                color: AppColors.sceTeal.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: AppColors.sceTeal.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Text(
+                'CHF ${widget.formattedAmount}',
+                style: FontManager.heading2(color: AppColors.sceTeal),
+              ),
+            ),
+            SizedBox(height: 8.h),
+
+            Text(
+              'This action cannot be undone.',
+              style: FontManager.bodySmall(color: AppColors.errorRed),
+            ),
+            SizedBox(height: 24.h),
+
+            // Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    text: 'Cancel',
+                    isPrimary: false,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: CustomButton(
+                    text: 'Confirm',
+                    onPressed: widget.onConfirm,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
