@@ -20,6 +20,7 @@ class AuctionsView extends StatefulWidget {
 
 class _AuctionsViewState extends State<AuctionsView> {
   int _selectedFilterIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
   final List<String> _filters = [
     "All",
     "Active",
@@ -38,6 +39,12 @@ class _AuctionsViewState extends State<AuctionsView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MyAuctionsProvider>().fetchAuctions();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   String _mapFilterToStatus(String filter) {
@@ -83,8 +90,12 @@ class _AuctionsViewState extends State<AuctionsView> {
             SizedBox(height: 16.h),
             // Custom search bar
             CustomTextField(
+              controller: _searchController,
               hintText: "Search make, model...",
               prefixIcon: const Icon(Icons.search, color: AppColors.textHint),
+              onChanged: (value) {
+                context.read<MyAuctionsProvider>().setSearchQuery(value);
+              },
             ),
             SizedBox(height: 20.h),
             // Filter chips
@@ -100,9 +111,12 @@ class _AuctionsViewState extends State<AuctionsView> {
                         setState(() {
                           _selectedFilterIndex = index;
                         });
-                        context.read<MyAuctionsProvider>().fetchAuctions(
-                          statusFilter: _mapFilterToStatus(_filters[index]),
-                        );
+                        _searchController.clear();
+                        context.read<MyAuctionsProvider>()
+                          ..setSearchQuery('')
+                          ..fetchAuctions(
+                            statusFilter: _mapFilterToStatus(_filters[index]),
+                          );
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(
@@ -165,7 +179,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                   );
                 }
 
-                final auctions = provider.auctions;
+                final auctions = provider.filteredAuctions;
 
                 return Expanded(
                   child: Column(
@@ -184,6 +198,8 @@ class _AuctionsViewState extends State<AuctionsView> {
                           color: AppColors.sceTeal,
                           backgroundColor: AppColors.sceCardBg,
                           onRefresh: () async {
+                            _searchController.clear();
+                            context.read<MyAuctionsProvider>().setSearchQuery('');
                             await context
                                 .read<MyAuctionsProvider>()
                                 .fetchAuctions(

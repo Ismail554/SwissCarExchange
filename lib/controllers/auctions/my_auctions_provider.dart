@@ -8,11 +8,26 @@ class MyAuctionsProvider extends ChangeNotifier {
   MyAuctionResponse? _response;
   bool _isLoading = false;
   String? _errorMessage;
+  String _searchQuery = '';
 
   MyAuctionResponse? get response => _response;
   List<AuctionItem> get auctions => _response?.results ?? [];
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+
+  void setSearchQuery(String query) {
+    _searchQuery = query.trim().toLowerCase();
+    notifyListeners();
+  }
+
+  List<AuctionItem> get filteredAuctions {
+    if (_searchQuery.isEmpty) return auctions;
+    return auctions.where((item) {
+      return item.title.toLowerCase().contains(_searchQuery) ||
+             item.vehicleBrand.toLowerCase().contains(_searchQuery) ||
+             item.sellerName.toLowerCase().contains(_searchQuery);
+    }).toList();
+  }
 
   Future<void> fetchAuctions({String? statusFilter}) async {
     _isLoading = true;
@@ -53,6 +68,7 @@ class MyAuctionsProvider extends ChangeNotifier {
     _response = null;
     _isLoading = false;
     _errorMessage = null;
+    _searchQuery = '';
     notifyListeners();
   }
 }
