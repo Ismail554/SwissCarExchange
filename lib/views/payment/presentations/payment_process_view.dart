@@ -10,6 +10,7 @@ import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/controllers/payment_process_provider.dart';
+import 'package:rionydo/views/won_auction/widgets/left_days_widget.dart';
 
 class PaymentProcessView extends StatefulWidget {
   final String auctionId;
@@ -226,10 +227,17 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
           ),
         ),
         AppSpacing.h40,
+        if (info.paymentDeadline != null) ...[
+          LeftDaysWidget(deadline: info.paymentDeadline!),
+          AppSpacing.h16,
+        ],
         provider.isLoading
             ? const Center(
                 child: CircularProgressIndicator(color: AppColors.sceTeal),
               )
+            : (info.paymentDeadline != null &&
+                  info.paymentDeadline!.isBefore(DateTime.now()))
+            ? const SizedBox.shrink()
             : CustomButton(
                 text: "I've made the payment",
                 onPressed: () async {

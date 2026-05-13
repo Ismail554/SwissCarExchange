@@ -26,7 +26,9 @@ class PaymentInfoResponse {
       amount: json['amount'] ?? "0.00",
       currency: json['currency'] ?? "",
       paymentDeadline: json['payment_deadline'] != null
-          ? DateTime.tryParse(json['payment_deadline'])
+          ? DateTime.tryParse(json['payment_deadline'].toString().endsWith('Z')
+              ? json['payment_deadline']
+              : '${json['payment_deadline']}Z')?.toLocal()
           : null,
       bankName: json['bank_name'] ?? "",
       accountName: json['account_name'] ?? "",
