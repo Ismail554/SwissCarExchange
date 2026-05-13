@@ -79,7 +79,7 @@ class _HomeViewState extends State<HomeView> {
             // ── Top Header (Logo) - Scrolls Away ──────────────────────────
             SliverToBoxAdapter(
               child: Center(
-                child: Image.asset(IconAssets.app_logo, height: 70.h),
+                child: Image.asset(IconAssets.appLogo, height: 70.h),
               ),
             ),
 

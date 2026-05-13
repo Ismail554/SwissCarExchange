@@ -71,7 +71,7 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                     SizedBox(height: 20.h),
                     // Logo Image
                     Image.asset(
-                      IconAssets.app_logo,
+                      IconAssets.appLogo,
                       width: 250.w,
                       height: 80.h,
                     ),

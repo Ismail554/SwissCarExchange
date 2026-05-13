@@ -96,7 +96,7 @@ class _SignUpViewState extends State<SignUpView> {
 
                       // Logo
                       Center(
-                        child: Image.asset(IconAssets.app_logo, height: 80.h),
+                        child: Image.asset(IconAssets.appLogo, height: 80.h),
                       ),
 
                       SizedBox(height: 36.h),

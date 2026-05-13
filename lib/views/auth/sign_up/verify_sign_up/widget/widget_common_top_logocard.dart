@@ -33,7 +33,7 @@ class WidgetCommonTopLogocard extends StatelessWidget {
                 ),
               ),
               Image.asset(
-                IconAssets.app_logo,
+                IconAssets.appLogo,
                 width: 180,
                 height: 180,
                 fit: BoxFit.contain,

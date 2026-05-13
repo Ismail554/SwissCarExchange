@@ -8,8 +8,8 @@ class ImageAssets {
   static const String onboadiing1 = "$imagePath/onboarding1_bg.png";
   static const String onboadiing2 = "$imagePath/onboarding2_bg.png";
   static const String onboadiing3 = "$imagePath/onboarding3_bg.png";
-  static const String home_bg = '$imagePath/home_bg.jpg';
-  static const String news_im1 = "$imagePath/news_im1.png";
+  static const String homeBg = '$imagePath/home_bg.jpg';
+  static const String newsIm1 = "$imagePath/news_im1.png";
   static const String car1 = "$imagePath/car1.png";
   static const String car2 = "$imagePath/car2.png";
   static const String car3 = "$imagePath/car3.png";
@@ -19,10 +19,10 @@ class ImageAssets {
 }
 
 class IconAssets {
-  static const String app_logo = "$iconPath/logo.png";
-  static const String soccer_icon = "$iconPath/soccer.png";
-  static const String red_card = "$iconPath/red_card.png";
-  static const String yellow_card = "$iconPath/yellow_card.png";
+  static const String appLogo = "$iconPath/logo.png";
+  static const String soccerIcon = "$iconPath/soccer.png";
+  static const String redCard = "$iconPath/red_card.png";
+  static const String yellowCard = "$iconPath/yellow_card.png";
   static const String trophy = "$iconPath/trophy.png";
   static const String customBack = "$iconPath/back_rounded.png";
 }
