@@ -23,6 +23,7 @@ import 'package:rionydo/controllers/bank_account_provider.dart';
 import 'package:rionydo/controllers/home_stats_provider.dart';
 import 'package:rionydo/controllers/payment_process_provider.dart';
 import 'package:rionydo/controllers/rate_dealer_provider.dart';
+import 'package:rionydo/controllers/profile/my_shipping_provider.dart';
 import 'package:rionydo/services/firebase_service.dart';
 
 Future<void> main() async {
@@ -64,6 +65,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => HomeStatsProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProcessProvider()),
         ChangeNotifierProvider(create: (_) => RateDealerProvider()),
+        ChangeNotifierProvider(create: (_) => MyShippingProvider()),
       ],
       child: const MyApp(),
     ),

@@ -132,6 +132,10 @@ class ApiService {
   static String get deleteBankDetails =>
       "$baseUrl/api/users/me/bank-account/delete/"; // DELETE
 
+  // Shipping Requests
+  static String get myShippingRequests =>
+      "$baseUrl/api/auctions/me/shipping-requests/"; // GET
+
   // Won Auction
   static String get wonAuction => "$baseUrl/api/auctions/me/bid/?filter=won";
   static String get myBidsAuction => "$baseUrl/api/auctions/me/bid/";

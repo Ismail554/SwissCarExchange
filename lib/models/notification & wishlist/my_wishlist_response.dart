@@ -1,3 +1,6 @@
+import 'package:rionydo/models/auctions/my_auctions_response.dart';
+import 'package:rionydo/models/auctions/auction_image.dart';
+
 class MyWishListResponse {
   final int count;
   final String? next;
@@ -95,6 +98,24 @@ class WishListItem {
       'total_bids': totalBids,
       'images': images.map((e) => e.toJson()).toList(),
     };
+  }
+
+  AuctionItem toAuctionItem() {
+    return AuctionItem(
+      id: id,
+      title: title,
+      vehicleBrand: vehicleBrand,
+      sellerName: sellerName,
+      currentHighestBid: currentHighestBid,
+      reservePrice: reservePrice,
+      status: status,
+      createdAt: DateTime.now(), // Fallback
+      endsAt: endsAt,
+      totalBidders: totalBidders,
+      images: images
+          .map((e) => AuctionImage(url: e.url, position: e.position))
+          .toList(),
+    );
   }
 }
 

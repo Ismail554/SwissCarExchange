@@ -16,19 +16,22 @@ class MyShippingRequest {
       count: json['count'] ?? 0,
       next: json['next'] as String?,
       previous: json['previous'] as String?,
-      results: (json['results'] as List<dynamic>?)
-              ?.map((item) => ShippingResult.fromJson(item as Map<String, dynamic>))
+      results:
+          (json['results'] as List<dynamic>?)
+              ?.map(
+                (item) => ShippingResult.fromJson(item as Map<String, dynamic>),
+              )
               .toList() ??
           [],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'count': count,
-        'next': next,
-        'previous': previous,
-        'results': results.map((item) => item.toJson()).toList(),
-      };
+    'count': count,
+    'next': next,
+    'previous': previous,
+    'results': results.map((item) => item.toJson()).toList(),
+  };
 }
 
 class ShippingResult {
@@ -63,12 +66,12 @@ class ShippingResult {
   }
 
   Map<String, dynamic> toJson() => {
-        'auction_id': auctionId,
-        'auction_title': auctionTitle,
-        'buyer_email': buyerEmail,
-        'amount': amount,
-        'shipping_method': shippingMethod,
-        'status': status,
-        'created_at': createdAt.toIso8601String(),
-      };
+    'auction_id': auctionId,
+    'auction_title': auctionTitle,
+    'buyer_email': buyerEmail,
+    'amount': amount,
+    'shipping_method': shippingMethod,
+    'status': status,
+    'created_at': createdAt.toIso8601String(),
+  };
 }

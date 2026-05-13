@@ -105,6 +105,35 @@ class AuctionsDetailProvider extends ChangeNotifier {
     );
   }
 
+  /// Optimistically removes an item from the wishlist without a full re-fetch.
+  /// Removes the item from the local list immediately for instant UI feedback,
+  /// then confirms the removal via the API. Rolls back if the API call fails.
+  Future<bool> removeFromWishlist(String auctionId) async {
+    final removedIndex = _wishlist.indexWhere((e) => e.id.toString() == auctionId);
+    if (removedIndex == -1) return false;
+
+    // Optimistic removal — update UI instantly, no loading flash.
+    final removedItem = _wishlist[removedIndex];
+    _wishlist = List.from(_wishlist)..removeAt(removedIndex);
+    notifyListeners();
+
+    final result = await DioManager.apiRequest(
+      url: ApiService.createWishlist(auctionId),
+      method: Methods.post,
+    );
+
+    return result.fold(
+      (error) {
+        // Roll back the optimistic removal on failure.
+        debugPrint("Remove wishlist error: $error");
+        _wishlist = List.from(_wishlist)..insert(removedIndex, removedItem);
+        notifyListeners();
+        return false;
+      },
+      (_) => true,
+    );
+  }
+
   Future<bool> placeBid(String auctionId, int amount) async {
     final result = await DioManager.apiRequest(
       url: ApiService.placeBid(auctionId),

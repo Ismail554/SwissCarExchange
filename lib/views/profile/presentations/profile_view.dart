@@ -8,6 +8,7 @@ import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/views/profile/presentations/my_bids_view.dart';
+import 'package:rionydo/views/profile/presentations/my_shipping_request_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/profile/widgets/profile_header_card.dart';
 import 'package:rionydo/views/bidding/widgets/bids_models.dart';
@@ -19,7 +20,6 @@ import 'package:rionydo/views/profile/widgets/account_info_card.dart';
 import 'package:rionydo/views/profile/widgets/settings_card.dart';
 import 'package:rionydo/views/profile/widgets/logout_button.dart';
 import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
-import 'package:rionydo/views/won_auction/widgets/won_auction_card.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -106,6 +106,18 @@ class _ProfileViewState extends State<ProfileView> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const WonAuctionHome(),
+                    ),
+                  );
+                },
+              ),
+              MyBidsTile(
+                title: 'My Shipping Request',
+                icon: Icons.feed_outlined,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyShippingRequestView(),
                     ),
                   );
                 },
