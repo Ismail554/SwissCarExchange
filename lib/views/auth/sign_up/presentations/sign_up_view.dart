@@ -39,14 +39,25 @@ class _SignUpViewState extends State<SignUpView> {
     super.dispose();
   }
 
+  bool get _hasMinLength =>
+      context.read<RegisterProvider>().passwordController.text.length >= 8;
+  bool get _hasUppercase =>
+      context.read<RegisterProvider>().passwordController.text.contains(RegExp(r'[A-Z]'));
+  bool get _hasLowercase =>
+      context.read<RegisterProvider>().passwordController.text.contains(RegExp(r'[a-z]'));
+  bool get _hasNumber =>
+      context.read<RegisterProvider>().passwordController.text.contains(RegExp(r'[0-9]'));
+  bool get _isPasswordValid =>
+      _hasMinLength && _hasUppercase && _hasLowercase && _hasNumber;
+
   void _validate() {
     if (!mounted) return;
     final provider = context.read<RegisterProvider>();
     final valid =
         provider.emailController.text.trim().contains('@') &&
-        provider.passwordController.text.length >= 6 &&
+        _isPasswordValid &&
         provider.phoneController.text.trim().length >= 6;
-    if (_isFormValid != valid) setState(() => _isFormValid = valid);
+    setState(() => _isFormValid = valid);
   }
 
   @override
@@ -100,7 +111,6 @@ class _SignUpViewState extends State<SignUpView> {
                       ),
 
                       SizedBox(height: 36.h),
-
                       // Dealer Registration Title
                       // Text(
                       //   'DEALER',
@@ -181,6 +191,36 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                         ),
                       ),
+
+                      // Password validation indicators
+                      if (provider.passwordController.text.isNotEmpty)
+                        Padding(
+                          padding: EdgeInsets.only(top: 10.h, left: 4.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _PasswordRule(
+                                label: 'At least 8 characters',
+                                passed: _hasMinLength,
+                              ),
+                              SizedBox(height: 4.h),
+                              _PasswordRule(
+                                label: 'Contains uppercase letter',
+                                passed: _hasUppercase,
+                              ),
+                              SizedBox(height: 4.h),
+                              _PasswordRule(
+                                label: 'Contains lowercase letter',
+                                passed: _hasLowercase,
+                              ),
+                              SizedBox(height: 4.h),
+                              _PasswordRule(
+                                label: 'Contains number',
+                                passed: _hasNumber,
+                              ),
+                            ],
+                          ),
+                        ),
 
                       SizedBox(height: 20.h),
 
@@ -270,7 +310,6 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 20.h),
                     ],
                   ),
@@ -280,6 +319,35 @@ class _SignUpViewState extends State<SignUpView> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PasswordRule extends StatelessWidget {
+  final String label;
+  final bool passed;
+
+  const _PasswordRule({required this.label, required this.passed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          passed ? Icons.check_circle : Icons.circle_outlined,
+          color: passed ? AppColors.sceTeal : AppColors.sceGreyA0,
+          size: 16.sp,
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          label,
+          style: TextStyle(
+            color: passed ? AppColors.sceTeal : AppColors.sceGreyA0,
+            fontSize: 12.sp,
+            fontWeight: passed ? FontWeight.w500 : FontWeight.w400,
+          ),
+        ),
+      ],
     );
   }
 }
