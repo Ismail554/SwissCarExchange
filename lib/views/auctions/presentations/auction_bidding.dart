@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:rionydo/services/socket_service.dart';
 import 'package:rionydo/views/auctions/presentations/recent_all_bids_view.dart';
+import 'package:rionydo/views/auctions/widgets/video_player_widget.dart';
 
 class AuctionBidding extends StatefulWidget {
   final AuctionItem initialData;
@@ -364,6 +365,15 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                               ).copyWith(fontSize: 10.sp),
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+                  // Video play button (centered)
+                  if ((widget.detailData?.videoUrl ?? '').isNotEmpty)
+                    Positioned.fill(
+                      child: Center(
+                        child: VideoPlayButton(
+                          videoUrl: widget.detailData!.videoUrl!,
                         ),
                       ),
                     ),
@@ -926,7 +936,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                               } else {
                                 AppSnackBar.error(
                                   localContext,
-                                  "Failed to set auto bid.",
+                                  "Failed to set auto bid.", // message from the api
                                 );
                               }
                             },

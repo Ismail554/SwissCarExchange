@@ -11,7 +11,6 @@ import 'package:rionydo/views/profile/presentations/my_bids_view.dart';
 import 'package:rionydo/views/profile/presentations/my_shipping_request_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/profile/widgets/profile_header_card.dart';
-import 'package:rionydo/views/bidding/widgets/bids_models.dart';
 import 'package:rionydo/views/profile/widgets/my_bids_tile.dart';
 import 'package:rionydo/views/profile/widgets/dealer_rating_card.dart';
 import 'package:rionydo/views/profile/widgets/upgrade_premium_card.dart';
@@ -84,7 +83,7 @@ class _ProfileViewState extends State<ProfileView> {
               AppSpacing.h24,
               ProfileHeaderCard(
                 isPremium: isPremium,
-                stats: kStatsData['1Y']!,
+                stats: profileProvider.periodStats,
                 profile: profileProvider.userProfile,
               ),
               AppSpacing.h16,

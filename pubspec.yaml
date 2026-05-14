@@ -45,6 +45,8 @@ dependencies:
   web_socket_channel: any
   logger: ^2.7.0
   easy_localization: ^3.0.8
+  video_player: ^2.11.1
+  chewie: ^1.13.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

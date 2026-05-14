@@ -12,6 +12,7 @@ import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/models/auctions/auctions_detail_response.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/views/auctions/widgets/video_player_widget.dart';
 
 class AuctionDetails extends StatefulWidget {
   final AuctionItem data;
@@ -180,6 +181,15 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                               );
                             }(),
                           ),
+                          // Video play button (centered)
+                          if ((detail?.videoUrl ?? '').isNotEmpty)
+                            Positioned.fill(
+                              child: Center(
+                                child: VideoPlayButton(
+                                  videoUrl: detail!.videoUrl!,
+                                ),
+                              ),
+                            ),
                           // Gradient overlay
                           Positioned(
                             bottom: 0,

@@ -8,6 +8,8 @@ import 'package:rionydo/models/profile/user_profile_response.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/models/subscription/subscription_plan.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
+import 'package:rionydo/models/transactions/analytics_response.dart';
+import 'package:rionydo/views/bidding/widgets/bids_models.dart';
 
 class UserProfileProvider extends ChangeNotifier {
   UserProfileResponse? _userProfile;
@@ -18,6 +20,41 @@ class UserProfileProvider extends ChangeNotifier {
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+
+  BidderStats? _bidderStats;
+  BidderStats? get bidderStats => _bidderStats;
+
+  /// Computed PeriodStats from real API data, matching the bids_view logic.
+  PeriodStats get periodStats {
+    if (_bidderStats == null) {
+      return const PeriodStats(
+        winRate: '--',
+        winRateBadge: '',
+        avgBid: '--',
+        auctionsWon: '--',
+        auctionParticipate: '--',
+      );
+    }
+    return PeriodStats(
+      winRate: '${_bidderStats!.winRate.toStringAsFixed(0)}%',
+      winRateBadge: '',
+      avgBid: _formatAvgBid(_bidderStats!.avgBid),
+      auctionsWon: _bidderStats!.auctionsWon.toString(),
+      auctionParticipate: _bidderStats!.auctionsParticipated.toString(),
+    );
+  }
+
+  String _formatAvgBid(String avgBidStr) {
+    final parsed = double.tryParse(avgBidStr);
+    if (parsed != null) {
+      if (parsed >= 1000) {
+        final kValue = parsed / 1000;
+        return 'CHF ${kValue.toStringAsFixed(kValue % 1 == 0 ? 0 : 1)}k';
+      }
+      return 'CHF ${parsed.toStringAsFixed(0)}';
+    }
+    return avgBidStr;
+  }
 
   /// Convenience getters for the display name (works for both user types).
   String get displayName {
@@ -94,6 +131,29 @@ class UserProfileProvider extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+
+    // Also fetch bidder stats so profile header shows real data
+    _fetchBidderStats();
+  }
+
+  Future<void> _fetchBidderStats() async {
+    try {
+      final response = await DioManager.apiRequest(
+        url: ApiService.bidderStats,
+        method: Methods.get,
+      );
+      response.fold(
+        (error) => debugPrint('PROFILE: ❌ fetchBidderStats error: $error'),
+        (data) {
+          if (data != null) {
+            _bidderStats = BidderStats.fromJson(data);
+            notifyListeners();
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('PROFILE: ❌ fetchBidderStats error: $e');
+    }
   }
 
   Future<bool> updateProfile(Map<String, dynamic> body) async {
