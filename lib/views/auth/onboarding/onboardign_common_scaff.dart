@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
 
 class OnboardignCommonScaff extends StatelessWidget {
   final String stepNumber;
@@ -68,12 +68,7 @@ class OnboardignCommonScaff extends StatelessWidget {
                       onPressed:
                           onSkip ??
                           () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginViews(),
-                              ),
-                            );
+                            context.go('/login');
                           },
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.sceGreyA0,

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,7 +11,6 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step3.dart';
 
 enum UserRole { individual, company }
 
@@ -245,34 +245,21 @@ class _SignUpStep2State extends State<SignUpStep2> {
                           onPressed: () {
                             FocusScope.of(context).unfocus();
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => SignUpStep3(
-                                  email: widget.email,
-                                  password: widget.password,
-                                  phone: widget.phone,
-                                  role: provider.selectedRole,
-
-                                  // Individual
-                                  fullName: provider.nameController.text.trim(),
-                                  address:
-                                      provider.selectedRole ==
-                                          UserRole.individual
-                                      ? provider
-                                            .individualAddressController
-                                            .text
-                                            .trim()
-                                      : provider.companyAddressController.text
-                                            .trim(),
-                                  idDocumentFile: provider.idFile,
-
-                                  // Company
-                                  company: provider.companyController.text
-                                      .trim(),
-                                  uid: provider.uidController.text.trim(),
-                                ),
-                              ),
+                            context.push(
+                              '/signup/step2/step3',
+                              extra: {
+                                'email': widget.email,
+                                'password': widget.password,
+                                'phone': widget.phone,
+                                'role': provider.selectedRole,
+                                'fullName': provider.nameController.text.trim(),
+                                'address': provider.selectedRole == UserRole.individual
+                                    ? provider.individualAddressController.text.trim()
+                                    : provider.companyAddressController.text.trim(),
+                                'idDocumentFile': provider.idFile,
+                                'company': provider.companyController.text.trim(),
+                                'uid': provider.uidController.text.trim(),
+                              },
                             );
                           },
                         ),

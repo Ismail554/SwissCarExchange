@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
@@ -7,8 +8,8 @@ import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 
 class PaySuccessful extends StatefulWidget {
-  final Widget? nextScreen;
-  const PaySuccessful({super.key, this.nextScreen});
+  final String? nextRoute;
+  const PaySuccessful({super.key, this.nextRoute});
 
   @override
   State<PaySuccessful> createState() => _PaySuccessfulState();
@@ -20,14 +21,10 @@ class _PaySuccessfulState extends State<PaySuccessful> {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        if (widget.nextScreen != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => widget.nextScreen!),
-          );
+        if (widget.nextRoute != null) {
+          context.go(widget.nextRoute!);
         } else {
-          int count = 0;
-          Navigator.popUntil(context, (route) => count++ == 3);
+          context.go('/home');
         }
       }
     });

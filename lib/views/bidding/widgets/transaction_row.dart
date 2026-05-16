@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/views/bidding/widgets/bids_models.dart';
-import 'package:rionydo/views/payment/presentations/payment_process_view.dart';
 
 /// A floating card row in the recent-transactions list.
 class TransactionRow extends StatelessWidget {
@@ -14,12 +14,7 @@ class TransactionRow extends StatelessWidget {
   void _openPayment(BuildContext context) {
     final id = transaction.auctionId;
     if (id == null || id.isEmpty) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PaymentProcessView(auctionId: id),
-      ),
-    );
+    context.push('/payment/$id');
   }
 
   @override

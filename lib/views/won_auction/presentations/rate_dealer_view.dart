@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +10,6 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
-import 'package:rionydo/views/won_auction/presentations/review_submitted_view.dart';
 
 class RateDealerView extends StatefulWidget {
   final String auctionId;
@@ -20,7 +20,7 @@ class RateDealerView extends StatefulWidget {
 }
 
 class _RateDealerViewState extends State<RateDealerView> {
-  final int _overallRating = 0;
+
   int _communicationRating = 0;
   int _accuracyRating = 0;
   int _reliabilityRating = 0;
@@ -54,10 +54,7 @@ class _RateDealerViewState extends State<RateDealerView> {
 
     if (success && mounted) {
       AppSnackBar.success(context, "Review submitted successfully!");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ReviewSubmittedView()),
-      );
+      context.pushReplacement('/review-submitted');
     } else if (provider.errorMessage != null && mounted) {
       AppSnackBar.error(context, provider.errorMessage!);
     }

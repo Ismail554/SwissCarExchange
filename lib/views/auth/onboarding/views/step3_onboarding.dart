@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
+import 'package:go_router/go_router.dart';
 import '../onboardign_common_scaff.dart';
 
 class Step3Onboarding extends StatelessWidget {
@@ -15,10 +15,7 @@ class Step3Onboarding extends StatelessWidget {
       currentIndex: 2,
       nextText: 'Enter ➔',
       onNext: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginViews()),
-        );
+        context.go('/login');
       },
       //   onSkip: () {
       //     Navigator.pushReplacement(

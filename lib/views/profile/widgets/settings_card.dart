@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
-import 'package:rionydo/views/settings/presentations/account_settings_view.dart';
-import 'package:rionydo/views/profile/presentations/notification_settings_view.dart';
-import 'package:rionydo/views/profile/presentations/payment_method_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
-import 'package:rionydo/views/settings/presentations/help_support_view.dart';
-import 'package:rionydo/views/settings/presentations/privacy_settings_view.dart';
-import 'package:rionydo/views/settings/presentations/manage_subscription_view.dart';
 import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
 
 class SettingsCard extends StatelessWidget {
@@ -26,77 +21,37 @@ class SettingsCard extends StatelessWidget {
           ProfileListTile(
             Icons.person_outline,
             'Account Settings',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AccountSettingsView(),
-                ),
-              );
-            },
+            onTap: () => context.push('/account-settings'),
           ),
           ProfileDivider(),
           ProfileListTile(
             Icons.notifications_outlined,
             'Notification setting',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificationSettingsView(),
-                ),
-              );
-            },
+            onTap: () => context.push('/notification-settings'),
           ),
           ProfileDivider(),
           ProfileListTile(
             Icons.currency_exchange_outlined,
             'Manage Subscription',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AccountSubscriptionView(),
-                ),
-              );
-            },
+            onTap: () => context.push('/manage-subscription'),
           ),
           ProfileDivider(),
           ProfileListTile(
             Icons.credit_card_outlined,
             'Payment Methods',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PaymentMethodView(),
-                ),
-              );
-            },
+            onTap: () => context.push('/payment-method'),
           ),
           ProfileDivider(),
           ProfileListTile(
             Icons.emoji_events_outlined,
             'Won Auctions',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const WonAuctionHome()),
-              );
-            },
+            onTap: () => context.push('/won-auctions'),
           ),
           ProfileDivider(),
           ProfileListTile(
             Icons.security_outlined,
             'Security & Privacy',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PrivacySettingsView(),
-                ),
-              );
-            },
+            onTap: () => context.push('/privacy-settings'),
           ),
           ProfileDivider(),
           ProfileListTile(Icons.language_outlined, 'Languages', onTap: () {}),
@@ -104,14 +59,7 @@ class SettingsCard extends StatelessWidget {
           ProfileListTile(
             Icons.help_outline,
             'Help & Support',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HelpSupportView(),
-                ),
-              );
-            },
+            onTap: () => context.push('/help-support'),
           ),
         ],
       ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
 
 // ---------------------------------------------------------------------------
 // Static bank detail model
@@ -108,10 +108,7 @@ class OfflinePaymentView extends StatelessWidget {
               // --- CTA button ---
               CustomButton(
                 text: "I've Made the Transfer",
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PaySuccessful()),
-                ),
+                onPressed: () => context.push('/pay-successful'),
               ),
               SizedBox(height: 20.h),
             ],

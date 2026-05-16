@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/controllers/auctions/auction_management_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-import 'package:rionydo/models/auctions/auction_image.dart';
+import 'package:rionydo/views/premium/widgets/auction_management_card.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
-import 'package:rionydo/models/premium/auction_management_response.dart'
-    as premium;
-import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
-import 'package:rionydo/views/auctions/presentations/auction_details.dart';
-import '../widgets/auction_management_card.dart';
+import 'package:rionydo/models/auctions/auction_image.dart';
+import 'package:rionydo/models/premium/auction_management_response.dart' as premium;
 
 class AuctionManagement extends StatefulWidget {
   const AuctionManagement({super.key});
@@ -78,10 +76,7 @@ class _AuctionManagementState extends State<AuctionManagement> {
             padding: EdgeInsets.only(right: 16.w),
             child: GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const CreateAuction()),
-                ).then((_) {
+                context.push('/create-auction').then((_) {
                   if (context.mounted) {
                     context.read<AuctionManagementProvider>().fetchAuctions();
                   }
@@ -271,30 +266,27 @@ class _AuctionManagementState extends State<AuctionManagement> {
       isReserveMet: isReserveMet,
       timeLeft: _formatTimeLeft(auction.endsAt),
       onViewDetails: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AuctionDetails(
-              data: AuctionItem(
-                id: auction.id,
-                title: auction.title,
-                vehicleBrand: auction.vehicleBrand,
-                sellerName: auction.sellerName,
-                currentHighestBid: auction.currentHighestBid,
-                reservePrice: auction.reservePrice,
-                status: auction.status,
-                createdAt: DateTime.now(),
-                endsAt: auction.endsAt,
-                totalBidders: auction.totalBidders,
-                images: auction.images
-                    .map(
-                      (img) =>
-                          AuctionImage(url: img.url, position: img.position),
-                    )
-                    .toList(),
-              ),
+        context.push(
+          '/auction-details',
+            extra: AuctionItem(
+              id: auction.id,
+              title: auction.title,
+              vehicleBrand: auction.vehicleBrand,
+              sellerName: auction.sellerName,
+              currentHighestBid: auction.currentHighestBid,
+              reservePrice: auction.reservePrice,
+              status: auction.status,
+              createdAt: DateTime.now(),
+              endsAt: auction.endsAt,
+              images:
+                  auction.images
+                      .map((img) => AuctionImage(
+                        url: img.url,
+                        position: img.position,
+                      ))
+                      .toList(),
+              totalBidders: auction.totalBidders,
             ),
-          ),
         );
       },
       onMenuTap: () {},

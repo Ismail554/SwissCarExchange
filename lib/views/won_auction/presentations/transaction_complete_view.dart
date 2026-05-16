@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/views/won_auction/presentations/rate_dealer_view.dart';
 
 class TransactionCompleteView extends StatelessWidget {
   final String auctionId;
@@ -43,10 +43,7 @@ class TransactionCompleteView extends StatelessWidget {
                 child: CustomButton(
                   text: 'Continue',
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RateDealerView(auctionId: auctionId)),
-                    );
+                    context.push('/rate-dealer/$auctionId');
                   },
                 ),
               ),

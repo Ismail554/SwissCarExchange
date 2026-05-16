@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/controllers/subscription_provider.dart';
@@ -54,12 +55,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
     if (!mounted) return;
 
     if (checkoutUrl != null && checkoutUrl.isNotEmpty) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CheckoutWebView(checkoutUrl: checkoutUrl),
-        ),
-      );
+      context.push('/checkout', extra: {'checkoutUrl': checkoutUrl});
     } else {
       AppSnackBar.error(
         context,
@@ -338,7 +334,7 @@ class _PageHeader extends StatelessWidget {
       Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.of(context).maybePop(),
+            onTap: () => context.pop(),
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(

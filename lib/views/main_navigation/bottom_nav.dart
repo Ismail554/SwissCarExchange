@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
-import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
-import 'package:rionydo/views/settings/presentations/manage_subscription_view.dart';
 
 /// The app-wide scaffold with custom bottom navigation.
 ///
 /// If [isPremiumUser] is provided, it overrides the value in [GlobalState].
 class MainNavigationShell extends StatefulWidget {
-  /// The four page bodies corresponding to: Home, Auctions, Bids, Profile.
-  final List<Widget> pages;
+  /// The GoRouter stateful shell.
+  final StatefulNavigationShell navigationShell;
 
   /// Whether the signed-in user has a Premium subscription.
   final bool? isPremiumUser;
 
-  final int initialIndex;
-
   const MainNavigationShell({
     super.key,
-    required this.pages,
+    required this.navigationShell,
     this.isPremiumUser,
-    this.initialIndex = 0,
   });
 
   @override
@@ -31,14 +27,6 @@ class MainNavigationShell extends StatefulWidget {
 }
 
 class _MainNavigationShellState extends State<MainNavigationShell> {
-  late int _currentIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentIndex = widget.initialIndex;
-  }
-
   // Map raw tab indices (skipping the centre FAB slot) to page indices.
   // Raw order: 0=Home, 1=Auctions, [fab], 2=Bids, 3=Profile
   static const _tabToPage = {0: 0, 1: 1, 3: 2, 4: 3};
@@ -48,29 +36,27 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     // Ignore taps on the centre slot (handled by the FAB)
     if (rawIndex == 2) return;
     final pageIndex = _tabToPage[rawIndex];
-    if (pageIndex != null) setState(() => _currentIndex = pageIndex);
+    if (pageIndex != null) {
+      widget.navigationShell.goBranch(
+        pageIndex,
+        // A common pattern when tapping on the active tab is to reset it to the initial location
+        initialLocation: pageIndex == widget.navigationShell.currentIndex,
+      );
+    }
   }
 
   void _onPremiumFabTap() {
     final isPremium =
         widget.isPremiumUser ?? context.read<GlobalState>().isPremium;
     if (isPremium) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const CreateAuction()),
-      );
+      context.push('/create_auction');
     } else {
       AppSnackBar.warning(
         context,
         'This feature is for Premium members only.',
         actionLabel: 'Upgrade',
         onAction: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AccountSubscriptionView(),
-            ),
-          );
+          context.push('/manage_subscription');
         },
       );
     }
@@ -78,7 +64,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
 
   @override
   Widget build(BuildContext context) {
-    final activeTab = _pageToTab[_currentIndex] ?? 0;
+    final activeTab = _pageToTab[widget.navigationShell.currentIndex] ?? 0;
     final isPremium =
         widget.isPremiumUser ?? context.watch<GlobalState>().isPremium;
 
@@ -86,7 +72,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       child: Scaffold(
         extendBody: true,
         // backgroundColor: const Color(0xFF0A0A0A),
-        body: IndexedStack(index: _currentIndex, children: widget.pages),
+        body: widget.navigationShell,
         floatingActionButton: _PremiumFab(
           isPremium: isPremium,
           onTap: _onPremiumFabTap,

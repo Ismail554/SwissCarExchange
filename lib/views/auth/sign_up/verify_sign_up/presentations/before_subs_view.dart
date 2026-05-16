@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_outlined_btn.dart';
-import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/subs_view.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/widget/widget_common_top_logocard.dart';
 import 'package:rionydo/views/profile/widgets/logout_button.dart';
 
@@ -60,12 +60,7 @@ class _BeforeSubsViewState extends State<BeforeSubsView> {
               icon: Icons.arrow_forward,
               themeColor: Colors.yellow[700]!,
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SubscriptionView(),
-                  ),
-                );
+                context.push('/subscription');
               },
             ),
             const Spacer(),

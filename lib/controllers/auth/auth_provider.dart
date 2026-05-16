@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
@@ -9,16 +10,8 @@ import 'package:rionydo/firebase_options.dart';
 import 'package:rionydo/models/auth/login_response.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
-import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
-import 'package:rionydo/views/home/presentation/home_view.dart';
-import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
-import 'package:rionydo/views/bidding/presentations/bids_view.dart';
-import 'package:rionydo/views/profile/presentations/profile_view.dart';
-import 'package:rionydo/views/main_navigation/bottom_nav.dart';
+
 import 'package:rionydo/app_utils/constants/global_state.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
-import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
-import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/before_subs_view.dart';
 import 'package:rionydo/models/subscription/subscription_plan.dart';
 import 'package:rionydo/services/firebase_service.dart';
 
@@ -56,12 +49,7 @@ class AuthProvider extends ChangeNotifier {
             // Automatically resend OTP so the user has a fresh code
             await resendOtp(context, email: email.trim());
             if (context.mounted) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OtpVerifyView(email: email.trim()),
-                ),
-              );
+              context.push('/verify-otp', extra: {'email': email.trim()});
             }
           }
         } else {
@@ -97,11 +85,7 @@ class AuthProvider extends ChangeNotifier {
             context.read<GlobalState>().setUserTypeFromString(
               loginData.userType,
             );
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const PendingView()),
-              (route) => false,
-            );
+            context.go('/pending');
           }
           return;
         }
@@ -112,12 +96,7 @@ class AuthProvider extends ChangeNotifier {
             if (loginData.message != null && loginData.message!.isNotEmpty) {
               AppSnackBar.success(context, loginData.message!);
             }
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OtpVerifyView(email: loginData.email),
-              ),
-            );
+            context.push('/verify-otp', extra: {'email': loginData.email});
           }
           return;
         }
@@ -136,11 +115,7 @@ class AuthProvider extends ChangeNotifier {
         final hasSub = loginData.subscription?.hasSubscription ?? false;
         if (!hasSub) {
           // No subscription → navigate to subscription gate
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const BeforeSubsView()),
-            (route) => false,
-          );
+          context.go('/before-subscription');
           return;
         }
 
@@ -157,15 +132,7 @@ class AuthProvider extends ChangeNotifier {
 
         if (!context.mounted) return;
 
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainNavigationShell(
-              pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
-            ),
-          ),
-          (route) => false,
-        );
+        context.go('/home');
       },
     );
   }
@@ -217,11 +184,7 @@ class AuthProvider extends ChangeNotifier {
         // Check subscription after 2FA
         final hasSub = loginData.subscription?.hasSubscription ?? false;
         if (!hasSub) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const BeforeSubsView()),
-            (route) => false,
-          );
+          context.go('/before-subscription');
           return;
         }
 
@@ -237,15 +200,7 @@ class AuthProvider extends ChangeNotifier {
 
         if (!context.mounted) return;
 
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainNavigationShell(
-              pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
-            ),
-          ),
-          (route) => false,
-        );
+        context.go('/home');
       },
     );
 
@@ -338,32 +293,11 @@ class AuthProvider extends ChangeNotifier {
             // Init FCM after OTP-verified login — fire and forget.
             FirebaseService.initFirebaseMessaging();
             if (!context.mounted) return;
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const MainNavigationShell(
-                  pages: [
-                    HomeView(),
-                    AuctionsView(),
-                    BidsView(),
-                    ProfileView(),
-                  ],
-                ),
-              ),
-              (route) => false,
-            );
+            context.go('/home');
           } else if (approvalStatus == 'pending') {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const PendingView()),
-              (route) => false,
-            );
+            context.go('/pending');
           } else {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginViews()),
-              (route) => false,
-            );
+            context.go('/login');
           }
         }
       },
@@ -379,11 +313,7 @@ class AuthProvider extends ChangeNotifier {
 
     // 2. Navigate back to login
     if (context.mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginViews()),
-        (route) => false,
-      );
+      context.go('/login');
     }
 
     notifyListeners();
@@ -413,21 +343,13 @@ class AuthProvider extends ChangeNotifier {
                 context,
                 "Your account has been approved! Please login.",
               );
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginViews()),
-                (route) => false,
-              );
+              context.go('/login');
             }
           } else if (data['approval_status'] == 'suspended') {
             shouldCancelTimer = true;
             if (context.mounted) {
               AppSnackBar.error(context, "Your account has been suspended.");
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginViews()),
-                (route) => false,
-              );
+              context.go('/login');
             }
           }
         }
@@ -463,11 +385,7 @@ class AuthProvider extends ChangeNotifier {
                 context,
                 "Subscription activated! Now login again.",
               );
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginViews()),
-                (route) => false,
-              );
+              context.go('/login');
             }
           }
         }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
-import 'package:rionydo/views/notification/notification_view.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
@@ -49,10 +49,7 @@ class _NotificationBadgeState extends State<NotificationBadge> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const NotificationView()),
-        );
+        await context.push('/notifications');
         _fetchUnreadCount();
       },
       child: Container(

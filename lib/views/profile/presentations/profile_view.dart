@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
@@ -8,7 +9,7 @@ import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/views/profile/presentations/my_bids_view.dart';
-import 'package:rionydo/views/profile/presentations/my_shipping_request_view.dart';
+
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/profile/widgets/profile_header_card.dart';
 import 'package:rionydo/views/profile/widgets/my_bids_tile.dart';
@@ -90,24 +91,12 @@ class _ProfileViewState extends State<ProfileView> {
               MyBidsTile(
                 title: 'My Bids',
                 icon: Icons.feed_outlined,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MyBidsView()),
-                  );
-                },
+                onTap: () => context.push('/my-bids'),
               ),
               MyBidsTile(
                 title: 'Won Auctions',
                 icon: Icons.redeem,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const WonAuctionHome(),
-                    ),
-                  );
-                },
+                onTap: () => context.push('/won-auctions'),
               ),
               // MyBidsTile(
               //   title: 'My Shipping Request',

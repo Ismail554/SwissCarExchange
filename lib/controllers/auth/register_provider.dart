@@ -1,15 +1,13 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_helper/s3_upload_helper.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
 import 'package:rionydo/app_utils/network/enums.dart';
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step2.dart' show UserRole;
-import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
-import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
-
 
 
 class RegisterProvider extends ChangeNotifier {
@@ -154,17 +152,9 @@ class RegisterProvider extends ChangeNotifier {
             if (data['is_email_verified'] == false) {
               final msg = data['message'] ?? 'Verification code sent to your email.';
               AppSnackBar.success(context, msg);
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => OtpVerifyView(email: email.trim())),
-                (route) => false,
-              );
+              context.go('/verify-otp', extra: {'email': email.trim()});
             } else {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => const PendingView()),
-                (route) => false,
-              );
+              context.go('/pending');
             }
           }
         },
@@ -237,17 +227,9 @@ class RegisterProvider extends ChangeNotifier {
             if (data['is_email_verified'] == false) {
               final msg = data['message'] ?? 'Verification code sent to your email.';
               AppSnackBar.success(context, msg);
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => OtpVerifyView(email: email.trim())),
-                (route) => false,
-              );
+              context.go('/verify-otp', extra: {'email': email.trim()});
             } else {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => const PendingView()),
-                (route) => false,
-              );
+              context.go('/pending');
             }
           }
         },

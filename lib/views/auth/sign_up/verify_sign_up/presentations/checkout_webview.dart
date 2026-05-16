@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
@@ -6,12 +7,6 @@ import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
-import 'package:rionydo/views/main_navigation/bottom_nav.dart';
-import 'package:rionydo/views/home/presentation/home_view.dart';
-import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
-import 'package:rionydo/views/bidding/presentations/bids_view.dart';
-import 'package:rionydo/views/profile/presentations/profile_view.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class CheckoutWebView extends StatefulWidget {
@@ -75,33 +70,17 @@ class _CheckoutWebViewState extends State<CheckoutWebView> {
       if (profile != null && profile.subscription.hasSubscription) {
         AppSnackBar.success(context, 'Subscription activated successfully!');
         
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainNavigationShell(
-              pages: [HomeView(), AuctionsView(), BidsView(), ProfileView()],
-            ),
-          ),
-          (route) => false,
-        );
+        context.go('/home');
       } else {
         // Fallback: If subscription is not active or profile is null, show warning and redirect to Login
         AppSnackBar.warning(context, 'Subscription not detected yet. Please login to verify.');
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginViews()),
-          (route) => false,
-        );
+        context.go('/login');
       }
     } catch (e) {
       debugPrint('Checkout Success Processing Error: $e');
       if (mounted) {
         AppSnackBar.error(context, 'Error processing checkout. Please login again.');
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginViews()),
-          (route) => false,
-        );
+        context.go('/login');
       }
     }
   }
@@ -119,7 +98,7 @@ class _CheckoutWebViewState extends State<CheckoutWebView> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.close, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => context.pop(),
                   ),
                   const SizedBox(width: 8),
                   Text(

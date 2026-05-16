@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
@@ -7,7 +8,6 @@ import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/views/won_auction/presentations/rate_dealer_view.dart';
 
 class TransactionCompletedView extends StatelessWidget {
   final String auctionId;
@@ -36,21 +36,12 @@ class TransactionCompletedView extends StatelessWidget {
               AppSpacing.h18,
               CustomButton(
                 text: "Rate Now",
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RateDealerView(auctionId: auctionId),
-                    ),
-                  );
-                },
+                onPressed: () => context.push('/rate-dealer/$auctionId'),
               ),
               AppSpacing.h18,
               CustomButton(
-                text: "Skip",
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                text: "Skip", 
+                onPressed: () => context.pop(),
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
@@ -8,7 +9,6 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
-import 'package:rionydo/views/auth/forgot_password/successful_view.dart';
 
 class ResetPasswordView extends StatefulWidget {
   final String email;
@@ -182,15 +182,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                               token: widget.resetToken,
                             );
                         if (success && context.mounted) {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SuccessfulView(
-                                approvalStatus: 'approved',
-                              ),
-                            ),
-                            (route) => false,
-                          );
+                          context.go('/forgot-password/success', extra: 'approved');
                         }
                       },
                     ),

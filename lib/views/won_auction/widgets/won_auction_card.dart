@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/views/payment/presentations/payment_process_view.dart';
-import 'package:rionydo/views/won_auction/presentations/auction_contact_view.dart';
-import 'package:rionydo/views/won_auction/presentations/rate_dealer_view.dart';
 
 class WonAuctionCard extends StatelessWidget {
   final String auctionId;
@@ -253,13 +251,7 @@ class WonAuctionCard extends StatelessWidget {
                 CustomButton(
                   text: 'View Seller Contact',
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AuctionContactView(auctionId: auctionId),
-                      ),
-                    );
+                    context.push('/auction-contact/$auctionId');
                   },
                   isPrimary: false,
                   icon: Icons.chat_bubble_outline,
@@ -268,28 +260,14 @@ class WonAuctionCard extends StatelessWidget {
                 if (transactionStatus == 'completed' && !hasReviewed)
                   _RateDealerButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              RateDealerView(auctionId: auctionId),
-                        ),
-                      );
+                      context.push('/rate-dealer/$auctionId');
                     },
                   )
                 else if (!_hiddenStatuses.contains(transactionStatus))
                   CustomButton(
                     text: _buttonText(),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PaymentProcessView(
-                            auctionId: auctionId,
-                            initialStep: _targetStep(),
-                          ),
-                        ),
-                      );
+                      context.push('/payment/$auctionId', extra: _targetStep());
                     },
                   ),
               ],

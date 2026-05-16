@@ -12,7 +12,7 @@ import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
 
@@ -360,11 +360,7 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
             'Your account has been deleted successfully.',
           );
 
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const LoginViews()),
-            (route) => false,
-          );
+          context.go('/login');
         },
       );
     } catch (e) {

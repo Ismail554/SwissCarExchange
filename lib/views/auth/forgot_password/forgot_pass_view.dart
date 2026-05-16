@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
@@ -8,7 +9,6 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-import 'package:rionydo/views/auth/forgot_password/otp_verify_view.dart';
 
 class ForgotPassView extends StatefulWidget {
   const ForgotPassView({super.key});
@@ -127,14 +127,12 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                             .read<AuthProvider>()
                             .requestPasswordReset(context, email: email);
                         if (success && context.mounted) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OtpVerifyView(
-                                email: email,
-                                isForgotPassword: true,
-                              ),
-                            ),
+                          context.push(
+                            '/verify-otp',
+                            extra: {
+                              'email': email,
+                              'isForgotPassword': true,
+                            },
                           );
                         }
                       },

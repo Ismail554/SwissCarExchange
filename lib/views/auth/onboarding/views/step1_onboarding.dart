@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../onboardign_common_scaff.dart';
-import 'step2_onborading.dart';
 
 class Step1Onboarding extends StatelessWidget {
   const Step1Onboarding({super.key});
@@ -16,10 +16,7 @@ class Step1Onboarding extends StatelessWidget {
       currentIndex: 0,
       nextText: 'Next ➔',
       onNext: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const Step2Onboarding()),
-        );
+        context.go('/onboarding/step2');
       },
       // onSkip: () {
       //   Navigator.pushReplacement(

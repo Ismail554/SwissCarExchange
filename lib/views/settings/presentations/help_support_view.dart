@@ -5,8 +5,8 @@ import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-import 'package:rionydo/views/settings/presentations/chat_support_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:rionydo/app_utils/constants/api_service.dart';
 import 'package:rionydo/app_utils/network/dio_manager.dart';
@@ -91,12 +91,7 @@ class _HelpSupportViewState extends State<HelpSupportView> {
                     subtitle: "Chat with our support team",
                     iconColor: AppColors.sceTeal,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ChatSupportView(),
-                        ),
-                      );
+                      context.push('/chat-support');
                     },
                   ),
                   Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),

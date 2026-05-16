@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
@@ -10,8 +11,6 @@ import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/controllers/bank_account_provider.dart';
 
-import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
-import 'package:rionydo/views/won_auction/presentations/auction_contact_view.dart';
 
 /// Screen to collect Switzerland offline bank transfer information (IBAN/SEPA).
 class PaymentMethodView extends StatefulWidget {
@@ -81,13 +80,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
       if (success && mounted) {
         AppSnackBar.success(context, "Bank details saved successfully!");
         if (widget.isPaymentFlow) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  PaySuccessful(nextScreen: AuctionContactView(auctionId: widget.auctionId ?? "")),
-            ),
-          );
+          context.push('/pay-successful', extra: {'nextRoute': '/auction-contact/${widget.auctionId}'});
         } else {
           setState(() {
             _isEditing = false;
@@ -233,13 +226,7 @@ class _PaymentMethodViewState extends State<PaymentMethodView> {
               CustomButton(
                 text: 'Confirm Transfer with these details',
                 onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          PaySuccessful(nextScreen: AuctionContactView(auctionId: widget.auctionId ?? "")),
-                    ),
-                  );
+                  context.push('/pay-successful', extra: {'nextRoute': '/auction-contact/${widget.auctionId}'});
                 },
               ),
               SizedBox(height: 20.h),

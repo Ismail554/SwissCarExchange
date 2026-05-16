@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
@@ -9,7 +10,6 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/models/subscription/subscription_plan.dart';
-import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/checkout_webview.dart';
 
 class PremiumFeature {
   final String title;
@@ -46,12 +46,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
     if (!mounted) return;
 
     if (checkoutUrl != null && checkoutUrl.isNotEmpty) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CheckoutWebView(checkoutUrl: checkoutUrl),
-        ),
-      );
+      context.push('/checkout', extra: {'checkoutUrl': checkoutUrl});
     } else {
       AppSnackBar.error(
         context,

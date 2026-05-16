@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/views/premium/presentations/advance_statistics.dart';
 import 'package:rionydo/views/premium/presentations/auction_management_view.dart';
@@ -50,66 +51,42 @@ class PremiumFeaturesCard extends StatelessWidget {
                 Icons.add,
                 'Create Auction',
                 isPremiumFeature: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CreateAuction()),
-                  );
-                },
+                onTap: () => context.push('/create-auction'),
               ),
               ProfileDivider(),
               ProfileListTile(
                 Icons.inventory_2_outlined,
                 'Auction Management',
                 isPremiumFeature: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AuctionManagement(),
-                    ),
-                  );
-                },
+                onTap: () => context.push('/manage-auctions'),
               ),
               ProfileDivider(),
               ProfileListTile(
                 Icons.trending_up,
                 'Advanced Statistics',
                 isPremiumFeature: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AdvanceStatistics(),
-                    ),
-                  );
-                },
+                onTap: () => context.push('/advanced-statistics'),
               ),
               ProfileDivider(),
               ProfileListTile(
                 Icons.attach_money,
                 'Receive Payments',
                 isPremiumFeature: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RecievePayments()),
-                  );
-                },
+                onTap: () => context.push('/receive-payments'),
+              ),
+              ProfileDivider(),
+              ProfileListTile(
+                Icons.settings_outlined,
+                'Update Subscription',
+                isPremiumFeature: true,
+                onTap: () => context.push('/update-subscription'),
               ),
               ProfileDivider(),
               ProfileListTile(
                 Icons.local_shipping_outlined,
                 'My Shipping',
                 isPremiumFeature: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MyShippingRequestView(),
-                    ),
-                  );
-                },
+                onTap: () => context.push('/shipping-requests'),
               ),
             ],
           ),

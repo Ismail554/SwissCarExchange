@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 
 class CustomBackButton extends StatelessWidget {
@@ -21,7 +21,7 @@ class CustomBackButton extends StatelessWidget {
               onPressed ??
               () {
                 if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
+                  context.pop();
                   debugPrint('Back');
                 }
               },

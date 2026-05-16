@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
-import 'package:rionydo/views/auth/onboarding/views/step1_onboarding.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
 import 'package:rionydo/app_utils/network/token_manager.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
-import 'package:rionydo/views/main_navigation/bottom_nav.dart';
-import 'package:rionydo/views/home/presentation/home_view.dart';
-import 'package:rionydo/views/auctions/presentations/auctions_view.dart';
-import 'package:rionydo/views/bidding/presentations/bids_view.dart';
-import 'package:rionydo/views/profile/presentations/profile_view.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -41,33 +35,15 @@ class _SplashScreenState extends State<SplashScreen>
         if (!hasUid) {
           await SecureStorageHelper.getUuid();
           if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Step1Onboarding()),
-            );
+            context.go('/onboarding');
           }
         } else {
           final token = await TokenManager.getValidToken();
           if (mounted) {
             if (token != null && token.isNotEmpty) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MainNavigationShell(
-                    pages: [
-                      HomeView(),
-                      AuctionsView(),
-                      BidsView(),
-                      ProfileView(),
-                    ],
-                  ),
-                ),
-              );
+              context.go('/home');
             } else {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginViews()),
-              );
+              context.go('/login');
             }
           }
         }

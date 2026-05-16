@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
-import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/pending_view.dart';
 
 class SuccessfulView extends StatefulWidget {
   final String approvalStatus;
@@ -26,30 +25,14 @@ class _SuccessfulViewState extends State<SuccessfulView> {
       
       final status = widget.approvalStatus;
       if (status == 'pending') {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const PendingView()),
-          (route) => false,
-        );
+        context.go('/pending');
       } else if (status == 'approved') {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginViews()),
-          (route) => false,
-        );
+        context.go('/login');
       } else if (status == 'suspended') {
         AppSnackBar.error(context, "Try login with different account");
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginViews()),
-          (route) => false,
-        );
+        context.go('/login');
       } else {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginViews()),
-          (route) => false,
-        );
+        context.go('/login');
       }
     });
   }

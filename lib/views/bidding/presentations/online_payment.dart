@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
-import 'package:rionydo/views/bidding/presentations/pay_successful.dart';
 
 /// Card (online) payment screen.
 /// Receives the [carName] and [amount] from the payment option sheet.
@@ -41,10 +41,7 @@ class _OnlinePaymentViewState extends State<OnlinePaymentView> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PaySuccessful()),
-      );
+      context.push('/pay-successful');
     }
   }
 

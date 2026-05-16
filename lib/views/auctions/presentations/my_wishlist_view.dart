@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -10,7 +11,6 @@ import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
-import 'package:rionydo/views/auctions/presentations/auction_details.dart';
 import 'package:rionydo/views/auctions/widgets/auction_card.dart';
 
 class MyWishlistView extends StatefulWidget {
@@ -109,13 +109,9 @@ class _MyWishlistViewState extends State<MyWishlistView> {
                                       ? item.images.first.url
                                       : null,
                                   onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AuctionDetails(
-                                          data: item.toAuctionItem(),
-                                        ),
-                                      ),
+                                    context.push(
+                                      '/auction-details',
+                                      extra: item.toAuctionItem(),
                                     );
                                   },
                                   topRightOverlay: Padding(

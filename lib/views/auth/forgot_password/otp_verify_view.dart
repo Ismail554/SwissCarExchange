@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:pinput/pinput.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
@@ -9,9 +10,6 @@ import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
-
-import 'package:rionydo/views/auth/forgot_password/reset_password_view.dart';
-import 'package:rionydo/views/auth/login/login_views.dart';
 
 class OtpVerifyView extends StatefulWidget {
   final String email;
@@ -145,14 +143,10 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
       onPopInvokedWithResult: (didPop, dynamic result) async {
         if (didPop) return;
         if (context.mounted) {
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
+          if (context.canPop()) {
+            context.pop();
           } else {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginViews()),
-              (route) => false,
-            );
+            context.go('/login');
           }
         }
       },
@@ -167,16 +161,10 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                   alignment: Alignment.centerLeft,
                   child: CustomBackButton(
                     onPressed: () {
-                      if (Navigator.canPop(context)) {
-                        Navigator.pop(context);
+                      if (context.canPop()) {
+                        context.pop();
                       } else {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginViews(),
-                          ),
-                          (route) => false,
-                        );
+                        context.go('/login');
                       }
                     },
                   ),
@@ -320,14 +308,12 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                                 code: _otpController.text.trim(),
                               );
                           if (token != null && context.mounted) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ResetPasswordView(
-                                  email: widget.email,
-                                  resetToken: token,
-                                ),
-                              ),
+                            context.push(
+                              '/forgot-password/reset',
+                              extra: {
+                                'email': widget.email,
+                                'resetToken': token,
+                              },
                             );
                           }
                         } else {

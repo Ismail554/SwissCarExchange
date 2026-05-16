@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auth/register_provider.dart';
@@ -7,7 +8,6 @@ import 'package:rionydo/app_utils/utils/assets_manager.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
-import 'package:rionydo/views/auth/sign_up/presentations/sign_up_step2.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -253,15 +253,13 @@ class _SignUpViewState extends State<SignUpView> {
                         isActive: _isFormValid,
                         onPressed: () {
                           FocusScope.of(context).unfocus();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => SignUpStep2(
-                                email: provider.emailController.text.trim(),
-                                password: provider.passwordController.text,
-                                phone: provider.phoneController.text.trim(),
-                              ),
-                            ),
+                          context.push(
+                            '/signup/step2',
+                            extra: {
+                              'email': provider.emailController.text.trim(),
+                              'password': provider.passwordController.text,
+                              'phone': provider.phoneController.text.trim(),
+                            },
                           );
                         },
                       ),

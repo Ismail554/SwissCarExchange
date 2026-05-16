@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
@@ -20,8 +21,7 @@ class _ReviewSubmittedViewState extends State<ReviewSubmittedView> {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        int count = 0;
-        Navigator.popUntil(context, (route) => count++ == 2);
+        context.pop();
       }
     });
   }

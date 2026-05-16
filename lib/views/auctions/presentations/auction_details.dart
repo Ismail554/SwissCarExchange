@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -6,7 +7,6 @@ import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
-import 'package:rionydo/views/auctions/presentations/auction_bidding.dart';
 import 'package:rionydo/views/auctions/widgets/auction_countdown.dart';
 import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
@@ -481,12 +481,9 @@ class _AuctionDetailsState extends State<AuctionDetails> {
           text: "OFFER NOW",
           onPressed: () {
             final detail = context.read<AuctionsDetailProvider>().auctionDetail;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    AuctionBidding(initialData: initial, detailData: detail),
-              ),
+            context.push(
+              '/auction-bidding',
+              extra: {'initialData': initial, 'detailData': detail},
             );
           },
         ),

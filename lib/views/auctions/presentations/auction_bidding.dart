@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
@@ -14,7 +15,6 @@ import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:rionydo/services/socket_service.dart';
-import 'package:rionydo/views/auctions/presentations/recent_all_bids_view.dart';
 import 'package:rionydo/views/auctions/widgets/video_player_widget.dart';
 
 class AuctionBidding extends StatefulWidget {
@@ -558,14 +558,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                     alignment: Alignment.center,
                                     child: GestureDetector(
                                       onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => RecentAllBidsView(
-                                              auctionId: _auctionId,
-                                            ),
-                                          ),
-                                        );
+                                        context.push('/all-bids/$_auctionId');
                                       },
                                       child: Text(
                                         "View more...",

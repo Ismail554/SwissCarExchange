@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
-import 'package:rionydo/views/premium/presentations/update_subscription_view.dart';
+
 
 class UpgradePremiumCard extends StatelessWidget {
   const UpgradePremiumCard({super.key});
@@ -47,10 +48,7 @@ class UpgradePremiumCard extends StatelessWidget {
           AppSpacing.h16,
           OutlinedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SubscriptionViews()),
-              );
+              context.push('/update-subscription');
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: AppColors.scePremiumDealerBg,

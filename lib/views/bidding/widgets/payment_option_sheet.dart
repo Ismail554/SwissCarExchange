@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
-import 'package:rionydo/views/bidding/presentations/offline_payment.dart';
-import 'package:rionydo/views/bidding/presentations/online_payment.dart';
 
 /// Shows a modal bottom sheet with two payment options:
 ///  - In-App Payment (card/wallet)
@@ -75,13 +74,10 @@ class _PaymentOptionSheet extends StatelessWidget {
             subtitle: 'Pay securely with card or wallet',
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      OnlinePaymentView(carName: carName, amount: amount),
-                ),
-              );
+              context.push('/online-payment', extra: {
+                'carName': carName,
+                'amount': amount,
+              });
             },
           ),
           SizedBox(height: 12.h),
@@ -95,13 +91,10 @@ class _PaymentOptionSheet extends StatelessWidget {
             subtitle: 'Pay via bank or in person',
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      OfflinePaymentView(carName: carName, amount: amount),
-                ),
-              );
+              context.push('/offline-payment', extra: {
+                'carName': carName,
+                'amount': amount,
+              });
             },
           ),
           SizedBox(height: 20.h),

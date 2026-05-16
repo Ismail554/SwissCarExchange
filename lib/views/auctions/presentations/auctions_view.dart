@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
@@ -7,8 +8,6 @@ import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
-import 'package:rionydo/views/auctions/presentations/auction_details.dart';
-import 'package:rionydo/views/auctions/presentations/my_wishlist_view.dart';
 import 'package:rionydo/views/auctions/widgets/auction_card.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -79,12 +78,7 @@ class _AuctionsViewState extends State<AuctionsView> {
           IconButton(
             icon: const Icon(Icons.bookmarks_rounded),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MyWishlistView(),
-                ),
-              );
+              context.push('/wishlist');
             },
           ),
         ],
@@ -267,13 +261,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                                           ? auction.images.first.url
                                           : null,
                                       onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                AuctionDetails(data: auction),
-                                          ),
-                                        );
+                                        context.push('/auction-details', extra: auction);
                                       },
                                     );
                                   },

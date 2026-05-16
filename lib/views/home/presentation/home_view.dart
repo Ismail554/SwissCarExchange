@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/app_utils/utils/assets_manager.dart';
@@ -12,7 +13,6 @@ import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
 import 'package:rionydo/controllers/home_stats_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/models/profile/user_profile_response.dart';
-import 'package:rionydo/views/auctions/presentations/auction_details.dart';
 import 'package:rionydo/views/auctions/widgets/auction_countdown.dart';
 import 'package:rionydo/views/home/widgets/notification_badge.dart';
 import 'package:rionydo/views/home/widgets/premium_dealer_card.dart';
@@ -369,12 +369,7 @@ class _HomeViewState extends State<HomeView> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AuctionDetails(data: auction),
-          ),
-        );
+        context.push('/auction-details', extra: auction);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -629,12 +624,7 @@ class _HomeViewState extends State<HomeView> {
                   CustomButton(
                     text: 'PLACE BID',
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AuctionDetails(data: auction),
-                        ),
-                      );
+                      context.push('/auction-details', extra: auction);
                     },
                     isPrimary: true,
                   ),

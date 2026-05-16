@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
-import 'package:rionydo/models/auctions/auction_image.dart';
 import 'package:rionydo/views/auctions/presentations/auction_bidding.dart';
 import 'package:rionydo/views/profile/widgets/my_bid_card.dart';
 import 'package:provider/provider.dart';
@@ -165,12 +165,7 @@ class _MyBidsViewState extends State<MyBidsView>
           currentBid: currentBid,
           timeLeft: _calculateTimeLeft(auction.endsAt),
           onBidHigher: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AuctionBidding(initialData: auction),
-              ),
-            );
+            context.push('/auction-bidding', extra: auction);
           },
         );
       },
