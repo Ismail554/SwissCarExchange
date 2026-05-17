@@ -59,26 +59,26 @@ class _ProfileViewState extends State<ProfileView> {
                     'Profile',
                     style: FontManager.heading1(color: AppColors.white),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        'Test Premium',
-                        style: TextStyle(
-                          color: AppColors.greyD9,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Switch(
-                        value: isPremium,
-                        activeThumbColor: AppColors.sceGold,
-                        inactiveTrackColor: AppColors.darkGrey,
-                        onChanged: (val) {
-                          context.read<GlobalState>().isPremium = val;
-                        },
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Text(
+                  //       'Test Premium',
+                  //       style: TextStyle(
+                  //         color: AppColors.greyD9,
+                  //         fontSize: 12.sp,
+                  //         fontWeight: FontWeight.w600,
+                  //       ),
+                  //     ),
+                  //     Switch(
+                  //       value: isPremium,
+                  //       activeThumbColor: AppColors.sceGold,
+                  //       inactiveTrackColor: AppColors.darkGrey,
+                  //       onChanged: (val) {
+                  //         context.read<GlobalState>().isPremium = val;
+                  //       },
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
               AppSpacing.h24,

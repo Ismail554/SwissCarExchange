@@ -59,7 +59,14 @@ class _AuctionBiddingState extends State<AuctionBidding> {
         widget.initialData.reservePrice;
 
     _currentBid = _parseBid(bidStr).toInt();
-    _userBid = _currentBid + _minIncrement;
+
+    final initialBidders =
+        widget.detailData?.totalBidders ?? widget.initialData.totalBidders;
+    if (initialBidders == 0) {
+      _userBid = _currentBid;
+    } else {
+      _userBid = _currentBid + _minIncrement;
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final provider = context.read<AuctionsDetailProvider>();
@@ -68,7 +75,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
       if (!mounted) return;
 
       final detail = provider.auctionDetail;
-      final noBidsYet = provider.bidHistory.isEmpty;
+      final noBidsYet =
+          provider.bidHistory.isEmpty &&
+          (detail?.totalBidders ?? initialBidders) == 0;
 
       setState(() {
         if (detail != null) {
@@ -77,7 +86,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
         }
 
         if (noBidsYet) {
-          _userBid = _minIncrement;
+          _userBid = _currentBid;
         } else {
           _userBid = _currentBid + _minIncrement;
         }
@@ -204,12 +213,16 @@ class _AuctionBiddingState extends State<AuctionBidding> {
   void _showBidConfirmation() {
     final provider = context.read<AuctionsDetailProvider>();
     final noBidsYet =
-        provider.bidHistory.isEmpty && !provider.isBidHistoryLoading;
-    final minAllowed = noBidsYet ? _minIncrement : _currentBid + _minIncrement;
+        provider.bidHistory.isEmpty &&
+        (provider.auctionDetail?.totalBidders ??
+                widget.detailData?.totalBidders ??
+                widget.initialData.totalBidders) ==
+            0;
+    final minAllowed = noBidsYet ? _currentBid : _currentBid + _minIncrement;
 
     if (_userBid < minAllowed) {
       final msg = noBidsYet
-          ? "Be the first one to bid! Minimum is CHF ${_formatCurrency(_minIncrement)}"
+          ? "Be the first one to bid! Minimum is CHF ${_formatCurrency(minAllowed)}"
           : "Bid must be at least CHF ${_formatCurrency(minAllowed)}";
       AppSnackBar.warning(context, msg);
       return;
@@ -399,7 +412,10 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                     builder: (context, provider, _) {
                       final noBidsYet =
                           provider.bidHistory.isEmpty &&
-                          !provider.isBidHistoryLoading;
+                          (provider.auctionDetail?.totalBidders ??
+                                  widget.detailData?.totalBidders ??
+                                  widget.initialData.totalBidders) ==
+                              0;
 
                       return Container(
                         width: double.infinity,
@@ -434,9 +450,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                   ),
                                 ),
                                 Text(
-                                  noBidsYet
-                                      ? _formatCurrency(_minIncrement) // 150
-                                      : _formatCurrency(_currentBid),
+                                  _formatCurrency(_currentBid),
                                   style: FontManager.heading1(
                                     color: AppColors.sceTeal,
                                   ).copyWith(fontSize: 32.sp),
@@ -668,10 +682,19 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                     builder: (context, provider, _) {
                                       final noBidsYet =
                                           provider.bidHistory.isEmpty &&
-                                          !provider.isBidHistoryLoading;
+                                          (provider
+                                                      .auctionDetail
+                                                      ?.totalBidders ??
+                                                  widget
+                                                      .detailData
+                                                      ?.totalBidders ??
+                                                  widget
+                                                      .initialData
+                                                      .totalBidders) ==
+                                              0;
                                       return Text(
                                         noBidsYet
-                                            ? "Next minimum bid: CHF ${_formatCurrency(_minIncrement)}"
+                                            ? "Next minimum bid: CHF ${_formatCurrency(_currentBid)}"
                                             : "Next minimum bid: CHF ${_formatCurrency(_currentBid + _minIncrement)}",
                                         style: FontManager.bodySmall(
                                           color: AppColors.textHint,
@@ -686,10 +709,12 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                   final provider = context
                                       .read<AuctionsDetailProvider>();
                                   final noBidsYet =
-                                      provider.bidHistory.isEmpty &&
-                                      !provider.isBidHistoryLoading;
+                                      (provider.auctionDetail?.totalBidders ??
+                                          widget.detailData?.totalBidders ??
+                                          widget.initialData.totalBidders) ==
+                                      0;
                                   final minAllowed = noBidsYet
-                                      ? _minIncrement
+                                      ? _currentBid
                                       : _currentBid + _minIncrement;
                                   if (_userBid - _minIncrement >= minAllowed) {
                                     setState(() {
@@ -700,25 +725,28 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                                 child: Container(
                                   padding: EdgeInsets.all(8.w),
                                   decoration: BoxDecoration(
-                                    color:
-                                        (_userBid - _minIncrement >=
-                                            (context
-                                                        .read<
-                                                          AuctionsDetailProvider
-                                                        >()
-                                                        .bidHistory
-                                                        .isEmpty &&
-                                                    !context
-                                                        .read<
-                                                          AuctionsDetailProvider
-                                                        >()
-                                                        .isBidHistoryLoading
-                                                ? _minIncrement
-                                                : _currentBid + _minIncrement))
-                                        ? AppColors.sceTeal
-                                        : AppColors.sceTeal.withValues(
-                                            alpha: 0.3,
-                                          ),
+                                    color: (() {
+                                      final provider = context
+                                          .read<AuctionsDetailProvider>();
+                                      final noBidsYet =
+                                          (provider
+                                                  .auctionDetail
+                                                  ?.totalBidders ??
+                                              widget.detailData?.totalBidders ??
+                                              widget
+                                                  .initialData
+                                                  .totalBidders) ==
+                                          0;
+                                      final minAllowed = noBidsYet
+                                          ? _currentBid
+                                          : _currentBid + _minIncrement;
+                                      return _userBid - _minIncrement >=
+                                              minAllowed
+                                          ? AppColors.sceTeal
+                                          : AppColors.sceTeal.withValues(
+                                              alpha: 0.3,
+                                            );
+                                    })(),
                                     borderRadius: BorderRadius.circular(8.r),
                                   ),
                                   child: Icon(
@@ -914,7 +942,8 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                               }
                               setState(() => _isSettingAutoBid = true);
                               final localContext = context;
-                              final provider = localContext.read<AuctionsDetailProvider>();
+                              final provider = localContext
+                                  .read<AuctionsDetailProvider>();
                               final success = await provider.createAutoBid(
                                 _auctionId,
                                 maxAmount,
