@@ -267,8 +267,8 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
 
-    response.fold(
-      (error) {
+    await response.fold(
+      (error) async {
         debugPrint('AUTH: ❌ verifyOtp API error: $error');
         if (context.mounted) {
           AppSnackBar.error(context, error);
@@ -286,6 +286,9 @@ class AuthProvider extends ChangeNotifier {
 
           final approvalStatus = data['approval_status']?.toString();
 
+          FocusManager.instance.primaryFocus?.unfocus();
+          await Future.delayed(const Duration(milliseconds: 50));
+
           if (approvalStatus == 'approved') {
             await Firebase.initializeApp(
               options: DefaultFirebaseOptions.currentPlatform,
@@ -295,8 +298,10 @@ class AuthProvider extends ChangeNotifier {
             if (!context.mounted) return;
             context.go('/home');
           } else if (approvalStatus == 'pending') {
+            if (!context.mounted) return;
             context.go('/pending');
           } else {
+            if (!context.mounted) return;
             context.go('/login');
           }
         }

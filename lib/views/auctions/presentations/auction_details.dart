@@ -511,7 +511,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
             ),
             SizedBox(height: 16.h),
             Text(
-              "Fehler beim Laden",
+              "Error While Loading",
               style: FontManager.heading3(color: Colors.white),
             ),
             SizedBox(height: 8.h),
@@ -533,7 +533,10 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                   borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
-              child: const Text("Wiederholen"),
+              child: Text(
+                "Retry",
+                style: FontManager.bodyMedium(color: Colors.white),
+              ),
             ),
           ],
         ),

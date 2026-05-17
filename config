@@ -1,0 +1,6 @@
+# ===== ISMAIL ACCOUNT =====
+Host github-ismail
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_ismail
+    IdentitiesOnly yes

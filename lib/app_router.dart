@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
+import 'package:rionydo/models/auctions/auctions_detail_response.dart';
 import 'package:rionydo/views/auctions/presentations/auction_bidding.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/checkout_webview.dart';
 import 'package:rionydo/views/profile/presentations/my_bids_view.dart';
@@ -254,7 +255,9 @@ final GoRouter appRouter = GoRouter(
       path: '/auction-details',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
-        final item = state.extra as AuctionItem;
+        final item = (state.extra is Map)
+            ? AuctionItem.fromJson(Map<String, dynamic>.from(state.extra as Map))
+            : state.extra as AuctionItem;
         return AuctionDetails(data: item);
       },
     ),
@@ -262,6 +265,26 @@ final GoRouter appRouter = GoRouter(
       path: '/auction-bidding',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
+        if (state.extra is Map) {
+          final extraMap = state.extra as Map;
+          if (extraMap.containsKey('initialData')) {
+            final initialData = extraMap['initialData'] is Map
+                ? AuctionItem.fromJson(Map<String, dynamic>.from(extraMap['initialData'] as Map))
+                : extraMap['initialData'] as AuctionItem;
+            
+            final detailData = extraMap.containsKey('detailData') && extraMap['detailData'] != null
+                ? (extraMap['detailData'] is Map 
+                    ? AuctionDetailResponse.fromJson(Map<String, dynamic>.from(extraMap['detailData'] as Map)) 
+                    : extraMap['detailData'] as AuctionDetailResponse)
+                : null;
+                
+            return AuctionBidding(initialData: initialData, detailData: detailData);
+          } else {
+            final item = AuctionItem.fromJson(Map<String, dynamic>.from(extraMap));
+            return AuctionBidding(initialData: item);
+          }
+        }
+        
         final item = state.extra as AuctionItem;
         return AuctionBidding(initialData: item);
       },
@@ -274,7 +297,9 @@ final GoRouter appRouter = GoRouter(
       path: '/car-details',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
-        final item = state.extra as AuctionItem;
+        final item = (state.extra is Map)
+            ? AuctionItem.fromJson(Map<String, dynamic>.from(state.extra as Map))
+            : state.extra as AuctionItem;
         return AuctionDetails(data: item);
       },
     ),
