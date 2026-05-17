@@ -325,6 +325,9 @@ class _MyBidsViewState extends State<MyBidsView>
                   onBidHigher: () {
                     context.push('/auction-bidding', extra: auction);
                   },
+                  onTap: () {
+                    context.push('/auction-details', extra: auction);
+                  },
                   totalBidders: auction.totalBidders,
                 );
               },
@@ -368,6 +371,9 @@ class _MyBidsViewState extends State<MyBidsView>
                   timeLeft: "Ended",
                   totalBids: auction.totalBids,
                   totalBidders: auction.totalBidders,
+                  onTap: () {
+                    context.push('/auction-details', extra: auction);
+                  },
                 );
               },
             ),

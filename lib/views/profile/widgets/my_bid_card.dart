@@ -14,6 +14,7 @@ class MyBidCard extends StatelessWidget {
   final String timeLeft; // or "Ended"
   final int totalBids;
   final VoidCallback? onBidHigher;
+  final VoidCallback? onTap;
 
   const MyBidCard({
     super.key,
@@ -25,6 +26,7 @@ class MyBidCard extends StatelessWidget {
     required this.totalBidders,
     required this.totalBids,
     this.onBidHigher,
+    this.onTap,
   });
 
   @override
@@ -56,113 +58,119 @@ class MyBidCard extends StatelessWidget {
 
     final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 20.h),
-      decoration: BoxDecoration(
-        color: AppColors.sceCardBg,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── IMAGE SECTION ──
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-                child: hasImage
-                    ? CachedNetworkImage(
-                        imageUrl: imageUrl!,
-                        height: 180.h,
-                        width: double.maxFinite,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Shimmer.fromColors(
-                          baseColor: Colors.white.withValues(alpha: 0.05),
-                          highlightColor: Colors.white.withValues(alpha: 0.1),
-                          child: Container(
-                            height: 180.h,
-                            width: double.maxFinite,
-                            color: Colors.white,
-                          ),
-                        ),
-                        errorWidget: (_, _, _) => _buildPlaceholderImage(),
-                      )
-                    : _buildPlaceholderImage(),
-              ),
-              // Status Badge on Image
-              Positioned(
-                top: 12.h,
-                right: 12.w,
-                child: _buildStatusBadge(statusColor, statusIcon, status),
-              ),
-            ],
-          ),
-
-          Padding(
-            padding: EdgeInsets.all(16.r),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 20.h),
+        decoration: BoxDecoration(
+          color: AppColors.sceCardBg,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── IMAGE SECTION ──
+            Stack(
               children: [
-                Text(
-                  title,
-                  style: FontManager.heading3(
-                    color: Colors.white,
-                  ).copyWith(fontSize: 18.sp),
-                ),
-                SizedBox(height: 16.h),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildCountColumn("Total Bids", totalBids),
-                    _buildCountColumn("Total Bidders", totalBidders),
-                    _buildBidColumn("Current Bid", currentBid, isTeal: true),
-                  ],
-                ),
-
-                SizedBox(height: 16.h),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          color: AppColors.sceGreyA0,
-                          size: 14.sp,
-                        ),
-                        SizedBox(width: 6.w),
-                        Text(timeLeft, style: FontManager.hintText()),
-                      ],
-                    ),
-                    if (status.toUpperCase() == "OUTBID" && onBidHigher != null)
-                      GestureDetector(
-                        onTap: onBidHigher,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 8.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.sceTeal,
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: Text(
-                            "Bid Higher",
-                            style: FontManager.labelMedium(
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(16.r),
+                  ),
+                  child: hasImage
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl!,
+                          height: 180.h,
+                          width: double.maxFinite,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Shimmer.fromColors(
+                            baseColor: Colors.white.withValues(alpha: 0.05),
+                            highlightColor: Colors.white.withValues(alpha: 0.1),
+                            child: Container(
+                              height: 180.h,
+                              width: double.maxFinite,
                               color: Colors.white,
-                            ).copyWith(fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                      ),
-                  ],
+                          errorWidget: (_, _, _) => _buildPlaceholderImage(),
+                        )
+                      : _buildPlaceholderImage(),
+                ),
+                // Status Badge on Image
+                Positioned(
+                  top: 12.h,
+                  right: 12.w,
+                  child: _buildStatusBadge(statusColor, statusIcon, status),
                 ),
               ],
             ),
-          ),
-        ],
+
+            Padding(
+              padding: EdgeInsets.all(16.r),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: FontManager.heading3(
+                      color: Colors.white,
+                    ).copyWith(fontSize: 18.sp),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildCountColumn("Total Bids", totalBids),
+                      _buildCountColumn("Total Bidders", totalBidders),
+                      _buildBidColumn("Current Bid", currentBid, isTeal: true),
+                    ],
+                  ),
+
+                  SizedBox(height: 16.h),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            color: AppColors.sceGreyA0,
+                            size: 14.sp,
+                          ),
+                          SizedBox(width: 6.w),
+                          Text(timeLeft, style: FontManager.hintText()),
+                        ],
+                      ),
+                      if (status.toUpperCase() == "OUTBID" &&
+                          onBidHigher != null)
+                        GestureDetector(
+                          onTap: onBidHigher,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 8.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.sceTeal,
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Text(
+                              "Bid Higher",
+                              style: FontManager.labelMedium(
+                                color: Colors.white,
+                              ).copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
