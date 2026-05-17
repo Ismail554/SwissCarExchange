@@ -88,16 +88,32 @@ class _ProfileViewState extends State<ProfileView> {
                 profile: profileProvider.userProfile,
               ),
               AppSpacing.h16,
-              MyBidsTile(
-                title: 'My Bids',
-                icon: Icons.feed_outlined,
-                onTap: () => context.push('/my-bids'),
+              Row(
+                children: [
+                  Expanded(
+                    child: MyBidsTile(
+                      title: 'My Bids',
+                      subtitle: 'Active & pending',
+                      icon: Icons.gavel_rounded,
+                      accentColor: AppColors.sceTeal,
+                      gradientColors: const [AppColors.sceTeal, Color(0xFF005662)],
+                      onTap: () => context.push('/my-bids'),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: MyBidsTile(
+                      title: 'Won Auctions',
+                      subtitle: 'Claim vehicles',
+                      icon: Icons.emoji_events_rounded,
+                      accentColor: Colors.orange,
+                      gradientColors: const [Color(0xFFFFB300), Color(0xFFE65100)],
+                      onTap: () => context.push('/won-auctions'),
+                    ),
+                  ),
+                ],
               ),
-              MyBidsTile(
-                title: 'Won Auctions',
-                icon: Icons.redeem,
-                onTap: () => context.push('/won-auctions'),
-              ),
+              AppSpacing.h16,
               // MyBidsTile(
               //   title: 'My Shipping Request',
               //   icon: Icons.feed_outlined,

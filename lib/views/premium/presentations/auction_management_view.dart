@@ -10,7 +10,8 @@ import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/views/premium/widgets/auction_management_card.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/models/auctions/auction_image.dart';
-import 'package:rionydo/models/premium/auction_management_response.dart' as premium;
+import 'package:rionydo/models/premium/auction_management_response.dart'
+    as premium;
 
 class AuctionManagement extends StatefulWidget {
   const AuctionManagement({super.key});
@@ -268,25 +269,24 @@ class _AuctionManagementState extends State<AuctionManagement> {
       onViewDetails: () {
         context.push(
           '/auction-details',
-            extra: AuctionItem(
-              id: auction.id,
-              title: auction.title,
-              vehicleBrand: auction.vehicleBrand,
-              sellerName: auction.sellerName,
-              currentHighestBid: auction.currentHighestBid,
-              reservePrice: auction.reservePrice,
-              status: auction.status,
-              createdAt: DateTime.now(),
-              endsAt: auction.endsAt,
-              images:
-                  auction.images
-                      .map((img) => AuctionImage(
-                        url: img.url,
-                        position: img.position,
-                      ))
-                      .toList(),
-              totalBidders: auction.totalBidders,
-            ),
+          extra: AuctionItem(
+            id: auction.id,
+            title: auction.title,
+            vehicleBrand: auction.vehicleBrand,
+            sellerName: auction.sellerName,
+            currentHighestBid: auction.currentHighestBid,
+            reservePrice: auction.reservePrice,
+            status: auction.status,
+            createdAt: DateTime.now(),
+            endsAt: auction.endsAt,
+            images: auction.images
+                .map(
+                  (img) => AuctionImage(url: img.url, position: img.position),
+                )
+                .toList(),
+            totalBidders: auction.totalBidders,
+            totalBids: auction.totalBids,
+          ),
         );
       },
       onMenuTap: () {},

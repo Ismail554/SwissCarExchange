@@ -64,6 +64,7 @@ class AuctionItem {
   final DateTime createdAt;
   final DateTime? endsAt;
   final int totalBidders;
+  final int totalBids;
   final List<AuctionImage> images;
 
   const AuctionItem({
@@ -77,6 +78,7 @@ class AuctionItem {
     required this.createdAt,
     this.endsAt,
     required this.totalBidders,
+    required this.totalBids,
     required this.images,
   });
 
@@ -96,6 +98,7 @@ class AuctionItem {
           ? DateTime.tryParse(json['ends_at'] as String)
           : null,
       totalBidders: json['total_bidders'] as int? ?? 0,
+      totalBids: json['total_bids'] as int? ?? 0,
       images: (json['images'] as List<dynamic>?)
               ?.map((e) => AuctionImage.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -104,18 +107,19 @@ class AuctionItem {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'vehicle_brand': vehicleBrand,
-        'seller_name': sellerName,
-        'current_highest_bid': currentHighestBid,
-        'reserve_price': reservePrice,
-        'status': status,
-        'created_at': createdAt.toIso8601String(),
-        'ends_at': endsAt?.toIso8601String(),
-        'total_bidders': totalBidders,
-        'images': images.map((e) => e.toJson()).toList(),
-      };
+    'id': id,
+    'title': title,
+    'vehicle_brand': vehicleBrand,
+    'seller_name': sellerName,
+    'current_highest_bid': currentHighestBid,
+    'reserve_price': reservePrice,
+    'status': status,
+    'created_at': createdAt.toIso8601String(),
+    'ends_at': endsAt?.toIso8601String(),
+    'total_bidders': totalBidders,
+    'total_bids': totalBids,
+    'images': images.map((e) => e.toJson()).toList(),
+  };
 
   AuctionItem copyWith({
     int? id,
@@ -127,6 +131,7 @@ class AuctionItem {
     String? status,
     DateTime? createdAt,
     int? totalBidders,
+    int? totalBids,
     List<AuctionImage>? images,
   }) {
     return AuctionItem(
@@ -139,6 +144,7 @@ class AuctionItem {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       totalBidders: totalBidders ?? this.totalBidders,
+      totalBids: totalBids ?? this.totalBids,
       images: images ?? this.images,
     );
   }

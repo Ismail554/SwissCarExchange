@@ -28,10 +28,17 @@ class AuctionsDetailProvider extends ChangeNotifier {
   bool get isWishlistLoading => _isWishlistLoading;
 
   Future<void> fetchAuctionDetail(String auctionId) async {
-    _isLoading = true;
-    _errorMessage = null;
-    _auctionDetail = null;
-    notifyListeners();
+    final isSameAuction = _auctionDetail?.id.toString() == auctionId;
+    
+    if (!isSameAuction) {
+      _isLoading = true;
+      _errorMessage = null;
+      _auctionDetail = null;
+      _bidHistory = []; // Clear old bid history to prevent cross-auction leakage
+      notifyListeners();
+    } else {
+      _errorMessage = null;
+    }
 
     final result = await DioManager.apiRequest(
       url: ApiService.auctionDetail(auctionId),

@@ -285,7 +285,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: _buildBottomButton(context, widget.data),
+                child: _buildBottomButton(context, widget.data, detail),
               ),
 
               if (provider.errorMessage != null)
@@ -300,7 +300,13 @@ class _AuctionDetailsState extends State<AuctionDetails> {
   Widget _buildBidSection(AuctionDetailResponse? detail, AuctionItem initial) {
     final currentBid = detail?.currentHighestBid ?? initial.currentHighestBid;
     final reservePrice = detail?.reservePrice ?? initial.reservePrice;
-    final displayBid = currentBid ?? reservePrice;
+    
+    final biddersCount = detail?.totalBidders ?? initial.totalBidders;
+    final totalBidsCount = initial.totalBids;
+    final hasNoBids = (currentBid == null || currentBid.isEmpty) || (biddersCount == 0) || (totalBidsCount == 0);
+    
+    final labelText = hasNoBids ? "BIDS START FROM" : "CURRENT HIGHEST BID";
+    final displayBid = hasNoBids ? reservePrice : currentBid;
 
     return Container(
       width: double.infinity,
@@ -314,7 +320,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "CURRENT HIGHEST BID",
+            labelText,
             style: FontManager.labelSmall(
               color: AppColors.sceTeal,
             ).copyWith(letterSpacing: 1.2),
@@ -463,7 +469,13 @@ class _AuctionDetailsState extends State<AuctionDetails> {
     );
   }
 
-  Widget _buildBottomButton(BuildContext context, AuctionItem initial) {
+  Widget _buildBottomButton(
+    BuildContext context,
+    AuctionItem initial,
+    AuctionDetailResponse? detail,
+  ) {
+    final isOwner = detail?.isOwner ?? false;
+
     return Container(
       padding: EdgeInsets.all(16.w).copyWith(bottom: 24.h),
       decoration: BoxDecoration(
@@ -477,17 +489,111 @@ class _AuctionDetailsState extends State<AuctionDetails> {
         ),
       ),
       child: SafeArea(
-        child: CustomButton(
-          text: "OFFER NOW",
-          onPressed: () {
-            final detail = context.read<AuctionsDetailProvider>().auctionDetail;
+        child: isOwner
+            ? _buildOwnerLiveBidsButton(context, initial, detail)
+            : CustomButton(
+                text: "OFFER NOW",
+                onPressed: () {
+                  context.push(
+                    '/auction-bidding',
+                    extra: {'initialData': initial, 'detailData': detail},
+                  );
+                },
+              ),
+      ),
+    );
+  }
+
+  Widget _buildOwnerLiveBidsButton(
+    BuildContext context,
+    AuctionItem initial,
+    AuctionDetailResponse? detail,
+  ) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Owner badge
+        Container(
+          margin: EdgeInsets.only(bottom: 10.h),
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          decoration: BoxDecoration(
+            color: AppColors.sceGold.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(
+              color: AppColors.sceGold.withValues(alpha: 0.4),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.workspace_premium_rounded,
+                color: AppColors.sceGold,
+                size: 14.sp,
+              ),
+              SizedBox(width: 6.w),
+              Text(
+                "You are the auction owner",
+                style: FontManager.labelSmall(
+                  color: AppColors.sceGold,
+                ).copyWith(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+        // Live Bids button
+        GestureDetector(
+          onTap: () {
             context.push(
               '/auction-bidding',
               extra: {'initialData': initial, 'detailData': detail},
             );
           },
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 16.h),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.sceTeal.withValues(alpha: 0.2),
+                  AppColors.sceTeal.withValues(alpha: 0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(
+                color: AppColors.sceTeal.withValues(alpha: 0.5),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(4.w),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.errorRed,
+                  ),
+                  child: Icon(
+                    Icons.circle,
+                    color: Colors.white,
+                    size: 6.sp,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Text(
+                  "VIEW LIVE BIDS",
+                  style: FontManager.labelMedium(
+                    color: AppColors.sceTeal,
+                  ).copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 

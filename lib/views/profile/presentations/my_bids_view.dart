@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
-import 'package:rionydo/views/auctions/presentations/auction_bidding.dart';
 import 'package:rionydo/views/profile/widgets/my_bid_card.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auctions/my_bids_provider.dart';
+
 class MyBidsView extends StatefulWidget {
   const MyBidsView({super.key});
 
@@ -110,7 +111,7 @@ class _MyBidsViewState extends State<MyBidsView>
             child: Consumer<MyBidsProvider>(
               builder: (context, provider, _) {
                 if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator(color: AppColors.sceTeal));
+                  return _buildShimmerSkeleton();
                 }
                 if (provider.errorMessage != null) {
                   return Center(
@@ -123,8 +124,8 @@ class _MyBidsViewState extends State<MyBidsView>
                 return TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildActiveBids(provider.activeBids),
-                    _buildCompletedBids(provider.completedBids),
+                    _buildActiveBids(provider.activeBids, provider),
+                    _buildCompletedBids(provider.completedBids, provider),
                   ],
                 );
               },
@@ -145,54 +146,231 @@ class _MyBidsViewState extends State<MyBidsView>
     return "${hours}h ${minutes}m";
   }
 
-  Widget _buildActiveBids(List<AuctionItem> bids) {
-    if (bids.isEmpty) {
-      return Center(
-        child: Text("No active bids.", style: FontManager.bodyMedium(color: AppColors.sceGreyA0)),
-      );
-    }
+  Widget _buildShimmerSkeleton() {
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
-      itemCount: bids.length,
+      itemCount: 3,
       itemBuilder: (context, index) {
-        final auction = bids[index];
-        final currentBid = double.tryParse(auction.currentHighestBid ?? '0') ?? 0.0;
-        return MyBidCard(
-          imageUrl: auction.images.isNotEmpty ? auction.images.first.url : "",
-          title: auction.title,
-          status: auction.status.toUpperCase(),
-          myBid: currentBid, // fallback since myBid is not available
-          currentBid: currentBid,
-          timeLeft: _calculateTimeLeft(auction.endsAt),
-          onBidHigher: () {
-            context.push('/auction-bidding', extra: auction);
-          },
+        return Container(
+          margin: EdgeInsets.only(bottom: 20.h),
+          decoration: BoxDecoration(
+            color: AppColors.sceCardBg,
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          ),
+          child: Shimmer.fromColors(
+            baseColor: Colors.white.withValues(alpha: 0.05),
+            highlightColor: Colors.white.withValues(alpha: 0.1),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image Placeholder
+                Container(
+                  height: 180.h,
+                  width: double.maxFinite,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(16.r),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(16.r),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title Placeholder
+                      Container(
+                        height: 18.h,
+                        width: 200.w,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      // Bids Row Placeholder
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 12.h,
+                                width: 50.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(3.r),
+                                ),
+                              ),
+                              SizedBox(height: 6.h),
+                              Container(
+                                height: 18.h,
+                                width: 80.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4.r),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 12.h,
+                                width: 70.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(3.r),
+                                ),
+                              ),
+                              SizedBox(height: 6.h),
+                              Container(
+                                height: 18.h,
+                                width: 80.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4.r),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16.h),
+                      // Time Left / Action Row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                height: 14.h,
+                                width: 14.w,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              SizedBox(width: 6.w),
+                              Container(
+                                height: 12.h,
+                                width: 60.w,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(3.r),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            height: 32.h,
+                            width: 90.w,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
   }
 
-  Widget _buildCompletedBids(List<AuctionItem> bids) {
-    if (bids.isEmpty) {
-      return Center(
-        child: Text("No completed bids.", style: FontManager.bodyMedium(color: AppColors.sceGreyA0)),
-      );
-    }
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      itemCount: bids.length,
-      itemBuilder: (context, index) {
-        final auction = bids[index];
-        final currentBid = double.tryParse(auction.currentHighestBid ?? '0') ?? 0.0;
-        return MyBidCard(
-          imageUrl: auction.images.isNotEmpty ? auction.images.first.url : "",
-          title: auction.title,
-          status: auction.status.toUpperCase(),
-          myBid: currentBid,
-          currentBid: currentBid,
-          timeLeft: "Ended",
-        );
-      },
+  Widget _buildActiveBids(List<AuctionItem> bids, MyBidsProvider provider) {
+    return RefreshIndicator(
+      color: AppColors.sceTeal,
+      backgroundColor: AppColors.sceCardBg,
+      onRefresh: () => provider.fetchMyBids(forceRefresh: true),
+      child: bids.isEmpty
+          ? ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(height: 150.h),
+                Center(
+                  child: Text(
+                    "No active bids.",
+                    style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
+                  ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+              itemCount: bids.length,
+              itemBuilder: (context, index) {
+                final auction = bids[index];
+                final currentBid =
+                    double.tryParse(auction.currentHighestBid ?? '0') ?? 0.0;
+                return MyBidCard(
+                  imageUrl: auction.images.isNotEmpty
+                      ? auction.images.first.url
+                      : "",
+                  title: auction.title,
+                  status: auction.status.toUpperCase(),
+                  currentBid: currentBid,
+                  timeLeft: _calculateTimeLeft(auction.endsAt),
+                  totalBids: auction.totalBids,
+                  onBidHigher: () {
+                    context.push('/auction-bidding', extra: auction);
+                  },
+                  totalBidders: auction.totalBidders,
+                );
+              },
+            ),
+    );
+  }
+
+  Widget _buildCompletedBids(List<AuctionItem> bids, MyBidsProvider provider) {
+    return RefreshIndicator(
+      color: AppColors.sceTeal,
+      backgroundColor: AppColors.sceCardBg,
+      onRefresh: () => provider.fetchMyBids(forceRefresh: true),
+      child: bids.isEmpty
+          ? ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(height: 150.h),
+                Center(
+                  child: Text(
+                    "No completed bids.",
+                    style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
+                  ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+              itemCount: bids.length,
+              itemBuilder: (context, index) {
+                final auction = bids[index];
+                final currentBid =
+                    double.tryParse(auction.currentHighestBid ?? '0') ?? 0.0;
+                return MyBidCard(
+                  imageUrl: auction.images.isNotEmpty
+                      ? auction.images.first.url
+                      : "",
+                  title: auction.title,
+                  status: auction.status.toUpperCase(),
+                  currentBid: currentBid,
+                  timeLeft: "Ended",
+                  totalBids: auction.totalBids,
+                  totalBidders: auction.totalBidders,
+                );
+              },
+            ),
     );
   }
 }

@@ -19,7 +19,8 @@ class MyWishListResponse {
       count: json['count'] ?? 0,
       next: json['next'] as String?,
       previous: json['previous'] as String?,
-      results: (json['results'] as List<dynamic>?)
+      results:
+          (json['results'] as List<dynamic>?)
               ?.map((e) => WishListItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -72,12 +73,13 @@ class WishListItem {
       currentHighestBid: json['current_highest_bid'] ?? "0.00",
       reservePrice: json['reserve_price'] ?? "0.00",
       status: json['status'] ?? "",
-      endsAt: json['ends_at'] != null 
-          ? DateTime.tryParse(json['ends_at']) 
+      endsAt: json['ends_at'] != null
+          ? DateTime.tryParse(json['ends_at'])
           : null,
       totalBidders: json['total_bidders'] ?? 0,
       totalBids: json['total_bids'] ?? 0,
-      images: (json['images'] as List<dynamic>?)
+      images:
+          (json['images'] as List<dynamic>?)
               ?.map((e) => WishListImage.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -112,6 +114,7 @@ class WishListItem {
       createdAt: DateTime.now(), // Fallback
       endsAt: endsAt,
       totalBidders: totalBidders,
+      totalBids: totalBids,
       images: images
           .map((e) => AuctionImage(url: e.url, position: e.position))
           .toList(),
@@ -123,10 +126,7 @@ class WishListImage {
   final String url;
   final int position;
 
-  WishListImage({
-    required this.url,
-    required this.position,
-  });
+  WishListImage({required this.url, required this.position});
 
   factory WishListImage.fromJson(Map<String, dynamic> json) {
     return WishListImage(
@@ -136,9 +136,6 @@ class WishListImage {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'url': url,
-      'position': position,
-    };
+    return {'url': url, 'position': position};
   }
 }

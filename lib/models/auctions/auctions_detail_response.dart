@@ -32,6 +32,7 @@ class AuctionDetailResponse {
   final bool isFlagged;
   final String adminNote;
   final bool isWatchlisted;
+  final bool isOwner;
   final String minBidIncrement;
 
   const AuctionDetailResponse({
@@ -62,6 +63,7 @@ class AuctionDetailResponse {
     required this.totalBidders,
     required this.isFlagged,
     required this.adminNote,
+    this.isOwner = false,
     required this.isWatchlisted,
     this.minBidIncrement= "150",
   });
@@ -82,6 +84,7 @@ class AuctionDetailResponse {
       reservePrice: json['reserve_price'] as String? ?? '0.00',
       buyNowPrice: json['buy_now_price'] as String?,
       status: json['status'] as String? ?? 'unknown',
+      isOwner: json['is_me'] as bool? ?? false,
       startsAt: json['starts_at'] != null
           ? DateTime.tryParse(json['starts_at'] as String) ?? DateTime.now()
           : DateTime.now(),

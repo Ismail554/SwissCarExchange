@@ -36,6 +36,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
   bool _isBidding = false;
   bool _isAuctionEnded = false;
   bool _isSettingAutoBid = false;
+  bool _isOwner = false;
   final TextEditingController _maxBidController = TextEditingController();
 
   String get _auctionId => widget.initialData.id.toString();
@@ -52,6 +53,9 @@ class _AuctionBiddingState extends State<AuctionBidding> {
     final rawIncrement = widget.detailData?.minBidIncrement ?? '150';
     final parsed = _parseBid(rawIncrement).toInt();
     _minIncrement = parsed > 0 ? parsed : 150;
+
+    // Determine owner status from pre-fetched detail
+    _isOwner = widget.detailData?.isOwner ?? false;
 
     final bidStr =
         widget.detailData?.currentHighestBid ??
@@ -83,6 +87,12 @@ class _AuctionBiddingState extends State<AuctionBidding> {
         if (detail != null) {
           final inc = _parseBid(detail.minBidIncrement).toInt();
           if (inc > 0) _minIncrement = inc;
+
+          final bidStr = detail.currentHighestBid ?? detail.reservePrice;
+          _currentBid = _parseBid(bidStr).toInt();
+
+          // Refresh owner status from fresh API response
+          _isOwner = detail.isOwner;
         }
 
         if (noBidsYet) {
@@ -595,6 +605,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   ),
                   SizedBox(height: 24.h),
 
+                  if (!_isOwner) ...[
                   // Your Bid Header
                   Text(
                     "Your Bid",
@@ -782,12 +793,53 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   SizedBox(height: 24.h),
 
                   // Place Bid Button
-                  CustomButton(
-                    text: _isAuctionEnded ? "AUCTION ENDED" : "PLACE BID",
-                    isLoading: _isBidding,
-                    isActive: !_isAuctionEnded,
-                    onPressed: _showBidConfirmation,
-                  ),
+                  if (_isOwner)
+                    GestureDetector(
+                      onTap: () {
+                        AppSnackBar.warning(
+                          context,
+                          "You cannot bid on your own auction.",
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                        decoration: BoxDecoration(
+                          color: AppColors.sceGold.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(14.r),
+                          border: Border.all(
+                            color: AppColors.sceGold.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.workspace_premium_rounded,
+                              color: AppColors.sceGold,
+                              size: 16.sp,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              "YOUR AUCTION — BIDS LOCKED",
+                              style: FontManager.labelMedium(
+                                color: AppColors.sceGold,
+                              ).copyWith(
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    CustomButton(
+                      text: _isAuctionEnded ? "AUCTION ENDED" : "PLACE BID",
+                      isLoading: _isBidding,
+                      isActive: !_isAuctionEnded,
+                      onPressed: _showBidConfirmation,
+                    ),
                   SizedBox(height: 24.h),
 
                   // Auto Bid Section
@@ -966,6 +1018,8 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                         ],
                       ),
                     ),
+                  ],
+                  // end if (!_isOwner)
                   ],
                   SizedBox(height: 48.h),
                 ],

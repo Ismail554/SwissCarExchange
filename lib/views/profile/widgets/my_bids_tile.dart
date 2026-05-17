@@ -9,6 +9,7 @@ class MyBidsTile extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final Color accentColor;
+  final List<Color> gradientColors;
 
   const MyBidsTile({
     super.key,
@@ -17,114 +18,93 @@ class MyBidsTile extends StatelessWidget {
     this.icon = Icons.feed_outlined,
     required this.onTap,
     this.accentColor = AppColors.sceTeal,
+    this.gradientColors = const [AppColors.sceTeal, Color(0xFF005662)],
   });
 
   @override
   Widget build(BuildContext context) {
-    final Color iconBgStart = accentColor.withValues(alpha: 0.25);
-    final Color iconBgEnd = accentColor.withValues(alpha: 0.08);
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.sceCardBg,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.03),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(14.r),
+          borderRadius: BorderRadius.circular(16.r),
           splashColor: accentColor.withValues(alpha: 0.08),
           highlightColor: accentColor.withValues(alpha: 0.04),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: AppColors.sceCardBg,
-              borderRadius: BorderRadius.circular(14.r),
-              border: Border.all(
-                color: accentColor.withValues(alpha: 0.15),
-                width: 1,
-              ),
-            ),
-            child: Row(
+          child: Padding(
+            padding: EdgeInsets.all(16.r),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Left accent bar
-                Container(
-                  width: 4.w,
-                  height: 64.h,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        accentColor,
-                        accentColor.withValues(alpha: 0.2),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(14.r),
-                      bottomLeft: Radius.circular(14.r),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 14.w),
-                // Icon badge
-                Container(
-                  width: 44.w,
-                  height: 44.w,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [iconBgStart, iconBgEnd],
-                    ),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: accentColor.withValues(alpha: 0.25),
-                      width: 1,
-                    ),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: accentColor,
-                    size: 20.sp,
-                  ),
-                ),
-                SizedBox(width: 14.w),
-                // Text content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        title,
-                        style: FontManager.labelMedium(
-                          color: Colors.white,
+                // Icon Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 40.r,
+                      height: 40.r,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: gradientColors,
                         ),
-                      ),
-                      if (subtitle != null) ...[
-                        SizedBox(height: 2.h),
-                        Text(
-                          subtitle!,
-                          style: FontManager.labelSmall(
-                            color: AppColors.textHint,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: gradientColors.first.withValues(alpha: 0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
                           ),
-                        ),
-                      ],
-                    ],
+                        ],
+                      ),
+                      child: Icon(
+                        icon,
+                        color: Colors.white,
+                        size: 20.sp,
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_outward_rounded,
+                      color: AppColors.sceGreyA0.withValues(alpha: 0.5),
+                      size: 16.sp,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20.h),
+                // Text content
+                Text(
+                  title,
+                  style: FontManager.heading3(color: Colors.white).copyWith(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                // Chevron
-                Container(
-                  margin: EdgeInsets.only(right: 14.w),
-                  padding: EdgeInsets.all(6.w),
-                  decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(8.r),
+                if (subtitle != null) ...[
+                  SizedBox(height: 4.h),
+                  Text(
+                    subtitle!,
+                    style: FontManager.bodySmall(color: AppColors.sceGreyA0).copyWith(
+                      fontSize: 11.sp,
+                    ),
                   ),
-                  child: Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: accentColor,
-                    size: 12.sp,
-                  ),
-                ),
+                ],
               ],
             ),
           ),
