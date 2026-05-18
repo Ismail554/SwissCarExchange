@@ -10,9 +10,37 @@ class CreateAuctionProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  int _minAuctionDurationHours = 12;
+  int _maxAuctionDurationHours = 360;
+  int _minBidIncrement = 180;
+
+  int get minAuctionDurationHours => _minAuctionDurationHours;
+  int get maxAuctionDurationHours => _maxAuctionDurationHours;
+  int get minBidIncrement => _minBidIncrement;
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  Future<void> fetchAuctionConfig() async {
+    final response = await DioManager.apiRequest(
+      url: ApiService.auctionCofig,
+      method: Methods.get,
+    );
+    response.fold(
+      (error) {
+        // Quietly fall back to defaults
+      },
+      (data) {
+        if (data is Map<String, dynamic>) {
+          _minAuctionDurationHours = data['min_auction_duration_hours'] ?? 12;
+          _maxAuctionDurationHours = data['max_auction_duration_hours'] ?? 360;
+          _minBidIncrement = data['min_bid_increment'] ?? 180;
+          notifyListeners();
+        }
+      },
+    );
   }
 
   Future<bool> createAuction({

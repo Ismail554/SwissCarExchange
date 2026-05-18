@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
-import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
 
 class SettingsCard extends StatelessWidget {
   const SettingsCard({super.key});

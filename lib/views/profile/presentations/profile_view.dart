@@ -8,8 +8,6 @@ import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/app_utils/utils/app_spacing.dart';
 import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
-import 'package:rionydo/views/profile/presentations/my_bids_view.dart';
-
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 import 'package:rionydo/views/profile/widgets/profile_header_card.dart';
 import 'package:rionydo/views/profile/widgets/my_bids_tile.dart';
@@ -19,7 +17,6 @@ import 'package:rionydo/views/profile/widgets/premium_features_card.dart';
 import 'package:rionydo/views/profile/widgets/account_info_card.dart';
 import 'package:rionydo/views/profile/widgets/settings_card.dart';
 import 'package:rionydo/views/profile/widgets/logout_button.dart';
-import 'package:rionydo/views/won_auction/presentations/won_auction_home.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});

@@ -49,14 +49,14 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     final isPremium =
         widget.isPremiumUser ?? context.read<GlobalState>().isPremium;
     if (isPremium) {
-      context.push('/create_auction');
+      context.push('/create-auction');
     } else {
       AppSnackBar.warning(
         context,
         'This feature is for Premium members only.',
         actionLabel: 'Upgrade',
         onAction: () {
-          context.push('/manage_subscription');
+          context.push('/manage-subscription');
         },
       );
     }

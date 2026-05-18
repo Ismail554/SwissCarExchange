@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
-import 'package:rionydo/views/premium/presentations/advance_statistics.dart';
-import 'package:rionydo/views/premium/presentations/auction_management_view.dart';
-import 'package:rionydo/views/premium/presentations/create_auction_view.dart';
-import 'package:rionydo/views/premium/presentations/recieve_payments_view.dart';
-import 'package:rionydo/views/profile/presentations/my_shipping_request_view.dart';
 import 'package:rionydo/views/profile/widgets/profile_helpers.dart';
 
 class PremiumFeaturesCard extends StatelessWidget {
@@ -58,7 +53,7 @@ class PremiumFeaturesCard extends StatelessWidget {
                 Icons.inventory_2_outlined,
                 'Auction Management',
                 isPremiumFeature: true,
-                onTap: () => context.push('/manage-auctions'),
+                onTap: () => context.push('/auction-management'),
               ),
               ProfileDivider(),
               ProfileListTile(

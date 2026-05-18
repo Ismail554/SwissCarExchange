@@ -8,7 +8,6 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:rionydo/models/profile/user_profile_response.dart';
 import 'package:rionydo/models/subscription/subscription_plan.dart';
-import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/checkout_webview.dart';
 
 // ─── View ─────────────────────────────────────────────────────────────────────
 

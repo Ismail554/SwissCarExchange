@@ -166,7 +166,13 @@ The application implements a secure, IndexedStack-based navigation shell through
   ├── /payment/:auctionId         [PaymentProcessView] (Shipping, offline/online selection)
   ├── /rate-dealer/:auctionId     [RateDealerView] (Dealer reviews, star ratings)
   ├── /transaction-completed      [TransactionCompletedView]
-  └── /advanced-statistics        [AdvanceStatistics] (Premium analytical panels)
+  ├── /advanced-statistics        [AdvanceStatistics] (Premium analytical panels)
+  ├── /create-auction             [CreateAuction] (Full screen form overlay)
+  ├── /auction-management         [AuctionManagement] (Seller's active auctions)
+  ├── /update-subscription        [SubscriptionViews] (Tier choice page)
+  ├── /account-settings           [AccountSettingsView]
+  ├── /manage-subscription        [AccountSubscriptionView] (Tier cancel & upgrade)
+  └── /privacy-settings           [PrivacySettingsView]
 ```
 
 ---

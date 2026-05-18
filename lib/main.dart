@@ -61,6 +61,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => PaymentProcessProvider()),
         ChangeNotifierProvider(create: (_) => RateDealerProvider()),
         ChangeNotifierProvider(create: (_) => MyShippingProvider()),
+        ChangeNotifierProvider(create: (_) => CreateAuctionProvider()),
       ],
       child: const MyApp(),
     ),

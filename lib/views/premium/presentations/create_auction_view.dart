@@ -55,6 +55,16 @@ class _CreateAuctionState extends State<CreateAuction> {
   static const int _maxVideoSizeMB = 50;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<CreateAuctionProvider>().fetchAuctionConfig();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _brandController.dispose();
@@ -99,7 +109,7 @@ class _CreateAuctionState extends State<CreateAuction> {
                 icon: Icons.camera_alt_outlined,
                 label: "Take Photo",
                 onTap: () {
-                  Navigator.pop(ctx);
+                  ctx.pop();
                   _pickImageFromCamera();
                 },
               ),
@@ -107,7 +117,7 @@ class _CreateAuctionState extends State<CreateAuction> {
                 icon: Icons.photo_library_outlined,
                 label: "Choose from Gallery",
                 onTap: () {
-                  Navigator.pop(ctx);
+                  ctx.pop();
                   _pickImagesFromGallery();
                 },
               ),
@@ -171,7 +181,7 @@ class _CreateAuctionState extends State<CreateAuction> {
                 icon: Icons.videocam_outlined,
                 label: "Record Video",
                 onTap: () {
-                  Navigator.pop(ctx);
+                  ctx.pop();
                   _pickVideoFromSource(ImageSource.camera);
                 },
               ),
@@ -179,7 +189,7 @@ class _CreateAuctionState extends State<CreateAuction> {
                 icon: Icons.video_library_outlined,
                 label: "Choose from Gallery",
                 onTap: () {
-                  Navigator.pop(ctx);
+                  ctx.pop();
                   _pickVideoFromSource(ImageSource.gallery);
                 },
               ),
@@ -258,8 +268,25 @@ class _CreateAuctionState extends State<CreateAuction> {
     if (picked != null) {
       setState(() {
         _startDate = picked;
-        if (_endDate != null && _endDate!.isBefore(picked)) {
-          _endDate = null;
+        if (_endDate != null) {
+          final provider = Provider.of<CreateAuctionProvider>(context, listen: false);
+          final minHours = provider.minAuctionDurationHours;
+          final maxHours = provider.maxAuctionDurationHours;
+          final startsAt = DateTime(
+            _startDate!.year,
+            _startDate!.month,
+            _startDate!.day,
+            _startTime?.hour ?? 0,
+            _startTime?.minute ?? 0,
+          );
+          final minEndDate = startsAt.add(Duration(hours: minHours));
+          final maxEndDate = startsAt.add(Duration(hours: maxHours));
+          final firstSelectableDate = DateTime(minEndDate.year, minEndDate.month, minEndDate.day);
+          final lastSelectableDate = DateTime(maxEndDate.year, maxEndDate.month, maxEndDate.day);
+
+          if (_endDate!.isBefore(firstSelectableDate) || _endDate!.isAfter(lastSelectableDate)) {
+            _endDate = null;
+          }
         }
       });
     }
@@ -300,14 +327,42 @@ class _CreateAuctionState extends State<CreateAuction> {
   }
 
   Future<void> _pickEndDate() async {
-    final DateTime initialDate =
-        _endDate ?? (_startDate ?? DateTime.now()).add(const Duration(days: 1));
-    final DateTime firstDate = _startDate ?? DateTime.now();
+    if (_startDate == null) {
+      if (!mounted) return;
+      AppSnackBar.error(context, "Please select a start date first.");
+      return;
+    }
+
+    final provider = Provider.of<CreateAuctionProvider>(context, listen: false);
+    final minHours = provider.minAuctionDurationHours;
+    final maxHours = provider.maxAuctionDurationHours;
+
+    final startsAt = DateTime(
+      _startDate!.year,
+      _startDate!.month,
+      _startDate!.day,
+      _startTime?.hour ?? 0,
+      _startTime?.minute ?? 0,
+    );
+
+    final minEndDate = startsAt.add(Duration(hours: minHours));
+    final maxEndDate = startsAt.add(Duration(hours: maxHours));
+
+    final firstSelectableDate = DateTime(minEndDate.year, minEndDate.month, minEndDate.day);
+    final lastSelectableDate = DateTime(maxEndDate.year, maxEndDate.month, maxEndDate.day);
+
+    DateTime initialDate = _endDate ?? minEndDate;
+    if (initialDate.isBefore(firstSelectableDate)) {
+      initialDate = firstSelectableDate;
+    } else if (initialDate.isAfter(lastSelectableDate)) {
+      initialDate = lastSelectableDate;
+    }
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: initialDate.isBefore(firstDate) ? firstDate : initialDate,
-      firstDate: firstDate,
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      initialDate: initialDate,
+      firstDate: firstSelectableDate,
+      lastDate: lastSelectableDate,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -333,6 +388,11 @@ class _CreateAuctionState extends State<CreateAuction> {
   }
 
   Future<void> _pickEndTime() async {
+    if (_endDate == null) {
+      if (!mounted) return;
+      AppSnackBar.error(context, "Please select an end date first.");
+      return;
+    }
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _endTime ?? TimeOfDay.now(),
@@ -383,13 +443,37 @@ class _CreateAuctionState extends State<CreateAuction> {
         return;
       }
 
-      final startsAt = DateTime(
-        _startDate!.year,
-        _startDate!.month,
-        _startDate!.day,
-        _startTime?.hour ?? 0,
-        _startTime?.minute ?? 0,
-      ).toUtc();
+      final now = DateTime.now();
+      DateTime startsAt;
+      if (_startTime == null) {
+        if (_startDate!.year == now.year &&
+            _startDate!.month == now.month &&
+            _startDate!.day == now.day) {
+          startsAt = now;
+        } else {
+          startsAt = DateTime(
+            _startDate!.year,
+            _startDate!.month,
+            _startDate!.day,
+            0,
+            0,
+          );
+        }
+      } else {
+        startsAt = DateTime(
+          _startDate!.year,
+          _startDate!.month,
+          _startDate!.day,
+          _startTime!.hour,
+          _startTime!.minute,
+        );
+      }
+
+      if (startsAt.isBefore(now.subtract(const Duration(minutes: 5)))) {
+        if (!mounted) return;
+        AppSnackBar.error(context, "Start time cannot be in the past.");
+        return;
+      }
 
       final endsAt = DateTime(
         _endDate!.year,
@@ -397,21 +481,34 @@ class _CreateAuctionState extends State<CreateAuction> {
         _endDate!.day,
         _endTime!.hour,
         _endTime!.minute,
-      ).toUtc();
+      );
 
-      if (!endsAt.isAfter(startsAt)) {
-        if (!mounted) return;
-        AppSnackBar.error(
-          context,
-          "End date/time must be strictly after start date/time.",
-        );
-        return;
-      }
+      final duration = endsAt.difference(startsAt);
+      final durationHours = duration.inMinutes / 60.0;
 
       final provider = Provider.of<CreateAuctionProvider>(
         context,
         listen: false,
       );
+      final minHours = provider.minAuctionDurationHours;
+      final maxHours = provider.maxAuctionDurationHours;
+
+      if (durationHours < minHours) {
+        if (!mounted) return;
+        AppSnackBar.error(
+          context,
+          "The minimum auction duration is $minHours hours (currently ${durationHours.toStringAsFixed(1)} hours).",
+        );
+        return;
+      }
+      if (durationHours > maxHours) {
+        if (!mounted) return;
+        AppSnackBar.error(
+          context,
+          "The maximum auction duration is $maxHours hours (currently ${durationHours.toStringAsFixed(1)} hours).",
+        );
+        return;
+      }
 
       final success = await provider.createAuction(
         context: context,
@@ -430,8 +527,8 @@ class _CreateAuctionState extends State<CreateAuction> {
         location: _locationController.text,
         reservePrice: _reservePriceController.text,
         buyNowPrice: _buyNowPriceController.text,
-        startsAt: startsAt.toIso8601String(),
-        endsAt: endsAt.toIso8601String(),
+        startsAt: startsAt.toUtc().toIso8601String(),
+        endsAt: endsAt.toUtc().toIso8601String(),
         images: _imageFiles,
         video: _videoFile,
         document: _documentFiles.isNotEmpty ? _documentFiles.first : null,

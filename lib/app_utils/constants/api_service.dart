@@ -123,7 +123,7 @@ class ApiService {
   // Auction Management
   static String get auctionManagement =>
       "$baseUrl/api/auctions/me/"; // ?status= `active` - Active * `sold` - Sold * `unsold` - Unsold * `withdrawn` - Withdrawn
-
+  static String get auctionCofig => "$baseUrl/api/auctions/config/";  // GET response : { "min_auction_duration_hours": 12, "max_auction_duration_hours": 360, "min_bid_increment": 180 }
   // Bank
   static String get allBankDetails =>
       "$baseUrl/api/users/me/bank-account"; // GET // response: { "bank_name": "", "account_name": "", "iban": "" }
