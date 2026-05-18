@@ -65,7 +65,7 @@ class AuctionDetailResponse {
     required this.adminNote,
     this.isOwner = false,
     required this.isWatchlisted,
-    this.minBidIncrement= "150",
+    this.minBidIncrement = "150",
   });
 
   factory AuctionDetailResponse.fromJson(Map<String, dynamic> json) {
@@ -84,7 +84,7 @@ class AuctionDetailResponse {
       reservePrice: json['reserve_price'] as String? ?? '0.00',
       buyNowPrice: json['buy_now_price'] as String?,
       status: json['status'] as String? ?? 'unknown',
-      isOwner: json['is_me'] as bool? ?? false,
+      isOwner: json['is_myauction'] as bool? ?? false,
       startsAt: json['starts_at'] != null
           ? DateTime.tryParse(json['starts_at'] as String) ?? DateTime.now()
           : DateTime.now(),
@@ -95,7 +95,8 @@ class AuctionDetailResponse {
       soldAt: json['sold_at'] != null
           ? DateTime.tryParse(json['sold_at'] as String)
           : null,
-      images: (json['images'] as List<dynamic>?)
+      images:
+          (json['images'] as List<dynamic>?)
               ?.map((e) => AuctionImage.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -115,36 +116,37 @@ class AuctionDetailResponse {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'description': description,
-        'vehicle_brand': vehicleBrand,
-        'vehicle_model': vehicleModel,
-        'vehicle_category': vehicleCategory,
-        'vehicle_year': vehicleYear,
-        'vehicle_mileage': vehicleMileage,
-        'vehicle_vin_number': vehicleVinNumber,
-        'vehicle_fuel_type': vehicleFuelType,
-        'vehicle_location': vehicleLocation,
-        'reserve_price': reservePrice,
-        'buy_now_price': buyNowPrice,
-        'status': status,
-        'starts_at': startsAt.toIso8601String(),
-        'ends_at': endsAt.toIso8601String(),
-        'winner_id': winnerId,
-        'sold_at': soldAt?.toIso8601String(),
-        'images': images.map((e) => e.toJson()).toList(),
-        'video_url': videoUrl,
-        'document_url': documentUrl,
-        'created_at': createdAt.toIso8601String(),
-        'seller_name': sellerName,
-        'current_highest_bid': currentHighestBid,
-        'total_bidders': totalBidders,
-        'is_flagged': isFlagged,
-        'admin_note': adminNote,
-        'is_watchlisted': isWatchlisted,
-        'min_bid_increment': minBidIncrement,
-      };
+    'id': id,
+    'title': title,
+    'description': description,
+    'vehicle_brand': vehicleBrand,
+    'vehicle_model': vehicleModel,
+    'vehicle_category': vehicleCategory,
+    'vehicle_year': vehicleYear,
+    'vehicle_mileage': vehicleMileage,
+    'vehicle_vin_number': vehicleVinNumber,
+    'vehicle_fuel_type': vehicleFuelType,
+    'vehicle_location': vehicleLocation,
+    'reserve_price': reservePrice,
+    'buy_now_price': buyNowPrice,
+    'status': status,
+    'starts_at': startsAt.toIso8601String(),
+    'ends_at': endsAt.toIso8601String(),
+    'winner_id': winnerId,
+    'sold_at': soldAt?.toIso8601String(),
+    'images': images.map((e) => e.toJson()).toList(),
+    'video_url': videoUrl,
+    'document_url': documentUrl,
+    'created_at': createdAt.toIso8601String(),
+    'seller_name': sellerName,
+    'current_highest_bid': currentHighestBid,
+    'total_bidders': totalBidders,
+    'is_flagged': isFlagged,
+    'admin_note': adminNote,
+    'is_myauction': isOwner,
+    'is_watchlisted': isWatchlisted,
+    'min_bid_increment': minBidIncrement,
+  };
 
   AuctionDetailResponse copyWith({
     int? id,
@@ -174,6 +176,7 @@ class AuctionDetailResponse {
     int? totalBidders,
     bool? isFlagged,
     String? adminNote,
+    bool? isOwner,
     bool? isWatchlisted,
   }) {
     return AuctionDetailResponse(
@@ -205,7 +208,7 @@ class AuctionDetailResponse {
       isFlagged: isFlagged ?? this.isFlagged,
       adminNote: adminNote ?? this.adminNote,
       isWatchlisted: isWatchlisted ?? this.isWatchlisted,
+      isOwner: isOwner ?? this.isOwner,
     );
   }
 }
-

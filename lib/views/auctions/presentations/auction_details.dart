@@ -48,8 +48,10 @@ class _AuctionDetailsState extends State<AuctionDetails> {
       backgroundColor: AppColors.primaryColor,
       body: Consumer<AuctionsDetailProvider>(
         builder: (context, provider, child) {
-          final detail = provider.auctionDetail;
-          final isLoading = provider.isLoading;
+          // Prevent stale details from previous auctions showing during transition
+          final isDetailForCurrentAuction = provider.auctionDetail?.id == widget.data.id;
+          final detail = isDetailForCurrentAuction ? provider.auctionDetail : null;
+          final isLoading = provider.isLoading || !isDetailForCurrentAuction;
 
           return Stack(
             children: [
@@ -256,10 +258,13 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                             style: FontManager.heading3(color: Colors.white),
                           ),
 
-                          // Grid with Shimmer support
-                          isLoading
-                              ? _buildShimmerGrid()
-                              : _buildVehicleDataGrid(detail),
+                          // Grid with Shimmer support using AnimatedSwitcher
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: isLoading
+                                ? _buildShimmerGrid(key: const ValueKey('shimmer_grid'))
+                                : _buildVehicleDataGrid(detail, key: const ValueKey('data_grid')),
+                          ),
 
                           Text(
                             "Description",
@@ -267,10 +272,13 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                           ),
                           SizedBox(height: 4.h),
 
-                          // Description with Shimmer support
-                          isLoading
-                              ? _buildShimmerBox(height: 100.h)
-                              : _buildDescriptionCard(detail?.description),
+                          // Description with Shimmer support using AnimatedSwitcher
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: isLoading
+                                ? _buildShimmerBox(height: 100.h, key: const ValueKey('shimmer_desc'))
+                                : _buildDescriptionCard(detail?.description, key: const ValueKey('data_desc')),
+                          ),
 
                           SizedBox(height: 140.h),
                         ],
@@ -300,11 +308,14 @@ class _AuctionDetailsState extends State<AuctionDetails> {
   Widget _buildBidSection(AuctionDetailResponse? detail, AuctionItem initial) {
     final currentBid = detail?.currentHighestBid ?? initial.currentHighestBid;
     final reservePrice = detail?.reservePrice ?? initial.reservePrice;
-    
+
     final biddersCount = detail?.totalBidders ?? initial.totalBidders;
     final totalBidsCount = initial.totalBids;
-    final hasNoBids = (currentBid == null || currentBid.isEmpty) || (biddersCount == 0) || (totalBidsCount == 0);
-    
+    final hasNoBids =
+        (currentBid == null || currentBid.isEmpty) ||
+        (biddersCount == 0) ||
+        (totalBidsCount == 0);
+
     final labelText = hasNoBids ? "BIDS START FROM" : "CURRENT HIGHEST BID";
     final displayBid = hasNoBids ? reservePrice : currentBid;
 
@@ -353,9 +364,10 @@ class _AuctionDetailsState extends State<AuctionDetails> {
     );
   }
 
-  Widget _buildVehicleDataGrid(AuctionDetailResponse? detail) {
-    if (detail == null) return const SizedBox.shrink();
+  Widget _buildVehicleDataGrid(AuctionDetailResponse? detail, {Key? key}) {
+    if (detail == null) return SizedBox.shrink(key: key);
     return GridView.count(
+      key: key,
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -387,8 +399,9 @@ class _AuctionDetailsState extends State<AuctionDetails> {
     );
   }
 
-  Widget _buildDescriptionCard(String? description) {
+  Widget _buildDescriptionCard(String? description, {Key? key}) {
     return Container(
+      key: key,
       width: double.maxFinite,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
@@ -443,20 +456,22 @@ class _AuctionDetailsState extends State<AuctionDetails> {
     );
   }
 
-  Widget _buildShimmerGrid() {
+  Widget _buildShimmerGrid({Key? key}) {
     return GridView.count(
+      key: key,
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12.h,
-      crossAxisSpacing: 12.w,
+      mainAxisSpacing: 8.h,
+      crossAxisSpacing: 8.w,
       childAspectRatio: 2.2,
       children: List.generate(4, (index) => _buildShimmerBox()),
     );
   }
 
-  Widget _buildShimmerBox({double? height}) {
+  Widget _buildShimmerBox({double? height, Key? key}) {
     return Shimmer.fromColors(
+      key: key,
       baseColor: Colors.white.withValues(alpha: 0.05),
       highlightColor: Colors.white.withValues(alpha: 0.1),
       child: Container(
@@ -469,12 +484,57 @@ class _AuctionDetailsState extends State<AuctionDetails> {
     );
   }
 
+
   Widget _buildBottomButton(
     BuildContext context,
     AuctionItem initial,
     AuctionDetailResponse? detail,
   ) {
-    final isOwner = detail?.isOwner ?? false;
+    Widget buttonChild;
+    final isOwner = detail?.isOwner ?? initial.isOwner;
+    final status = detail?.status ?? initial.status;
+
+    if (status == 'scheduled') {
+      // Show elegant bidding not started button instantly
+      buttonChild = KeyedSubtree(
+        key: const ValueKey('scheduled'),
+        child: CustomButton(
+          text: "BIDDING NOT STARTED",
+          isActive: false,
+          onPressed: () {},
+        ),
+      );
+    } else if (status == 'sold' || status == 'unsold' || status == 'withdrawn') {
+      // Show ended button instantly
+      buttonChild = KeyedSubtree(
+        key: const ValueKey('ended'),
+        child: CustomButton(
+          text: "AUCTION ENDED",
+          isActive: false,
+          onPressed: () {},
+        ),
+      );
+    } else if (isOwner) {
+      // Show owner live bids action instantly without any loading flicker
+      buttonChild = KeyedSubtree(
+        key: const ValueKey('owner'),
+        child: _buildOwnerLiveBidsButton(context, initial, detail),
+      );
+    } else {
+      // Show active bidding button instantly
+      buttonChild = KeyedSubtree(
+        key: const ValueKey('bidder'),
+        child: CustomButton(
+          text: "OFFER NOW",
+          onPressed: () {
+            context.push(
+              '/auction-bidding',
+              extra: {'initialData': initial, 'detailData': detail},
+            );
+          },
+        ),
+      );
+    }
 
     return Container(
       padding: EdgeInsets.all(16.w).copyWith(bottom: 24.h),
@@ -489,17 +549,19 @@ class _AuctionDetailsState extends State<AuctionDetails> {
         ),
       ),
       child: SafeArea(
-        child: isOwner
-            ? _buildOwnerLiveBidsButton(context, initial, detail)
-            : CustomButton(
-                text: "OFFER NOW",
-                onPressed: () {
-                  context.push(
-                    '/auction-bidding',
-                    extra: {'initialData': initial, 'detailData': detail},
-                  );
-                },
-              ),
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            child: buttonChild,
+          ),
+        ),
       ),
     );
   }
@@ -519,9 +581,7 @@ class _AuctionDetailsState extends State<AuctionDetails> {
           decoration: BoxDecoration(
             color: AppColors.sceGold.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              color: AppColors.sceGold.withValues(alpha: 0.4),
-            ),
+            border: Border.all(color: AppColors.sceGold.withValues(alpha: 0.4)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -573,21 +633,14 @@ class _AuctionDetailsState extends State<AuctionDetails> {
                     shape: BoxShape.circle,
                     color: AppColors.errorRed,
                   ),
-                  child: Icon(
-                    Icons.circle,
-                    color: Colors.white,
-                    size: 6.sp,
-                  ),
+                  child: Icon(Icons.circle, color: Colors.white, size: 6.sp),
                 ),
                 SizedBox(width: 8.w),
                 Text(
                   "VIEW LIVE BIDS",
                   style: FontManager.labelMedium(
                     color: AppColors.sceTeal,
-                  ).copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  ),
+                  ).copyWith(fontWeight: FontWeight.bold, letterSpacing: 1.2),
                 ),
               ],
             ),

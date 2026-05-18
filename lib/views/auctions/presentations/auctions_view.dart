@@ -88,7 +88,7 @@ class _AuctionsViewState extends State<AuctionsView> {
           "Auction",
           style: FontManager.heading1(color: Colors.white),
         ),
-        
+
         centerTitle: false,
       ),
       child: Padding(
@@ -208,7 +208,9 @@ class _AuctionsViewState extends State<AuctionsView> {
                           backgroundColor: AppColors.sceCardBg,
                           onRefresh: () async {
                             _searchController.clear();
-                            context.read<MyAuctionsProvider>().setSearchQuery('');
+                            context.read<MyAuctionsProvider>().setSearchQuery(
+                              '',
+                            );
                             await context
                                 .read<MyAuctionsProvider>()
                                 .fetchAuctions(
@@ -262,7 +264,10 @@ class _AuctionsViewState extends State<AuctionsView> {
                                           ? auction.images.first.url
                                           : null,
                                       onTap: () {
-                                        context.push('/auction-details', extra: auction);
+                                        context.push(
+                                          '/auction-details',
+                                          extra: auction,
+                                        );
                                       },
                                     );
                                   },

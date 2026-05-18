@@ -21,7 +21,8 @@ class MyAuctionResponse {
       count: json['count'] as int? ?? 0,
       next: json['next'] as String?,
       previous: json['previous'] as String?,
-      results: (json['results'] as List<dynamic>?)
+      results:
+          (json['results'] as List<dynamic>?)
               ?.map((e) => AuctionItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -29,11 +30,11 @@ class MyAuctionResponse {
   }
 
   Map<String, dynamic> toJson() => {
-        'count': count,
-        'next': next,
-        'previous': previous,
-        'results': results.map((e) => e.toJson()).toList(),
-      };
+    'count': count,
+    'next': next,
+    'previous': previous,
+    'results': results.map((e) => e.toJson()).toList(),
+  };
 
   MyAuctionResponse copyWith({
     int? count,
@@ -58,13 +59,14 @@ class AuctionItem {
   final String title;
   final String vehicleBrand;
   final String sellerName;
-  final String? currentHighestBid; 
+  final String? currentHighestBid;
   final String reservePrice;
   final String status;
   final DateTime createdAt;
   final DateTime? endsAt;
   final DateTime? startsAt;
   final int totalBidders;
+  final bool isOwner;
   final int totalBids;
   final List<AuctionImage> images;
 
@@ -79,6 +81,7 @@ class AuctionItem {
     required this.createdAt,
     this.endsAt,
     this.startsAt,
+    this.isOwner = false,
     required this.totalBidders,
     required this.totalBids,
     required this.images,
@@ -104,10 +107,12 @@ class AuctionItem {
           : null,
       totalBidders: json['total_bidders'] as int? ?? 0,
       totalBids: json['total_bids'] as int? ?? 0,
-      images: (json['images'] as List<dynamic>?)
+      images:
+          (json['images'] as List<dynamic>?)
               ?.map((e) => AuctionImage.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      isOwner: json['is_myauction'] as bool? ?? false,
     );
   }
 
@@ -125,6 +130,7 @@ class AuctionItem {
     'total_bidders': totalBidders,
     'total_bids': totalBids,
     'images': images.map((e) => e.toJson()).toList(),
+    "is_myauction": isOwner,
   };
 
   AuctionItem copyWith({
@@ -136,9 +142,12 @@ class AuctionItem {
     String? reservePrice,
     String? status,
     DateTime? createdAt,
+    DateTime? endsAt,
+    DateTime? startsAt,
     int? totalBidders,
     int? totalBids,
     List<AuctionImage>? images,
+    bool? isOwner,
   }) {
     return AuctionItem(
       id: id ?? this.id,
@@ -149,11 +158,12 @@ class AuctionItem {
       reservePrice: reservePrice ?? this.reservePrice,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      endsAt: endsAt ?? this.endsAt,
+      startsAt: startsAt ?? this.startsAt,
       totalBidders: totalBidders ?? this.totalBidders,
       totalBids: totalBids ?? this.totalBids,
       images: images ?? this.images,
+      isOwner: isOwner ?? this.isOwner,
     );
   }
 }
-
-
