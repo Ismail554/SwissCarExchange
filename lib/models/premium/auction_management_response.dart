@@ -42,6 +42,7 @@ class Auction {
   final String reservePrice;
   final String status;
   final DateTime? endsAt;
+  final DateTime? startsAt;
   final int totalBidders;
   final int totalBids;
   final List<AuctionImage> images;
@@ -59,6 +60,7 @@ class Auction {
     required this.reservePrice,
     required this.status,
     this.endsAt,
+    this.startsAt,
     required this.totalBidders,
     required this.totalBids,
     required this.images,
@@ -77,6 +79,9 @@ class Auction {
       currentHighestBid: json['current_highest_bid'] ?? "0.00",
       reservePrice: json['reserve_price'] ?? "0.00",
       status: json['status'] ?? "",
+      startsAt: json['starts_at'] != null 
+          ? DateTime.tryParse(json['starts_at']) 
+          : null,
       endsAt: json['ends_at'] != null 
           ? DateTime.tryParse(json['ends_at']) 
           : null,
@@ -102,6 +107,7 @@ hasReviewed: json['has_reviewed'] ?? false,
       'current_highest_bid': currentHighestBid,
       'reserve_price': reservePrice,
       'status': status,
+      "starts_at" : startsAt?.toIso8601String(),
       'ends_at': endsAt?.toIso8601String(),
       'total_bidders': totalBidders,
       'total_bids': totalBids,

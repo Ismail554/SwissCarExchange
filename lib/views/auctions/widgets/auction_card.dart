@@ -10,6 +10,7 @@ class AuctionCard extends StatelessWidget {
   final String reservePrice;
   final String status;
   final DateTime? endsAt;
+  final DateTime? startsAt;
   final String? imageUrl;
   final VoidCallback? onTap;
   final Widget? topRightOverlay;
@@ -22,6 +23,7 @@ class AuctionCard extends StatelessWidget {
     required this.reservePrice,
     required this.status,
     this.endsAt,
+    this.startsAt,
     this.imageUrl,
     this.onTap,
     this.topRightOverlay,
@@ -53,7 +55,8 @@ class AuctionCard extends StatelessWidget {
                           imageUrl!,
                           fit: BoxFit.cover,
                           errorBuilder: (_, _, _) => _buildImagePlaceholder(),
-                          loadingBuilder: (_, child, progress) => progress == null
+                          loadingBuilder: (_, child, progress) =>
+                              progress == null
                               ? child
                               : _buildImagePlaceholder(loading: true),
                         )
@@ -105,9 +108,9 @@ class AuctionCard extends StatelessWidget {
                               "Live",
                               style: FontManager.bodySmall(color: Colors.white)
                                   .copyWith(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 10.sp,
-                              ),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10.sp,
+                                  ),
                             ),
                           ],
                         ),
@@ -116,11 +119,7 @@ class AuctionCard extends StatelessWidget {
 
                   // Optional Overlay (e.g. Heart button for wishlist)
                   if (topRightOverlay != null)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: topRightOverlay!,
-                    ),
+                    Positioned(top: 0, right: 0, child: topRightOverlay!),
                 ],
               ),
             ),
@@ -196,7 +195,7 @@ class AuctionCard extends StatelessWidget {
                               vertical: 3.h,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.07),
+                              color: _getTimeBgColor(endsAt, startsAt),
                               borderRadius: BorderRadius.circular(6.r),
                             ),
                             child: Row(
@@ -205,13 +204,13 @@ class AuctionCard extends StatelessWidget {
                                 Icon(
                                   Icons.access_time_rounded,
                                   size: 10.sp,
-                                  color: AppColors.textHint,
+                                  color: _getTimeColor(endsAt, startsAt),
                                 ),
                                 SizedBox(width: 3.w),
                                 Text(
-                                  _getTimeRemaining(endsAt),
+                                  _getTimeRemaining(endsAt, startsAt),
                                   style: FontManager.bodySmall(
-                                    color: AppColors.textHint,
+                                    color: _getTimeColor(endsAt, startsAt),
                                   ).copyWith(fontSize: 10.sp),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -254,11 +253,22 @@ class AuctionCard extends StatelessWidget {
     );
   }
 
-  String _getTimeRemaining(DateTime? endsAt) {
+  String _getTimeRemaining(DateTime? endsAt, DateTime? startsAt) {
+    final now = DateTime.now();
+    if (startsAt != null && startsAt.isAfter(now)) {
+      final difference = startsAt.difference(now);
+      if (difference.inDays > 0) {
+        return "Starts in ${difference.inDays}d ${difference.inHours % 24}h";
+      } else if (difference.inHours > 0) {
+        return "Starts in ${difference.inHours}h ${difference.inMinutes % 60}m";
+      } else {
+        return "Starts in ${difference.inMinutes}m";
+      }
+    }
+
     if (endsAt == null) {
       return "Ended";
     }
-    final now = DateTime.now();
     final difference = endsAt.difference(now);
 
     if (difference.isNegative) {
@@ -272,5 +282,36 @@ class AuctionCard extends StatelessWidget {
     } else {
       return "${difference.inMinutes}m remaining";
     }
+  }
+
+  Color _getTimeColor(DateTime? endsAt, DateTime? startsAt) {
+    final now = DateTime.now();
+
+    // 1. Scheduled / Starting in the future
+    if (startsAt != null && startsAt.isAfter(now)) {
+      return AppColors.sceGold; // Gold/Yellow for upcoming scheduled auctions
+    }
+
+    // 2. Ended
+    if (endsAt == null || endsAt.isBefore(now)) {
+      return AppColors.textHint; // Grey for ended
+    }
+
+    // 3. Active / Live
+    final difference = endsAt.difference(now);
+    if (difference.inHours < 1) {
+      return AppColors.errorRed; // Red for ending extremely soon (under 1 hour)
+    } else if (difference.inHours < 24) {
+      return AppColors.warning; // Orange for ending soon (under 24 hours)
+    }
+
+    return AppColors.sceTeal; // Active teal color for general live auctions
+  }
+
+  Color _getTimeBgColor(DateTime? endsAt, DateTime? startsAt) {
+    final color = _getTimeColor(endsAt, startsAt);
+    return color.withValues(
+      alpha: 0.1,
+    ); // Dynamic translucent matching background
   }
 }

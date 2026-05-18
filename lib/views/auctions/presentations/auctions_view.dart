@@ -257,6 +257,7 @@ class _AuctionsViewState extends State<AuctionsView> {
                                       reservePrice: auction.reservePrice,
                                       status: auction.status,
                                       endsAt: auction.endsAt,
+                                      startsAt: auction.startsAt,
                                       imageUrl: auction.images.isNotEmpty
                                           ? auction.images.first.url
                                           : null,

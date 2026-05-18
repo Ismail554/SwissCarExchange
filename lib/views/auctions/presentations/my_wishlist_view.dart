@@ -105,6 +105,7 @@ class _MyWishlistViewState extends State<MyWishlistView> {
                                   reservePrice: item.reservePrice,
                                   status: item.status,
                                   endsAt: item.endsAt,
+                                  startsAt: item.startsAt,
                                   imageUrl: item.images.isNotEmpty
                                       ? item.images.first.url
                                       : null,

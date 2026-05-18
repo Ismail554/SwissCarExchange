@@ -265,7 +265,7 @@ class _AuctionManagementState extends State<AuctionManagement> {
       currentBid: currentBid,
       reservePrice: reserve,
       isReserveMet: isReserveMet,
-      timeLeft: _formatTimeLeft(auction.endsAt),
+      timeLeft: _formatTimeLeft(auction),
       onViewDetails: () {
         context.push(
           '/auction-details',
@@ -305,9 +305,30 @@ class _AuctionManagementState extends State<AuctionManagement> {
     return auction.status.toUpperCase();
   }
 
-  String _formatTimeLeft(DateTime? endsAt) {
-    if (endsAt == null) return "No end date";
+  String _formatTimeLeft(premium.Auction auction) {
+    final statusLower = auction.status.toLowerCase();
     final now = DateTime.now();
+
+    if (statusLower == 'scheduled') {
+      final startsAt = auction.startsAt;
+      if (startsAt == null) return "No start date";
+      if (startsAt.isBefore(now)) {
+        return "Starts now";
+      }
+      final diff = startsAt.difference(now);
+      if (diff.inDays > 0) {
+        return "Starts in ${diff.inDays} ${diff.inDays == 1 ? 'day' : 'days'}";
+      } else if (diff.inHours > 0) {
+        return "Starts in ${diff.inHours} ${diff.inHours == 1 ? 'hour' : 'hours'}";
+      } else if (diff.inMinutes > 0) {
+        return "Starts in ${diff.inMinutes} ${diff.inMinutes == 1 ? 'minute' : 'minutes'}";
+      } else {
+        return "Starts shortly";
+      }
+    }
+
+    final endsAt = auction.endsAt;
+    if (endsAt == null) return "No end date";
     if (endsAt.isBefore(now)) {
       final diff = now.difference(endsAt);
       if (diff.inDays > 0) {

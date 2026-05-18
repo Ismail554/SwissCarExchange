@@ -46,6 +46,7 @@ class WishListItem {
   final String reservePrice;
   final String status;
   final DateTime? endsAt;
+  final DateTime? startsAt;
   final int totalBidders;
   final int totalBids;
   final List<WishListImage> images;
@@ -59,6 +60,7 @@ class WishListItem {
     required this.reservePrice,
     required this.status,
     this.endsAt,
+    this.startsAt,
     required this.totalBidders,
     required this.totalBids,
     required this.images,
@@ -75,6 +77,9 @@ class WishListItem {
       status: json['status'] ?? "",
       endsAt: json['ends_at'] != null
           ? DateTime.tryParse(json['ends_at'])
+          : null,
+      startsAt: json['starts_at'] != null
+          ? DateTime.tryParse(json['starts_at'])
           : null,
       totalBidders: json['total_bidders'] ?? 0,
       totalBids: json['total_bids'] ?? 0,
@@ -96,6 +101,7 @@ class WishListItem {
       'reserve_price': reservePrice,
       'status': status,
       'ends_at': endsAt?.toIso8601String(),
+      'starts_at': startsAt?.toIso8601String(),
       'total_bidders': totalBidders,
       'total_bids': totalBids,
       'images': images.map((e) => e.toJson()).toList(),
@@ -113,6 +119,7 @@ class WishListItem {
       status: status,
       createdAt: DateTime.now(), // Fallback
       endsAt: endsAt,
+      startsAt: startsAt,
       totalBidders: totalBidders,
       totalBids: totalBids,
       images: images
