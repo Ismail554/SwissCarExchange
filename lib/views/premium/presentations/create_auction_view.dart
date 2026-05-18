@@ -16,6 +16,15 @@ import '../widgets/media_selection_section.dart';
 import '../widgets/pricing_duration_section.dart';
 import 'package:rionydo/controllers/auctions/create_auctions_provider.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:flutter/cupertino.dart'
+    show
+        CupertinoDatePicker,
+        CupertinoDatePickerMode,
+        CupertinoTheme,
+        CupertinoThemeData,
+        CupertinoTextThemeData,
+        showCupertinoModalPopup;
+import 'package:rionydo/app.dart';
 
 class CreateAuction extends StatefulWidget {
   const CreateAuction({super.key});
@@ -240,36 +249,176 @@ class _CreateAuctionState extends State<CreateAuction> {
     }
   }
 
-  // _showLimitSnackbar replaced by AppSnackBar
+  // Helper to show a beautiful, premium dark-teal Cupertino Date/Time Picker modal on iOS
+  Future<DateTime?> _showCupertinoDatePicker({
+    required BuildContext context,
+    required DateTime initialDateTime,
+    required DateTime minimumDate,
+    required DateTime maximumDate,
+    required CupertinoDatePickerMode mode,
+  }) async {
+    DateTime selectedDateTime = initialDateTime;
+    if (selectedDateTime.isBefore(minimumDate)) {
+      selectedDateTime = minimumDate;
+    } else if (selectedDateTime.isAfter(maximumDate)) {
+      selectedDateTime = maximumDate;
+    }
 
-  Future<void> _pickStartDate() async {
-    final DateTime? picked = await showDatePicker(
+    bool isDonePressed = false;
+    await showCupertinoModalPopup<void>(
       context: context,
-      initialDate: _startDate ?? DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(minutes: 5)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppColors.sceTeal,
-              onPrimary: Colors.black,
-              surface: AppColors.sceCardBg,
-              onSurface: Colors.white,
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
+      builder: (BuildContext context) {
+        return Container(
+          height: 300.h,
+          padding: EdgeInsets.only(top: 6.h),
+          color: AppColors.sceCardBg,
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                Container(
+                  color: AppColors.sceCardBg,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          isDonePressed = true;
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          "Done",
+                          style: TextStyle(
+                            color: AppColors.sceTeal,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(color: Colors.white24, height: 1),
+                Expanded(
+                  child: CupertinoTheme(
+                    data: const CupertinoThemeData(
+                      brightness: Brightness.dark,
+                      textTheme: CupertinoTextThemeData(
+                        dateTimePickerTextStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                    child: CupertinoDatePicker(
+                      mode: mode,
+                      initialDateTime: selectedDateTime,
+                      minimumDate: minimumDate,
+                      maximumDate: maximumDate,
+                      use24hFormat: true,
+                      onDateTimeChanged: (DateTime newDateTime) {
+                        selectedDateTime = newDateTime;
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          child: child!,
         );
       },
     );
+    if (isDonePressed) {
+      return selectedDateTime;
+    }
+    return null;
+  }
+
+  Future<void> _pickStartDate() async {
+    DateTime? picked;
+    if (PlatformUtils.isIOS) {
+      picked = await _showCupertinoDatePicker(
+        context: context,
+        initialDateTime: _startDate ?? DateTime.now(),
+        minimumDate: DateTime.now().subtract(const Duration(minutes: 5)),
+        maximumDate: DateTime.now().add(const Duration(days: 365)),
+        mode: CupertinoDatePickerMode.date,
+      );
+    } else {
+      picked = await showDatePicker(
+        context: context,
+        initialDate: _startDate ?? DateTime.now(),
+        firstDate: DateTime.now().subtract(const Duration(minutes: 5)),
+        lastDate: DateTime.now().add(const Duration(days: 365)),
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.dark(
+                primary: AppColors.sceTeal,
+                onPrimary: Colors.black,
+                surface: AppColors.sceCardBg,
+                onSurface: Colors.white,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
+              ),
+            ),
+            child: child!,
+          );
+        },
+      );
+    }
+
     if (picked != null) {
+      if (!mounted) return;
+      final now = DateTime.now();
       setState(() {
         _startDate = picked;
+        // If they select today, make sure any pre-selected start time is not in the past
+        if (picked!.year == now.year &&
+            picked.month == now.month &&
+            picked.day == now.day) {
+          if (_startTime != null) {
+            final startsAt = DateTime(
+              picked.year,
+              picked.month,
+              picked.day,
+              _startTime!.hour,
+              _startTime!.minute,
+            );
+            if (startsAt.isBefore(now.subtract(const Duration(minutes: 5)))) {
+              _startTime = null;
+              AppSnackBar.error(
+                context,
+                "Start time reset because it is in the past.",
+              );
+            }
+          }
+        }
+
+        // Restrict end date/time range based on the new start date/time
         if (_endDate != null) {
-          final provider = Provider.of<CreateAuctionProvider>(context, listen: false);
+          final provider = Provider.of<CreateAuctionProvider>(
+            context,
+            listen: false,
+          );
           final minHours = provider.minAuctionDurationHours;
           final maxHours = provider.maxAuctionDurationHours;
           final startsAt = DateTime(
@@ -281,11 +430,21 @@ class _CreateAuctionState extends State<CreateAuction> {
           );
           final minEndDate = startsAt.add(Duration(hours: minHours));
           final maxEndDate = startsAt.add(Duration(hours: maxHours));
-          final firstSelectableDate = DateTime(minEndDate.year, minEndDate.month, minEndDate.day);
-          final lastSelectableDate = DateTime(maxEndDate.year, maxEndDate.month, maxEndDate.day);
+          final firstSelectableDate = DateTime(
+            minEndDate.year,
+            minEndDate.month,
+            minEndDate.day,
+          );
+          final lastSelectableDate = DateTime(
+            maxEndDate.year,
+            maxEndDate.month,
+            maxEndDate.day,
+          );
 
-          if (_endDate!.isBefore(firstSelectableDate) || _endDate!.isAfter(lastSelectableDate)) {
+          if (_endDate!.isBefore(firstSelectableDate) ||
+              _endDate!.isAfter(lastSelectableDate)) {
             _endDate = null;
+            _endTime = null;
           }
         }
       });
@@ -293,27 +452,123 @@ class _CreateAuctionState extends State<CreateAuction> {
   }
 
   Future<void> _pickStartTime() async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _startTime ?? TimeOfDay.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppColors.sceTeal,
-              onPrimary: Colors.black,
-              surface: AppColors.sceCardBg,
-              onSurface: Colors.white,
+    DateTime? pickedDateTime;
+    if (PlatformUtils.isIOS) {
+      final now = DateTime.now();
+      final initialDateTime = DateTime(
+        _startDate?.year ?? now.year,
+        _startDate?.month ?? now.month,
+        _startDate?.day ?? now.day,
+        _startTime?.hour ?? now.hour,
+        _startTime?.minute ?? now.minute,
+      );
+      final minimumDate = DateTime(
+        _startDate?.year ?? now.year,
+        _startDate?.month ?? now.month,
+        _startDate?.day ?? now.day,
+        0,
+        0,
+      );
+      final maximumDate = DateTime(
+        _startDate?.year ?? now.year,
+        _startDate?.month ?? now.month,
+        _startDate?.day ?? now.day,
+        23,
+        59,
+      );
+      pickedDateTime = await _showCupertinoDatePicker(
+        context: context,
+        initialDateTime: initialDateTime,
+        minimumDate: minimumDate,
+        maximumDate: maximumDate,
+        mode: CupertinoDatePickerMode.time,
+      );
+    } else {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: _startTime ?? TimeOfDay.now(),
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.dark(
+                primary: AppColors.sceTeal,
+                onPrimary: Colors.black,
+                surface: AppColors.sceCardBg,
+                onSurface: Colors.white,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
+              ),
             ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
-            ),
-          ),
-          child: child!,
+            child: child!,
+          );
+        },
+      );
+      if (picked != null) {
+        pickedDateTime = DateTime(
+          _startDate?.year ?? DateTime.now().year,
+          _startDate?.month ?? DateTime.now().month,
+          _startDate?.day ?? DateTime.now().day,
+          picked.hour,
+          picked.minute,
         );
-      },
-    );
-    if (picked != null) {
+      }
+    }
+
+    if (pickedDateTime != null) {
+      if (!mounted) return;
+      final picked = TimeOfDay(
+        hour: pickedDateTime.hour,
+        minute: pickedDateTime.minute,
+      );
+      final now = DateTime.now();
+      // If start date is selected, check if it's today and picked time is in the past
+      if (_startDate != null) {
+        final chosenStart = DateTime(
+          _startDate!.year,
+          _startDate!.month,
+          _startDate!.day,
+          picked.hour,
+          picked.minute,
+        );
+        if (chosenStart.isBefore(now.subtract(const Duration(minutes: 5)))) {
+          if (!mounted) return;
+          AppSnackBar.error(context, "Start time cannot be in the past.");
+          return;
+        }
+
+        // Also check if this new start time invalidates currently selected end date/time
+        if (_endDate != null && _endTime != null) {
+          final provider = Provider.of<CreateAuctionProvider>(
+            context,
+            listen: false,
+          );
+          final minHours = provider.minAuctionDurationHours;
+          final maxHours = provider.maxAuctionDurationHours;
+          final endsAt = DateTime(
+            _endDate!.year,
+            _endDate!.month,
+            _endDate!.day,
+            _endTime!.hour,
+            _endTime!.minute,
+          );
+          final duration = endsAt.difference(chosenStart);
+          final durationHours = duration.inMinutes / 60.0;
+          if (durationHours < minHours || durationHours > maxHours) {
+            setState(() {
+              _startTime = picked;
+              _endDate = null;
+              _endTime = null;
+            });
+            AppSnackBar.error(
+              context,
+              "Start time updated. End date/time reset because it falls outside the allowed duration range ($minHours - $maxHours hours).",
+            );
+            return;
+          }
+        }
+      }
+
       setState(() {
         _startTime = picked;
       });
@@ -348,8 +603,16 @@ class _CreateAuctionState extends State<CreateAuction> {
     final minEndDate = startsAt.add(Duration(hours: minHours));
     final maxEndDate = startsAt.add(Duration(hours: maxHours));
 
-    final firstSelectableDate = DateTime(minEndDate.year, minEndDate.month, minEndDate.day);
-    final lastSelectableDate = DateTime(maxEndDate.year, maxEndDate.month, maxEndDate.day);
+    final firstSelectableDate = DateTime(
+      minEndDate.year,
+      minEndDate.month,
+      minEndDate.day,
+    );
+    final lastSelectableDate = DateTime(
+      maxEndDate.year,
+      maxEndDate.month,
+      maxEndDate.day,
+    );
 
     DateTime initialDate = _endDate ?? minEndDate;
     if (initialDate.isBefore(firstSelectableDate)) {
@@ -358,29 +621,66 @@ class _CreateAuctionState extends State<CreateAuction> {
       initialDate = lastSelectableDate;
     }
 
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: firstSelectableDate,
-      lastDate: lastSelectableDate,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppColors.sceTeal,
-              onPrimary: Colors.black,
-              surface: AppColors.sceCardBg,
-              onSurface: Colors.white,
+    DateTime? picked;
+    if (PlatformUtils.isIOS) {
+      picked = await _showCupertinoDatePicker(
+        context: context,
+        initialDateTime: initialDate,
+        minimumDate: firstSelectableDate,
+        maximumDate: lastSelectableDate,
+        mode: CupertinoDatePickerMode.date,
+      );
+    } else {
+      picked = await showDatePicker(
+        context: context,
+        initialDate: initialDate,
+        firstDate: firstSelectableDate,
+        lastDate: lastSelectableDate,
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.dark(
+                primary: AppColors.sceTeal,
+                onPrimary: Colors.black,
+                surface: AppColors.sceCardBg,
+                onSurface: Colors.white,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
+              ),
             ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
+            child: child!,
+          );
+        },
+      );
+    }
+
     if (picked != null) {
+      if (!mounted) return;
+      if (_endTime != null) {
+        // Check if the selected end date combined with current end time is valid
+        final endsAt = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          _endTime!.hour,
+          _endTime!.minute,
+        );
+        final duration = endsAt.difference(startsAt);
+        final durationHours = duration.inMinutes / 60.0;
+        if (durationHours < minHours || durationHours > maxHours) {
+          setState(() {
+            _endDate = picked;
+            _endTime = null;
+          });
+          AppSnackBar.error(
+            context,
+            "End date updated. Please select an end time within the allowed range ($minHours - $maxHours hours).",
+          );
+          return;
+        }
+      }
+
       setState(() {
         _endDate = picked;
       });
@@ -393,27 +693,116 @@ class _CreateAuctionState extends State<CreateAuction> {
       AppSnackBar.error(context, "Please select an end date first.");
       return;
     }
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _endTime ?? TimeOfDay.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppColors.sceTeal,
-              onPrimary: Colors.black,
-              surface: AppColors.sceCardBg,
-              onSurface: Colors.white,
+
+    DateTime? pickedDateTime;
+    if (PlatformUtils.isIOS) {
+      final now = DateTime.now();
+      final initialDateTime = DateTime(
+        _endDate!.year,
+        _endDate!.month,
+        _endDate!.day,
+        _endTime?.hour ?? now.hour,
+        _endTime?.minute ?? now.minute,
+      );
+      final minimumDate = DateTime(
+        _endDate!.year,
+        _endDate!.month,
+        _endDate!.day,
+        0,
+        0,
+      );
+      final maximumDate = DateTime(
+        _endDate!.year,
+        _endDate!.month,
+        _endDate!.day,
+        23,
+        59,
+      );
+      pickedDateTime = await _showCupertinoDatePicker(
+        context: context,
+        initialDateTime: initialDateTime,
+        minimumDate: minimumDate,
+        maximumDate: maximumDate,
+        mode: CupertinoDatePickerMode.time,
+      );
+    } else {
+      final TimeOfDay? picked = await showTimePicker(
+        context: context,
+        initialTime: _endTime ?? TimeOfDay.now(),
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.dark(
+                primary: AppColors.sceTeal,
+                onPrimary: Colors.black,
+                surface: AppColors.sceCardBg,
+                onSurface: Colors.white,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
+              ),
             ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: AppColors.sceTeal),
-            ),
-          ),
-          child: child!,
+            child: child!,
+          );
+        },
+      );
+      if (picked != null) {
+        pickedDateTime = DateTime(
+          _endDate!.year,
+          _endDate!.month,
+          _endDate!.day,
+          picked.hour,
+          picked.minute,
         );
-      },
-    );
-    if (picked != null) {
+      }
+    }
+
+    if (pickedDateTime != null) {
+      if (!mounted) return;
+      final picked = TimeOfDay(
+        hour: pickedDateTime.hour,
+        minute: pickedDateTime.minute,
+      );
+      final startsAt = DateTime(
+        _startDate!.year,
+        _startDate!.month,
+        _startDate!.day,
+        _startTime?.hour ?? 0,
+        _startTime?.minute ?? 0,
+      );
+      final endsAt = DateTime(
+        _endDate!.year,
+        _endDate!.month,
+        _endDate!.day,
+        picked.hour,
+        picked.minute,
+      );
+      final duration = endsAt.difference(startsAt);
+      final durationHours = duration.inMinutes / 60.0;
+      final provider = Provider.of<CreateAuctionProvider>(
+        context,
+        listen: false,
+      );
+      final minHours = provider.minAuctionDurationHours;
+      final maxHours = provider.maxAuctionDurationHours;
+
+      if (durationHours < minHours) {
+        if (!mounted) return;
+        AppSnackBar.error(
+          context,
+          "End time must be at least $minHours hours after start time (currently ${durationHours.toStringAsFixed(1)} hours).",
+        );
+        return;
+      }
+      if (durationHours > maxHours) {
+        if (!mounted) return;
+        AppSnackBar.error(
+          context,
+          "End time must be at most $maxHours hours after start time (currently ${durationHours.toStringAsFixed(1)} hours).",
+        );
+        return;
+      }
+
       setState(() {
         _endTime = picked;
       });
