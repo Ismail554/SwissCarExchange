@@ -19,7 +19,8 @@ class BidHistoryResponse {
       count: json['count'] as int? ?? 0,
       next: json['next'] as String?,
       previous: json['previous'] as String?,
-      results: (json['results'] as List<dynamic>?)
+      results:
+          (json['results'] as List<dynamic>?)
               ?.map((e) => BidItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -27,11 +28,11 @@ class BidHistoryResponse {
   }
 
   Map<String, dynamic> toJson() => {
-        'count': count,
-        'next': next,
-        'previous': previous,
-        'results': results.map((e) => e.toJson()).toList(),
-      };
+    'count': count,
+    'next': next,
+    'previous': previous,
+    'results': results.map((e) => e.toJson()).toList(),
+  };
 
   BidHistoryResponse copyWith({
     int? count,
@@ -69,7 +70,7 @@ class BidItem {
   factory BidItem.fromJson(Map<String, dynamic> json) {
     return BidItem(
       bidderAlias: json['bidder_alias'] as String? ?? 'Unknown Bidder',
-      isMe: json['is_me'] as bool? ?? false,
+      isMe: json['is_myauction'] as bool? ?? false,
       // Monetary values kept as Strings to preserve precision from the backend
       increment: json['increment'] as String? ?? '0.00',
       amountAfter: json['amount_after'] as String? ?? '0.00',
@@ -80,12 +81,12 @@ class BidItem {
   }
 
   Map<String, dynamic> toJson() => {
-        'bidder_alias': bidderAlias,
-        'is_me': isMe,
-        'increment': increment,
-        'amount_after': amountAfter,
-        'created_at': createdAt.toIso8601String(),
-      };
+    'bidder_alias': bidderAlias,
+    'is_myauction': isMe,
+    'increment': increment,
+    'amount_after': amountAfter,
+    'created_at': createdAt.toIso8601String(),
+  };
 
   BidItem copyWith({
     String? bidderAlias,
