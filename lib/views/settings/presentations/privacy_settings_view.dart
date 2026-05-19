@@ -26,14 +26,6 @@ class PrivacySettingsView extends StatefulWidget {
 }
 
 class _PrivacySettingsViewState extends State<PrivacySettingsView> {
-  final _currentPasswordController = TextEditingController();
-  final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  bool _obscureCurrent = true;
-  bool _obscureNew = true;
-  bool _obscureConfirm = true;
-
   bool _twoFactorEnabled = false;
 
   @override
@@ -73,19 +65,22 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
     }
   }
 
-  @override
-  void dispose() {
-    _currentPasswordController.dispose();
-    _newPasswordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
+
 
   void _showDeleteAccountDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => const _DeleteAccountDialog(),
+    );
+  }
+
+  void _showChangePasswordBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const _ChangePasswordBottomSheet(),
     );
   }
 
@@ -123,7 +118,7 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                     icon: Icons.lock_outline,
                     title: "Change Password",
                     onTap: () {
-                      // Logic to trigger password change flow/fields
+                      _showChangePasswordBottomSheet();
                     },
                   ),
                   Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
@@ -156,134 +151,6 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-            AppSpacing.h40,
-            // Change Password Form (Optional if user taps Change Password, showing it directly for convenience)
-            Text(
-              "CHANGE PASSWORD",
-              style: FontManager.labelMedium(color: AppColors.sceGreyA0),
-            ),
-            AppSpacing.h16,
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  CustomTextField(
-                    controller: _currentPasswordController,
-                    hintText: "Enter Current Password",
-                    obscureText: _obscureCurrent,
-                    prefixIcon: const Icon(
-                      Icons.lock_open,
-                      color: AppColors.sceGreyA0,
-                    ),
-                    suffixIcon: GestureDetector(
-                      onTap: () =>
-                          setState(() => _obscureCurrent = !_obscureCurrent),
-                      child: Icon(
-                        _obscureCurrent
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: AppColors.sceGreyA0,
-                        size: 20.sp,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Current password is required';
-                      }
-                      return null;
-                    },
-                  ),
-                  AppSpacing.h16,
-                  CustomTextField(
-                    controller: _newPasswordController,
-                    hintText: "Enter New Password",
-                    obscureText: _obscureNew,
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: AppColors.sceGreyA0,
-                    ),
-                    suffixIcon: GestureDetector(
-                      onTap: () => setState(() => _obscureNew = !_obscureNew),
-                      child: Icon(
-                        _obscureNew
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: AppColors.sceGreyA0,
-                        size: 20.sp,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'New password is required';
-                      }
-                      if (value.trim().length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  AppSpacing.h16,
-                  CustomTextField(
-                    controller: _confirmPasswordController,
-                    hintText: "Confirm New Password",
-                    obscureText: _obscureConfirm,
-                    prefixIcon: const Icon(
-                      Icons.lock_person,
-                      color: AppColors.sceGreyA0,
-                    ),
-                    suffixIcon: GestureDetector(
-                      onTap: () =>
-                          setState(() => _obscureConfirm = !_obscureConfirm),
-                      child: Icon(
-                        _obscureConfirm
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                        color: AppColors.sceGreyA0,
-                        size: 20.sp,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please confirm your new password';
-                      }
-                      if (value != _newPasswordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
-                  ),
-                  AppSpacing.h24,
-                  Consumer<AuthProvider>(
-                    builder: (context, authProvider, child) {
-                      return CustomButton(
-                        text: "Change Password",
-                        isLoading: authProvider.isLoading,
-                        onPressed: authProvider.isLoading
-                            ? () {}
-                            : () async {
-                                if (_formKey.currentState!.validate()) {
-                                  final success = await authProvider
-                                      .changePassword(
-                                        context,
-                                        currentPassword:
-                                            _currentPasswordController.text
-                                                .trim(),
-                                        newPassword: _newPasswordController.text
-                                            .trim(),
-                                      );
-                                  if (success) {
-                                    _currentPasswordController.clear();
-                                    _newPasswordController.clear();
-                                    _confirmPasswordController.clear();
-                                  }
-                                }
-                              },
-                      );
-                    },
                   ),
                 ],
               ),
@@ -651,6 +518,209 @@ class _SecurityOption extends StatelessWidget {
             ),
             Icon(Icons.chevron_right, color: AppColors.sceGreyA0, size: 20.sp),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Change Password Bottom Sheet — fully self‑contained StatefulWidget
+// ---------------------------------------------------------------------------
+
+class _ChangePasswordBottomSheet extends StatefulWidget {
+  const _ChangePasswordBottomSheet();
+
+  @override
+  State<_ChangePasswordBottomSheet> createState() =>
+      _ChangePasswordBottomSheetState();
+}
+
+class _ChangePasswordBottomSheetState
+    extends State<_ChangePasswordBottomSheet> {
+  final _currentPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  bool _obscureCurrent = true;
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleChangePassword() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.changePassword(
+      context,
+      currentPassword: _currentPasswordController.text.trim(),
+      newPassword: _newPasswordController.text.trim(),
+    );
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (success) {
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Determine bottom padding for keyboard
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return Container(
+      padding: EdgeInsets.only(
+        left: 20.w,
+        right: 20.w,
+        top: 24.h,
+        bottom: 24.h + bottomInset,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.sceCardBg.withValues(alpha: 0.98),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        border: Border(
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+      ),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                ),
+              ),
+              AppSpacing.h24,
+              Text(
+                "Change Password",
+                style: FontManager.heading2(color: AppColors.white),
+              ),
+              AppSpacing.h8,
+              Text(
+                "Create a new, strong password to keep your account secure.",
+                style: FontManager.bodyMedium(color: AppColors.sceGreyA0),
+              ),
+              AppSpacing.h24,
+              CustomTextField(
+                controller: _currentPasswordController,
+                hintText: "Enter Current Password",
+                obscureText: _obscureCurrent,
+                prefixIcon: const Icon(
+                  Icons.lock_open,
+                  color: AppColors.sceGreyA0,
+                ),
+                suffixIcon: GestureDetector(
+                  onTap: () =>
+                      setState(() => _obscureCurrent = !_obscureCurrent),
+                  child: Icon(
+                    _obscureCurrent
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: AppColors.sceGreyA0,
+                    size: 20.sp,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Current password is required';
+                  }
+                  return null;
+                },
+              ),
+              AppSpacing.h16,
+              CustomTextField(
+                controller: _newPasswordController,
+                hintText: "Enter New Password",
+                obscureText: _obscureNew,
+                prefixIcon: const Icon(
+                  Icons.lock_outline,
+                  color: AppColors.sceGreyA0,
+                ),
+                suffixIcon: GestureDetector(
+                  onTap: () => setState(() => _obscureNew = !_obscureNew),
+                  child: Icon(
+                    _obscureNew
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: AppColors.sceGreyA0,
+                    size: 20.sp,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'New password is required';
+                  }
+                  if (value.trim().length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+              ),
+              AppSpacing.h16,
+              CustomTextField(
+                controller: _confirmPasswordController,
+                hintText: "Confirm New Password",
+                obscureText: _obscureConfirm,
+                prefixIcon: const Icon(
+                  Icons.lock_person,
+                  color: AppColors.sceGreyA0,
+                ),
+                suffixIcon: GestureDetector(
+                  onTap: () =>
+                      setState(() => _obscureConfirm = !_obscureConfirm),
+                  child: Icon(
+                    _obscureConfirm
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: AppColors.sceGreyA0,
+                    size: 20.sp,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please confirm your new password';
+                  }
+                  if (value != _newPasswordController.text) {
+                    return 'Passwords do not match';
+                  }
+                  return null;
+                },
+              ),
+              AppSpacing.h32,
+              CustomButton(
+                text: "Update Password",
+                isLoading: _isLoading,
+                onPressed: _isLoading ? () {} : _handleChangePassword,
+              ),
+            ],
+          ),
         ),
       ),
     );
