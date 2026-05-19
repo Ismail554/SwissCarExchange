@@ -61,7 +61,7 @@ class _SuccessfulViewState extends State<SuccessfulView> {
               //   "Your password has been reset successfully. You can now login with your new password.",
               //   textAlign: TextAlign.center,
               //   style: TextStyle(
-              //     color: const Color(0xFFA0AABF),
+              //     color: AppColors.sceGreyA0,
               //     fontSize: 15.sp,
               //     height: 1.5,
               //     fontWeight: FontWeight.w400,

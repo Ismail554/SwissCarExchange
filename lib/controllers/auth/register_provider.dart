@@ -143,7 +143,10 @@ class RegisterProvider extends ChangeNotifier {
       response.fold(
         (error) {
           debugPrint('REGISTER: ❌ registerPrivate API error: $error');
-          if (context.mounted) AppSnackBar.error(context, error);
+          if (context.mounted) {
+            final msg = error.isNotEmpty ? error : 'Registration failed. Please try again.';
+            AppSnackBar.error(context, msg);
+          }
         },
         (data) {
           debugPrint('REGISTER: ✅ registerPrivate API success! Response: $data');
@@ -218,7 +221,10 @@ class RegisterProvider extends ChangeNotifier {
       response.fold(
         (error) {
           debugPrint('REGISTER: ❌ registerCompany API error: $error');
-          if (context.mounted) AppSnackBar.error(context, error);
+          if (context.mounted) {
+            final msg = error.isNotEmpty ? error : 'Registration failed. Please try again.';
+            AppSnackBar.error(context, msg);
+          }
         },
         (data) {
           debugPrint('REGISTER: ✅ registerCompany API success! Response: $data');

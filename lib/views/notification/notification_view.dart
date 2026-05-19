@@ -391,7 +391,7 @@ _TypeConfig _getTypeConfig(String notificationType) {
     case 'auction_withdrawn':
       return const _TypeConfig(
         icon: Icons.cancel_outlined,
-        color: Color(0xFFD4A843),
+        color: AppColors.sceGoldNotification,
       );
     // --- Bidding ---
     case 'outbid':
@@ -403,12 +403,12 @@ _TypeConfig _getTypeConfig(String notificationType) {
     case 'payment_marked':
       return const _TypeConfig(
         icon: Icons.payment_outlined,
-        color: Color(0xFFD4A843),
+        color: AppColors.sceGoldNotification,
       );
     case 'shipping_request':
       return const _TypeConfig(
         icon: Icons.local_shipping_outlined,
-        color: Color(0xFF64B5F6),
+        color: AppColors.sceBlueNotification,
       );
     case 'shipping_done':
       return const _TypeConfig(

@@ -24,7 +24,7 @@ class PaymentFilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.scePremiumOrange
-              : const Color(0xFF4A5568),
+              : AppColors.sceSlateGrey,
           borderRadius: BorderRadius.circular(10.r),
           boxShadow: isSelected
               ? [

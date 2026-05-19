@@ -108,7 +108,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                       'Create a new password for your account. Make sure it is at least 8 characters long.',
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        color: const Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         fontSize: 15.sp,
                         height: 1.5,
                         fontWeight: FontWeight.w400,

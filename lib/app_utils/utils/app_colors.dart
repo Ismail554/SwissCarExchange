@@ -172,4 +172,29 @@ class AppColors {
   static const Color sceErrorDarkBg = Color(0xFF1E0A0A);
   static const Color sceWarningDarkBg = Color(0xFF1E1400);
   static const Color sceInfoDarkBg = Color(0xFF0A1020);
+
+  /* ==================== Automatically Extracted Colors ==================== */
+  static const Color sceSlateDarkBg = Color(0xFF1E2230);
+  static const Color sceCoralRed = Color(0xFFFF6B6B);
+  static const Color sceDeepNavy = Color(0xFF1A2235);
+  static const Color sceGoldNotification = Color(0xFFD4A843);
+  static const Color sceBrightGold = Color(0xFFE2B93B);
+  static const Color sceBlueNotification = Color(0xFF64B5F6);
+  static const Color sceDarkTealBg = Color(0xFF0F1B1A);
+  static const Color sceSlateGrey = Color(0xFF4A5568);
+  static const Color sceTealDark = Color(0xFF005662);
+  static const Color sceOrangeLight = Color(0xFFFFB300);
+  static const Color sceOrangeDark = Color(0xFFE65100);
+  static const Color sceOrange = Color(0xFFFF9800);
+  static const Color sceRed = Color(0xFFE53935);
+  static const Color sceDarkPurpleBg = Color(0xFF1E1E2E);
+  static const Color sceMutedGrey = Color(0xFFB0B0C3);
+  static const Color sceMutedBlueGrey = Color(0xFF7C7C9A);
+  static const Color sceIndigo = Color(0xFF7C6FF7);
+  static const Color sceGreen = Color(0xFF4CAF50);
+  static const Color scePurple = Color(0xFF4F46E5);
+  static const Color sceCyan = Color(0xFF2E9CCA);
+  static const Color sceBlue = Color(0xFF1976D2);
+  static const Color sceDarkBrownBg = Color(0xFF1E140C);
+  static const Color sceBrownBg = Color(0xFF2A1B0D);
 }

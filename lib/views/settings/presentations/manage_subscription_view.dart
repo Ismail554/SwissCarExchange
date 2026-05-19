@@ -1,3 +1,4 @@
+import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -70,7 +71,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
       message:
           'Your plan will be downgraded to Basic at the end of the current billing period.',
       confirmLabel: 'Downgrade',
-      confirmColor: const Color(0xFFFF9800),
+      confirmColor: AppColors.sceOrange,
     );
     if (!confirmed) return;
 
@@ -91,7 +92,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
       message:
           'Are you sure you want to cancel your subscription? You will lose access at the end of the billing period.',
       confirmLabel: 'Cancel Subscription',
-      confirmColor: const Color(0xFFE53935),
+      confirmColor: AppColors.sceRed,
     );
     if (!confirmed) return;
 
@@ -114,7 +115,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E2E),
+        backgroundColor: AppColors.sceDarkPurpleBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           title,
@@ -127,7 +128,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
         content: Text(
           message,
           style: const TextStyle(
-            color: Color(0xFFB0B0C3),
+            color: AppColors.sceMutedGrey,
             fontSize: 14,
             height: 1.5,
           ),
@@ -137,7 +138,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
             onPressed: () => Navigator.pop(ctx, false),
             child: const Text(
               'Go Back',
-              style: TextStyle(color: Color(0xFF7C7C9A)),
+              style: TextStyle(color: AppColors.sceMutedBlueGrey),
             ),
           ),
           TextButton(
@@ -210,8 +211,8 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
 
     return RefreshIndicator(
       onRefresh: _loadData,
-      color: const Color(0xFF7C6FF7),
-      backgroundColor: const Color(0xFF1E1E2E),
+      color: AppColors.sceIndigo,
+      backgroundColor: AppColors.sceDarkPurpleBg,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -245,7 +246,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
                 _ActionButton(
                   label: '⬆  Upgrade to Premium',
                   subtitle: 'Switch to the Premium plan',
-                  color: const Color(0xFF4CAF50),
+                  color: AppColors.sceGreen,
                   isLoading: subProvider.isCheckingOut,
                   onTap: _handleUpgrade,
                 )
@@ -253,7 +254,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
                 _ActionButton(
                   label: '⬇  Downgrade to Basic',
                   subtitle: 'Scheduled at end of billing period',
-                  color: const Color(0xFFFF9800),
+                  color: AppColors.sceOrange,
                   isLoading: _isActionLoading,
                   onTap: _handleDowngrade,
                 ),
@@ -262,7 +263,7 @@ class _AccountSubscriptionViewState extends State<AccountSubscriptionView> {
               _ActionButton(
                 label: '✕  Cancel Subscription',
                 subtitle: 'You will lose access at period end',
-                color: const Color(0xFFE53935),
+                color: AppColors.sceRed,
                 isLoading: _isActionLoading,
                 onTap: _handleCancel,
               ),
@@ -281,7 +282,7 @@ class _LoadingState extends StatelessWidget {
   const _LoadingState();
   @override
   Widget build(BuildContext context) =>
-      const Center(child: CircularProgressIndicator(color: Color(0xFF7C6FF7)));
+      const Center(child: CircularProgressIndicator(color: AppColors.sceIndigo));
 }
 
 class _ErrorState extends StatelessWidget {
@@ -298,20 +299,20 @@ class _ErrorState extends StatelessWidget {
         children: [
           Icon(
             Icons.wifi_off_rounded,
-            color: Color(0xFF7C7C9A),
+            color: AppColors.sceMutedBlueGrey,
             size: 56.sp,
           ),
           SizedBox(height: 16.h),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFFB0B0C3), fontSize: 15),
+            style: const TextStyle(color: AppColors.sceMutedGrey, fontSize: 15),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: onRetry,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF7C6FF7),
+              backgroundColor: AppColors.sceIndigo,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -364,7 +365,7 @@ class _PageHeader extends StatelessWidget {
         padding: EdgeInsets.only(left: 46),
         child: Text(
           'Manage your plan & billing',
-          style: TextStyle(color: Color(0xFF7C7C9A), fontSize: 13),
+          style: TextStyle(color: AppColors.sceMutedBlueGrey, fontSize: 13),
         ),
       ),
     ],
@@ -404,8 +405,8 @@ class _CurrentSubscriptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPremium = subscription.plan == SubscriptionPlanId.premium;
     final gradientColors = isPremium
-        ? [const Color(0xFF7C6FF7), const Color(0xFF4F46E5)]
-        : [const Color(0xFF2E9CCA), const Color(0xFF1976D2)];
+        ? [AppColors.sceIndigo, AppColors.scePurple]
+        : [AppColors.sceCyan, AppColors.sceBlue];
 
     return Container(
       width: double.infinity,
@@ -575,10 +576,10 @@ class _StatusBadge extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: isActive
-            ? const Color(0xFF4CAF50).withValues(alpha: 0.2)
-            : const Color(0xFFE53935).withValues(alpha: 0.2),
+            ? AppColors.sceGreen.withValues(alpha: 0.2)
+            : AppColors.sceRed.withValues(alpha: 0.2),
         border: Border.all(
-          color: isActive ? const Color(0xFF4CAF50) : const Color(0xFFE53935),
+          color: isActive ? AppColors.sceGreen : AppColors.sceRed,
           width: 1.2.w,
         ),
         borderRadius: BorderRadius.circular(20.r),
@@ -592,8 +593,8 @@ class _StatusBadge extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isActive
-                  ? const Color(0xFF4CAF50)
-                  : const Color(0xFFE53935),
+                  ? AppColors.sceGreen
+                  : AppColors.sceRed,
             ),
           ),
           SizedBox(width: 6.w),
@@ -601,8 +602,8 @@ class _StatusBadge extends StatelessWidget {
             status[0].toUpperCase() + status.substring(1),
             style: TextStyle(
               color: isActive
-                  ? const Color(0xFF4CAF50)
-                  : const Color(0xFFE53935),
+                  ? AppColors.sceGreen
+                  : AppColors.sceRed,
               fontSize: 12.sp,
               fontWeight: FontWeight.w700,
             ),
@@ -641,11 +642,11 @@ class _PlanCard extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
         color: isCurrentPlan
-            ? const Color(0xFF7C6FF7).withValues(alpha: 0.1)
-            : const Color(0xFF1E1E2E),
+            ? AppColors.sceIndigo.withValues(alpha: 0.1)
+            : AppColors.sceDarkPurpleBg,
         border: Border.all(
           color: isCurrentPlan
-              ? const Color(0xFF7C6FF7)
+              ? AppColors.sceIndigo
               : Colors.white.withValues(alpha: 0.08),
           width: isCurrentPlan ? 1.5 : 1,
         ),
@@ -659,8 +660,8 @@ class _PlanCard extends StatelessWidget {
             height: 44.h,
             decoration: BoxDecoration(
               color: isPremium
-                  ? const Color(0xFF7C6FF7).withValues(alpha: 0.15)
-                  : const Color(0xFF2E9CCA).withValues(alpha: 0.15),
+                  ? AppColors.sceIndigo.withValues(alpha: 0.15)
+                  : AppColors.sceCyan.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -668,8 +669,8 @@ class _PlanCard extends StatelessWidget {
                   ? Icons.workspace_premium_rounded
                   : Icons.star_outline_rounded,
               color: isPremium
-                  ? const Color(0xFF7C6FF7)
-                  : const Color(0xFF2E9CCA),
+                  ? AppColors.sceIndigo
+                  : AppColors.sceCyan,
               size: 22.sp,
             ),
           ),
@@ -696,13 +697,13 @@ class _PlanCard extends StatelessWidget {
                           vertical: 2.h,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF7C6FF7).withValues(alpha: 0.2),
+                          color: AppColors.sceIndigo.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Text(
                           'Current',
                           style: TextStyle(
-                            color: Color(0xFF7C6FF7),
+                            color: AppColors.sceIndigo,
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w700,
                           ),
@@ -715,7 +716,7 @@ class _PlanCard extends StatelessWidget {
                 Text(
                   '${plan.currency.toUpperCase()} ${plan.price} / ${plan.interval}',
                   style: TextStyle(
-                    color: Color(0xFF7C7C9A),
+                    color: AppColors.sceMutedBlueGrey,
                     fontSize: 12.sp,
                   ),
                 ),
@@ -783,7 +784,7 @@ class _ActionButton extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: const Color(0xFF7C7C9A),
+                      color: AppColors.sceMutedBlueGrey,
                       fontSize: 12.sp,
                     ),
                   ),

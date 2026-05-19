@@ -106,7 +106,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.sceDarkBg, // Color(0xFF0A0A0A)
+      backgroundColor: AppColors.sceDarkBg, // AppColors.sceDarkBg
       body: CommonBackground(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -393,7 +393,7 @@ class _SubscriptionViewsState extends State<SubscriptionViews> {
                               Text(
                                 feature.subtitle,
                                 style: FontManager.labelSmall(
-                                  color: const Color(0xFF99A1AF),
+                                  color: AppColors.sceGrey99,
                                 ).copyWith(height: 1.4),
                               ),
                             ],

@@ -265,7 +265,7 @@ class _ChartPainter extends CustomPainter {
       ..color = AppColors.sceTeal
       ..style = PaintingStyle.fill;
     final dotBorder = Paint()
-      ..color = const Color(0xFF1A2235)
+      ..color = AppColors.sceDeepNavy
       ..style = PaintingStyle.fill;
     for (final p in pts) {
       canvas.drawCircle(p, 4.0, dotBorder);

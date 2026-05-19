@@ -138,7 +138,7 @@ class PaymentTransactionCard extends StatelessWidget {
                   style: FontManager.labelMedium(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4A5568),
+                  backgroundColor: AppColors.sceSlateGrey,
                   padding: EdgeInsets.symmetric(vertical: 12.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.r),

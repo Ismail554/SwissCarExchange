@@ -53,7 +53,7 @@ class SettingsCard extends StatelessWidget {
             onTap: () => context.push('/privacy-settings'),
           ),
           ProfileDivider(),
-          ProfileListTile(Icons.language_outlined, 'Languages', onTap: () {}),
+          // ProfileListTile(Icons.language_outlined, 'Languages', onTap: () {}),
           ProfileDivider(),
           ProfileListTile(
             Icons.help_outline,

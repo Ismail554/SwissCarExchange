@@ -26,7 +26,7 @@ class LeftDaysWidget extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E140C), // Dark brown/orange tint
+            color: AppColors.sceDarkBrownBg, // Dark brown/orange tint
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: AppColors.sceOnboardingGold.withValues(alpha: 0.3),
@@ -69,7 +69,7 @@ class LeftDaysWidget extends StatelessWidget {
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 12.h),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2A1B0D),
+                  color: AppColors.sceBrownBg,
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Column(

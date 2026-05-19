@@ -143,7 +143,7 @@ class WidgetPremiumCard extends StatelessWidget {
                         'Select $title',
                         style: FontManager.labelLarge(
                           color: isPremium
-                              ? const Color(0xFFE2B93B)
+                              ? AppColors.sceBrightGold
                               : Colors.white,
                         ),
                       ),

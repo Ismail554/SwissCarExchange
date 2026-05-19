@@ -18,7 +18,7 @@ class MyBidsTile extends StatelessWidget {
     this.icon = Icons.feed_outlined,
     required this.onTap,
     this.accentColor = AppColors.sceTeal,
-    this.gradientColors = const [AppColors.sceTeal, Color(0xFF005662)],
+    this.gradientColors = const [AppColors.sceTeal, AppColors.sceTealDark],
   });
 
   @override

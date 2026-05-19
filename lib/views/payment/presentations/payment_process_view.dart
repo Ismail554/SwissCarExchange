@@ -368,7 +368,7 @@ class _PaymentProcessViewState extends State<PaymentProcessView> {
                 width: double.infinity,
                 height: 54.h,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F1B1A), // Dark teal tint
+                  color: AppColors.sceDarkTealBg, // Dark teal tint
                   borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(
                     color: AppColors.sceTeal.withValues(alpha: 0.3),

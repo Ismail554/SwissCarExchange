@@ -45,6 +45,7 @@ import 'package:rionydo/views/settings/presentations/help_support_view.dart';
 import 'package:rionydo/views/settings/presentations/chat_support_view.dart';
 import 'package:rionydo/views/won_auction/presentations/review_submitted_view.dart';
 import 'package:rionydo/views/notification/notification_view.dart';
+import 'package:rionydo/views/profile/presentations/notification_settings_view.dart';
 import 'package:rionydo/views/auctions/presentations/my_wishlist_view.dart';
 import 'package:rionydo/views/premium/presentations/dealer_reviews_view.dart';
 import 'package:rionydo/views/premium/presentations/advance_statistics.dart';
@@ -429,6 +430,11 @@ final GoRouter appRouter = GoRouter(
       path: '/account-settings',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const AccountSettingsView(),
+    ),
+    GoRoute(
+      path: '/notification-settings',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const NotificationSettingsView(),
     ),
     GoRoute(
       path: '/manage-subscription',

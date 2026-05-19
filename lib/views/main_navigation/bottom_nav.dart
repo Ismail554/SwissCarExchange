@@ -71,7 +71,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     return SafeArea(
       child: Scaffold(
         extendBody: true,
-        // backgroundColor: const Color(0xFF0A0A0A),
+        // backgroundColor: AppColors.sceDarkBg,
         body: widget.navigationShell,
         floatingActionButton: _PremiumFab(
           isPremium: isPremium,

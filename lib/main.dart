@@ -6,7 +6,8 @@ import 'package:rionydo/app.dart';
 import 'package:rionydo/app_utils/constants/global_state.dart';
 import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/controllers/auctions/create_auctions_provider.dart';
-import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';import 'package:rionydo/controllers/auctions/auction_management_provider.dart';
+import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
+import 'package:rionydo/controllers/auctions/auction_management_provider.dart';
 import 'package:rionydo/controllers/auctions/won_auction_provider.dart';
 import 'package:rionydo/controllers/auctions/my_bids_provider.dart';
 import 'package:rionydo/controllers/auctions/dealer_contact_provider.dart';
@@ -61,7 +62,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => PaymentProcessProvider()),
         ChangeNotifierProvider(create: (_) => RateDealerProvider()),
         ChangeNotifierProvider(create: (_) => MyShippingProvider()),
-        ChangeNotifierProvider(create: (_) => CreateAuctionProvider()),
+        // ChangeNotifierProvider(create: (_) => CreateAuctionProvider()),
       ],
       child: const MyApp(),
     ),

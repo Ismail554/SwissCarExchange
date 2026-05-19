@@ -119,7 +119,7 @@ class OnboardignCommonScaff extends StatelessWidget {
                               Text(
                                 subtitle,
                                 style: const TextStyle(
-                                  color: Color(0xFFA0AABF),
+                                  color: AppColors.sceGreyA0,
                                   fontSize: 15,
                                   height: 1.5,
                                   fontWeight: FontWeight.w400,
@@ -189,8 +189,8 @@ class OnboardignCommonScaff extends StatelessWidget {
                             width: isActive ? 24 : 4,
                             decoration: BoxDecoration(
                               color: isActive
-                                  ? const Color(0xFFD4AF37)
-                                  : const Color(0xFFFFFFFF).withValues(alpha: 0.08),
+                                  ? AppColors.sceRegistrationGold
+                                  : Colors.white.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(2),
                               boxShadow: isActive
                                   ? [

@@ -96,7 +96,7 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                       "Enter your email address and we'll send you a verification code to reset your password.",
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        color: const Color(0xFFA0AABF),
+                        color: AppColors.sceGreyA0,
                         fontSize: 15.sp,
                         height: 1.5,
                         fontWeight: FontWeight.w400,

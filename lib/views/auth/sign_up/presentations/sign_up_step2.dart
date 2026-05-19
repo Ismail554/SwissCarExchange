@@ -237,8 +237,6 @@ class _SignUpStep2State extends State<SignUpStep2> {
                           ),
                         ),
 
-                        SizedBox(height: 40.h),
-
                         CustomButton(
                           text: 'Continue',
                           isActive: _isFormValid,
@@ -253,11 +251,15 @@ class _SignUpStep2State extends State<SignUpStep2> {
                                 'phone': widget.phone,
                                 'role': provider.selectedRole,
                                 'fullName': provider.nameController.text.trim(),
-                                'address': provider.selectedRole == UserRole.individual
-                                    ? provider.individualAddressController.text.trim()
-                                    : provider.companyAddressController.text.trim(),
+                                'address':
+                                    provider.selectedRole == UserRole.individual
+                                    ? provider.individualAddressController.text
+                                          .trim()
+                                    : provider.companyAddressController.text
+                                          .trim(),
                                 'idDocumentFile': provider.idFile,
-                                'company': provider.companyController.text.trim(),
+                                'company': provider.companyController.text
+                                    .trim(),
                                 'uid': provider.uidController.text.trim(),
                               },
                             );
@@ -379,7 +381,10 @@ class _RoleToggle extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
       ),
       child: Stack(
         children: [
@@ -823,7 +828,7 @@ class _PickerSheet extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E2230),
+        color: AppColors.sceSlateDarkBg,
         borderRadius: BorderRadius.circular(20.r),
       ),
       child: Column(

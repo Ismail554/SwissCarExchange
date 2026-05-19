@@ -130,7 +130,7 @@ class PhotoPickerSheet extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E2230),
+        color: AppColors.sceSlateDarkBg,
         borderRadius: BorderRadius.circular(20.r),
       ),
       child: Column(
@@ -293,7 +293,7 @@ class _PhotoPreviewState extends State<PhotoPreview> {
                 _OverlayActionBtn(
                   icon: Icons.delete_outline_rounded,
                   label: 'Remove',
-                  color: const Color(0xFFFF6B6B),
+                  color: AppColors.sceCoralRed,
                   onTap: () { setState(() => _showOverlay = false); widget.onRemove(); },
                 ),
               ],
@@ -397,7 +397,7 @@ class _NetworkPhotoPreviewState extends State<NetworkPhotoPreview> {
                     _OverlayActionBtn(
                       icon: Icons.delete_outline_rounded,
                       label: 'Remove',
-                      color: const Color(0xFFFF6B6B),
+                      color: AppColors.sceCoralRed,
                       onTap: () { setState(() => _showOverlay = false); widget.onRemove(); },
                     ),
                   ],
