@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/models/auctions/auctions_detail_response.dart';
 import 'package:rionydo/views/auctions/presentations/auction_bidding.dart';
+import 'package:rionydo/views/auctions/presentations/recent_all_bids_view.dart';
 import 'package:rionydo/views/auth/sign_up/verify_sign_up/presentations/checkout_webview.dart';
 import 'package:rionydo/views/profile/presentations/my_bids_view.dart';
 import 'package:rionydo/views/splash/splash_screen.dart';
@@ -288,6 +289,14 @@ final GoRouter appRouter = GoRouter(
         
         final item = state.extra as AuctionItem;
         return AuctionBidding(initialData: item);
+      },
+    ),
+    GoRoute(
+      path: '/all-bids/:auctionId',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final auctionId = state.pathParameters['auctionId']!;
+        return RecentAllBidsView(auctionId: auctionId);
       },
     ),
 

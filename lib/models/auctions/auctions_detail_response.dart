@@ -34,6 +34,7 @@ class AuctionDetailResponse {
   final bool isWatchlisted;
   final bool isOwner;
   final String minBidIncrement;
+  final MyAutoBid? myAutoBid;
 
   const AuctionDetailResponse({
     required this.id,
@@ -66,6 +67,7 @@ class AuctionDetailResponse {
     this.isOwner = false,
     required this.isWatchlisted,
     this.minBidIncrement = "150",
+    this.myAutoBid,
   });
 
   factory AuctionDetailResponse.fromJson(Map<String, dynamic> json) {
@@ -112,6 +114,11 @@ class AuctionDetailResponse {
       adminNote: json['admin_note'] as String? ?? '',
       isWatchlisted: json['is_watchlisted'] as bool? ?? false,
       minBidIncrement: json['min_bid_increment']?.toString() ?? '0.00',
+      myAutoBid: json['my_autobid'] != null
+          ? MyAutoBid.fromJson(json['my_autobid'] as Map<String, dynamic>)
+          : json['my_auto_bid'] != null
+              ? MyAutoBid.fromJson(json['my_auto_bid'] as Map<String, dynamic>)
+              : null,
     );
   }
 
@@ -146,6 +153,7 @@ class AuctionDetailResponse {
     'is_myauction': isOwner,
     'is_watchlisted': isWatchlisted,
     'min_bid_increment': minBidIncrement,
+    'my_autobid': myAutoBid?.toJson(),
   };
 
   AuctionDetailResponse copyWith({
@@ -178,6 +186,8 @@ class AuctionDetailResponse {
     String? adminNote,
     bool? isOwner,
     bool? isWatchlisted,
+    MyAutoBid? myAutoBid,
+    bool clearAutoBid = false,
   }) {
     return AuctionDetailResponse(
       id: id ?? this.id,
@@ -209,6 +219,26 @@ class AuctionDetailResponse {
       adminNote: adminNote ?? this.adminNote,
       isWatchlisted: isWatchlisted ?? this.isWatchlisted,
       isOwner: isOwner ?? this.isOwner,
+      myAutoBid: clearAutoBid ? null : (myAutoBid ?? this.myAutoBid),
     );
   }
+}
+
+// ------------------------------------------------------------------
+// MY AUTO BID MODEL
+// ------------------------------------------------------------------
+class MyAutoBid {
+  final int maxAmount;
+
+  const MyAutoBid({required this.maxAmount});
+
+  factory MyAutoBid.fromJson(Map<String, dynamic> json) {
+    return MyAutoBid(
+      maxAmount: (json['max_amount'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'max_amount': maxAmount,
+  };
 }

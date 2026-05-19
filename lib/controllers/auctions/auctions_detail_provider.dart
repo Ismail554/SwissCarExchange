@@ -35,6 +35,7 @@ class AuctionsDetailProvider extends ChangeNotifier {
       _errorMessage = null;
       _auctionDetail = null;
       _bidHistory = []; // Clear old bid history to prevent cross-auction leakage
+      _isBidHistoryLoading = true;
       notifyListeners();
     } else {
       _errorMessage = null;
@@ -171,7 +172,15 @@ class AuctionsDetailProvider extends ChangeNotifier {
     return result.fold((error) {
       debugPrint("Auto bid create error: $error");
       return false;
-    }, (data) => true);
+    }, (data) {
+      if (_auctionDetail != null) {
+        _auctionDetail = _auctionDetail!.copyWith(
+          myAutoBid: MyAutoBid(maxAmount: maxAmount),
+        );
+        notifyListeners();
+      }
+      return true;
+    });
   }
 
   Future<bool> deleteAutoBid(String auctionId) async {
@@ -183,7 +192,20 @@ class AuctionsDetailProvider extends ChangeNotifier {
     return result.fold((error) {
       debugPrint("Auto bid delete error: $error");
       return false;
-    }, (data) => true);
+    }, (data) {
+      if (_auctionDetail != null) {
+        _auctionDetail = _auctionDetail!.copyWith(
+          clearAutoBid: true,
+        );
+        notifyListeners();
+      }
+      return true;
+    });
+  }
+
+  void updateAuctionDetail(AuctionDetailResponse detail) {
+    _auctionDetail = detail;
+    notifyListeners();
   }
 
   Future<void> fetchWishlist() async {
@@ -216,6 +238,7 @@ class AuctionsDetailProvider extends ChangeNotifier {
     _isLoading = false;
     _bidHistory = [];
     _wishlist = [];
+    _isBidHistoryLoading = false;
     notifyListeners();
   }
 }

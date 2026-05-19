@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
 import 'package:rionydo/controllers/auctions/auctions_detail_provider.dart';
 import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
 
-class RecentAllBidsView extends StatelessWidget {
+class RecentAllBidsView extends StatefulWidget {
   final String auctionId;
 
   const RecentAllBidsView({super.key, required this.auctionId});
+
+  @override
+  State<RecentAllBidsView> createState() => _RecentAllBidsViewState();
+}
+
+class _RecentAllBidsViewState extends State<RecentAllBidsView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuctionsDetailProvider>().fetchBidHistory(widget.auctionId);
+    });
+  }
 
   double _parseBid(String value) {
     String cleanValue = value.replaceAll(',', '');
@@ -49,8 +63,12 @@ class RecentAllBidsView extends StatelessWidget {
       child: Consumer<AuctionsDetailProvider>(
         builder: (context, provider, _) {
           if (provider.isBidHistoryLoading && provider.bidHistory.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.sceTeal),
+            return ListView.separated(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 8,
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) => _buildShimmerBidTile(),
             );
           }
 
@@ -66,7 +84,7 @@ class RecentAllBidsView extends StatelessWidget {
           return RefreshIndicator(
             color: AppColors.sceTeal,
             backgroundColor: AppColors.sceCardBg,
-            onRefresh: () => provider.fetchBidHistory(auctionId),
+            onRefresh: () => provider.fetchBidHistory(widget.auctionId),
             child: ListView.separated(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               physics: const AlwaysScrollableScrollPhysics(),
@@ -152,6 +170,65 @@ class RecentAllBidsView extends StatelessWidget {
           const Spacer(),
           Text(amount, style: FontManager.heading3(color: AppColors.sceTeal)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerBidTile() {
+    return Shimmer.fromColors(
+      baseColor: AppColors.sceCardBg,
+      highlightColor: Colors.white.withValues(alpha: 0.08),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: AppColors.sceCardBg,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32.w,
+              height: 32.w,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 80.w,
+                  height: 12.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                Container(
+                  width: 50.w,
+                  height: 10.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Container(
+              width: 60.w,
+              height: 16.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
