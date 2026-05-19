@@ -15,6 +15,21 @@ String mimeTypeFor(String filePath) {
     case 'jpeg':
       return 'image/jpeg';
     case 'png':
+      return 'image/png';
+    case 'webp':
+      return 'image/webp';
+    case 'mp4':
+      return 'video/mp4';
+    case 'mov':
+      return 'video/quicktime';
+    case 'webm':
+      return 'video/webm';
+    case 'doc':
+    case 'docx':
+      return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    case 'xls':
+    case 'xlsx':
+      return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     default:
       return 'image/png';
   }

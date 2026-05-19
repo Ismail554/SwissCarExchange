@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -26,6 +27,7 @@ import 'package:rionydo/controllers/rate_dealer_provider.dart';
 import 'package:rionydo/controllers/profile/my_shipping_provider.dart';
 
 Future<void> main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
   // Lock the orientation to portrait
   await SystemChrome.setPreferredOrientations([
@@ -38,7 +40,7 @@ Future<void> main() async {
 
   final globalState = GlobalState();
   await globalState.rehydrate();
-
+  // debugRepaintRainbowEnabled = true;
   runApp(
     MultiProvider(
       providers: [

@@ -72,10 +72,12 @@ class _HomeViewState extends State<HomeView> {
     final displayName = profile == null
         ? ''
         : (profile is PrivateUserProfile
-            ? (profile.fullName.isNotEmpty ? profile.fullName : profile.email)
-            : (profile is CompanyUserProfile
-                ? (profile.company.isNotEmpty ? profile.company : profile.email)
-                : ''));
+              ? (profile.fullName.isNotEmpty ? profile.fullName : profile.email)
+              : (profile is CompanyUserProfile
+                    ? (profile.company.isNotEmpty
+                          ? profile.company
+                          : profile.email)
+                    : ''));
 
     return CommonBackground(
       child: RefreshIndicator(
@@ -611,7 +613,7 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           SizedBox(width: 4.w),
                           Text(
-                            '${auction.totalBidders} Bids',
+                            '${auction.totalBids} Bids',
                             style: FontManager.bodySmall(
                               color: Colors.white38,
                               fontSize: 11.sp,

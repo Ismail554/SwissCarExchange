@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 import 'package:rionydo/app_utils/utils/app_colors.dart';
+import 'package:rionydo/app_utils/constants/api_service.dart';
+
 
 /// A self-contained play-button / inline-video-player overlay.
 ///
@@ -54,8 +56,8 @@ class _VideoPlayButtonState extends State<VideoPlayButton> {
     });
 
     try {
-      final url = widget.videoUrl.trim();
-      debugPrint('🎬 VIDEO: _startPlayer() — URL = "$url"');
+      String url = widget.videoUrl.trim();
+      debugPrint('🎬 VIDEO: _startPlayer() — Raw URL = "$url"');
 
       if (url.isEmpty) {
         debugPrint('🎬 VIDEO: ERROR — URL is empty!');
@@ -68,9 +70,33 @@ class _VideoPlayButtonState extends State<VideoPlayButton> {
         return;
       }
 
-      final uri = Uri.tryParse(url);
+      // 1. Sanitize localhosts to allow playback in emulator/device when backend is on ngrok or machine IP
+      final baseApiUrl = ApiService.baseUrl;
+      if (url.startsWith('http://localhost') || url.startsWith('http://127.0.0.1')) {
+        final uriObj = Uri.tryParse(url);
+        if (uriObj != null && baseApiUrl.startsWith('http')) {
+          final baseUri = Uri.parse(baseApiUrl);
+          final newUri = uriObj.replace(
+            scheme: baseUri.scheme,
+            host: baseUri.host,
+            port: baseUri.port,
+          );
+          url = newUri.toString();
+          debugPrint('🎬 VIDEO: Rewrote localhost URL to: "$url"');
+        }
+      }
+
+      // 2. Safely encode URL to handle spaces and special characters properly
+      String encodedUrl = url;
+      try {
+        encodedUrl = Uri.encodeFull(url);
+      } catch (e) {
+        debugPrint('🎬 VIDEO: Warning — Uri.encodeFull failed: $e');
+      }
+
+      final uri = Uri.tryParse(encodedUrl);
       if (uri == null || !uri.hasScheme) {
-        debugPrint('🎬 VIDEO: ERROR — Invalid URI: "$url"');
+        debugPrint('🎬 VIDEO: ERROR — Invalid URI after encoding: "$encodedUrl"');
         if (mounted) {
           setState(() {
             _isLoading = false;
