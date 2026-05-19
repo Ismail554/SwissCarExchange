@@ -22,7 +22,6 @@ class AuctionManagement extends StatefulWidget {
 
 class _AuctionManagementState extends State<AuctionManagement> {
   static const Map<String, String> _statusTabs = {
-    'all': 'All',
     'active': 'Active',
     'sold': 'Sold',
     'unsold': 'Unsold',

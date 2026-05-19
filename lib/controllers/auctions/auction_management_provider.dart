@@ -8,7 +8,7 @@ class AuctionManagementProvider extends ChangeNotifier {
   AuctionManagementResponse? _response;
   bool _isLoading = false;
   String? _errorMessage;
-  String _selectedStatus = 'active'; // Default tab
+  String _selectedStatus = 'active';
 
   AuctionManagementResponse? get response => _response;
   List<Auction> get auctions => _response?.results ?? [];
@@ -40,7 +40,9 @@ class AuctionManagementProvider extends ChangeNotifier {
           _response = null;
         },
         (data) {
-          _response = AuctionManagementResponse.fromJson(data as Map<String, dynamic>);
+          _response = AuctionManagementResponse.fromJson(
+            data as Map<String, dynamic>,
+          );
         },
       );
     } catch (e) {

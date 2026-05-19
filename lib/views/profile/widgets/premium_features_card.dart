@@ -70,12 +70,12 @@ class PremiumFeaturesCard extends StatelessWidget {
                 onTap: () => context.push('/receive-payments'),
               ),
               ProfileDivider(),
-              ProfileListTile(
-                Icons.settings_outlined,
-                'Update Subscription',
-                isPremiumFeature: true,
-                onTap: () => context.push('/update-subscription'),
-              ),
+              // ProfileListTile(
+              //   Icons.settings_outlined,
+              //   'Update Subscription',
+              //   isPremiumFeature: true,
+              //   onTap: () => context.push('/update-subscription'),
+              // ),
               ProfileDivider(),
               ProfileListTile(
                 Icons.local_shipping_outlined,

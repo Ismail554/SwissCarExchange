@@ -11,6 +11,7 @@ import 'package:rionydo/app_utils/constants/font_manager.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/controllers/auctions/my_auctions_provider.dart';
 import 'package:rionydo/controllers/home_stats_provider.dart';
+import 'package:rionydo/controllers/profile_provider.dart';
 import 'package:rionydo/models/auctions/my_auctions_response.dart';
 import 'package:rionydo/models/profile/user_profile_response.dart';
 import 'package:rionydo/views/auctions/widgets/auction_countdown.dart';
@@ -66,6 +67,16 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = context.watch<UserProfileProvider>();
+    final profile = profileProvider.userProfile;
+    final displayName = profile == null
+        ? ''
+        : (profile is PrivateUserProfile
+            ? (profile.fullName.isNotEmpty ? profile.fullName : profile.email)
+            : (profile is CompanyUserProfile
+                ? (profile.company.isNotEmpty ? profile.company : profile.email)
+                : ''));
+
     return CommonBackground(
       child: RefreshIndicator(
         onRefresh: _refreshData,
@@ -113,7 +124,7 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           ),
                           Text(
-                            context.watch<GlobalState>().userName,
+                            displayName,
                             style: FontManager.heading3(
                               color: Colors.white,
                               fontSize: 20.sp,

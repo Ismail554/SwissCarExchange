@@ -42,7 +42,9 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         debugPrint('LOGIN: ❌ Error: $error');
-        final errorStr = error.isNotEmpty ? error : 'Login failed. Please try again.';
+        final errorStr = error.isNotEmpty
+            ? error
+            : 'Login failed. Please try again.';
         if (errorStr.startsWith('UNVERIFIED_EMAIL:')) {
           final msg = errorStr.substring('UNVERIFIED_EMAIL:'.length);
           AppSnackBar.error(context, msg);
@@ -67,7 +69,8 @@ class AuthProvider extends ChangeNotifier {
         // --- 1. Suspended account ---
         if (loginData.approvalStatus == 'suspended') {
           if (context.mounted) {
-            final msg = (loginData.message != null && loginData.message!.isNotEmpty)
+            final msg =
+                (loginData.message != null && loginData.message!.isNotEmpty)
                 ? loginData.message!
                 : "Your account is suspended. Contact your owner.\nOr try with another account.";
             AppSnackBar.error(context, msg);
@@ -170,7 +173,9 @@ class AuthProvider extends ChangeNotifier {
     response.fold(
       (error) {
         debugPrint('AUTH: ❌ verify2fa error: $error');
-        final msg = error.isNotEmpty ? error : 'Two-Factor Verification failed. Please try again.';
+        final msg = error.isNotEmpty
+            ? error
+            : 'Two-Factor Verification failed. Please try again.';
         AppSnackBar.error(context, msg);
       },
       (data) async {
@@ -234,12 +239,17 @@ class AuthProvider extends ChangeNotifier {
     response.fold(
       (error) {
         debugPrint('AUTH: ❌ resendOtp API error: $error');
-        final msg = error.isNotEmpty ? error : 'Failed to resend OTP. Please try again.';
+        final msg = error.isNotEmpty
+            ? error
+            : 'Failed to resend OTP. Please try again.';
         AppSnackBar.error(context, msg);
       },
       (data) {
         debugPrint('AUTH: ✅ resendOtp API success! Response: $data');
-        final msg = (data is Map<String, dynamic> && data['message'] != null && data['message'].toString().isNotEmpty)
+        final msg =
+            (data is Map<String, dynamic> &&
+                data['message'] != null &&
+                data['message'].toString().isNotEmpty)
             ? data['message'].toString()
             : 'OTP has been resent to your email';
         AppSnackBar.success(context, msg);
@@ -280,7 +290,9 @@ class AuthProvider extends ChangeNotifier {
       (error) async {
         debugPrint('AUTH: ❌ verifyOtp API error: $error');
         if (context.mounted) {
-          final msg = error.isNotEmpty ? error : 'Verification failed. Please try again.';
+          final msg = error.isNotEmpty
+              ? error
+              : 'Verification failed. Please try again.';
           AppSnackBar.error(context, msg);
         }
       },
@@ -354,7 +366,9 @@ class AuthProvider extends ChangeNotifier {
           if (data['approval_status'] == 'approved') {
             shouldCancelTimer = true;
             if (context.mounted) {
-              final msg = (data['message'] != null && data['message'].toString().isNotEmpty)
+              final msg =
+                  (data['message'] != null &&
+                      data['message'].toString().isNotEmpty)
                   ? data['message'].toString()
                   : "Your account has been approved! Please login.";
               AppSnackBar.success(context, msg);
@@ -363,7 +377,9 @@ class AuthProvider extends ChangeNotifier {
           } else if (data['approval_status'] == 'suspended') {
             shouldCancelTimer = true;
             if (context.mounted) {
-              final msg = (data['message'] != null && data['message'].toString().isNotEmpty)
+              final msg =
+                  (data['message'] != null &&
+                      data['message'].toString().isNotEmpty)
                   ? data['message'].toString()
                   : "Your account has been suspended.";
               AppSnackBar.error(context, msg);
@@ -399,7 +415,9 @@ class AuthProvider extends ChangeNotifier {
           if (hasSub && status == 'active') {
             subscriptionActive = true;
             if (context.mounted) {
-              final msg = (data['message'] != null && data['message'].toString().isNotEmpty)
+              final msg =
+                  (data['message'] != null &&
+                      data['message'].toString().isNotEmpty)
                   ? data['message'].toString()
                   : "Subscription activated! Now login again.";
               AppSnackBar.success(context, msg);
@@ -439,7 +457,9 @@ class AuthProvider extends ChangeNotifier {
     response.fold(
       (error) {
         debugPrint('AUTH: ❌ requestPasswordReset API error: $error');
-        final msg = error.isNotEmpty ? error : 'Password reset request failed. Please try again.';
+        final msg = error.isNotEmpty
+            ? error
+            : 'Password reset request failed. Please try again.';
         AppSnackBar.error(context, msg);
       },
       (data) {
@@ -487,7 +507,9 @@ class AuthProvider extends ChangeNotifier {
     response.fold(
       (error) {
         debugPrint('AUTH: ❌ verifyResetPasswordCode API error: $error');
-        final msg = error.isNotEmpty ? error : 'Code verification failed. Please try again.';
+        final msg = error.isNotEmpty
+            ? error
+            : 'Code verification failed. Please try again.';
         AppSnackBar.error(context, msg);
       },
       (data) {
@@ -535,7 +557,9 @@ class AuthProvider extends ChangeNotifier {
     response.fold(
       (error) {
         debugPrint('AUTH: ❌ resetPassword API error: $error');
-        final msg = error.isNotEmpty ? error : 'Password reset failed. Please try again.';
+        final msg = error.isNotEmpty
+            ? error
+            : 'Password reset failed. Please try again.';
         AppSnackBar.error(context, msg);
       },
       (data) {
@@ -583,7 +607,9 @@ class AuthProvider extends ChangeNotifier {
     response.fold(
       (error) {
         debugPrint('AUTH: ❌ changePassword API error: $error');
-        final msg = error.isNotEmpty ? error : 'Change password failed. Please try again.';
+        final msg = error.isNotEmpty
+            ? error
+            : 'Change password failed. Please try again.';
         AppSnackBar.error(context, msg);
       },
       (data) {
@@ -607,10 +633,7 @@ class AuthProvider extends ChangeNotifier {
   // ----------------------------------------------------------------
   // TOGGLE TWO-FACTOR AUTHENTICATION (Settings)
   // ----------------------------------------------------------------
-  Future<bool> toggle2FA(
-    BuildContext context, {
-    required bool enable,
-  }) async {
+  Future<bool> toggle2FA(BuildContext context, {required bool enable}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -626,15 +649,20 @@ class AuthProvider extends ChangeNotifier {
     response.fold(
       (error) {
         debugPrint('AUTH: ❌ toggle2FA API error: $error');
-        final msg = error.isNotEmpty ? error : 'Failed to update 2FA settings. Please try again.';
+        final msg = error.isNotEmpty
+            ? error
+            : 'Failed to update 2FA settings. Please try again.';
         AppSnackBar.error(context, msg);
       },
       (data) {
         debugPrint('AUTH: ✅ toggle2FA API success! Response: $data');
         if (context.mounted) {
-          final message = (data is Map<String, dynamic> && data['message'] != null)
+          final message =
+              (data is Map<String, dynamic> && data['message'] != null)
               ? data['message'].toString()
-              : (enable ? 'Two-Factor Authentication enabled.' : 'Two-Factor Authentication disabled.');
+              : (enable
+                    ? 'Two-Factor Authentication enabled.'
+                    : 'Two-Factor Authentication disabled.');
           AppSnackBar.success(context, message);
         }
         success = true;

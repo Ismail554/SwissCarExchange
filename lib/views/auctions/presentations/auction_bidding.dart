@@ -1049,7 +1049,7 @@ class _AuctionBiddingState extends State<AuctionBidding> {
         children: [
           Container(
             width: 32.w,
-            height: 32.w,
+            height: 32.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: gradient,
