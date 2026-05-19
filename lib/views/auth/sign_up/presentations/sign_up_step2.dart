@@ -583,7 +583,9 @@ class _CompanyForm extends StatelessWidget {
         _LabeledField(
           label: 'UID Number',
           controller: uidController,
+          textCapitalization: TextCapitalization.characters,
           hintText: 'CHE-123.456.789',
+
           icon: Icons.business_center_outlined,
         ),
         SizedBox(height: 20.h),
@@ -607,6 +609,7 @@ class _LabeledField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final IconData icon;
+  final TextCapitalization? textCapitalization;
   final TextInputAction textInputAction;
 
   const _LabeledField({
@@ -614,6 +617,7 @@ class _LabeledField extends StatelessWidget {
     required this.controller,
     required this.hintText,
     required this.icon,
+    this.textCapitalization,
     this.textInputAction = TextInputAction.next,
   });
 
@@ -627,8 +631,9 @@ class _LabeledField extends StatelessWidget {
         CustomTextField(
           textInputAction: textInputAction,
           controller: controller,
+          textCapitalization: textCapitalization,
           hintText: hintText,
-          prefixIcon: Icon(icon, color: AppColors.sceGreyA0, size: 20),
+          prefixIcon: Icon(icon, color: AppColors.sceGreyA0, size: 20.sp),
         ),
       ],
     );

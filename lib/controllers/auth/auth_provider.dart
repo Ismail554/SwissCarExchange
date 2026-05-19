@@ -603,4 +603,46 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     return success;
   }
+
+  // ----------------------------------------------------------------
+  // TOGGLE TWO-FACTOR AUTHENTICATION (Settings)
+  // ----------------------------------------------------------------
+  Future<bool> toggle2FA(
+    BuildContext context, {
+    required bool enable,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final url = enable ? ApiService.enable2FA : ApiService.disable2FA;
+    debugPrint('AUTH: ▶️ Calling toggle2FA API ($url)');
+
+    final response = await DioManager.apiRequest(
+      url: url,
+      method: Methods.post,
+    );
+
+    bool success = false;
+    response.fold(
+      (error) {
+        debugPrint('AUTH: ❌ toggle2FA API error: $error');
+        final msg = error.isNotEmpty ? error : 'Failed to update 2FA settings. Please try again.';
+        AppSnackBar.error(context, msg);
+      },
+      (data) {
+        debugPrint('AUTH: ✅ toggle2FA API success! Response: $data');
+        if (context.mounted) {
+          final message = (data is Map<String, dynamic> && data['message'] != null)
+              ? data['message'].toString()
+              : (enable ? 'Two-Factor Authentication enabled.' : 'Two-Factor Authentication disabled.');
+          AppSnackBar.success(context, message);
+        }
+        success = true;
+      },
+    );
+
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
 }

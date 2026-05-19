@@ -13,6 +13,7 @@ class CustomTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final TextInputAction? textInputAction;
   final bool enabled;
+  final TextCapitalization? textCapitalization;
   final List<TextInputFormatter>? inputFormatters;
   final int? validationMinLength;
   final int? validationMaxLength;
@@ -33,6 +34,7 @@ class CustomTextField extends StatefulWidget {
     this.inputFormatters,
     this.enabled = true,
     this.validationMinLength,
+    this.textCapitalization,
     this.validationMaxLength,
     this.onChanged,
     this.onFieldSubmitted,
@@ -52,8 +54,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   TextEditingController get _effectiveController =>
       widget.controller ?? _internalController;
 
-  FocusNode get _effectiveFocusNode =>
-      widget.focusNode ?? _internalFocusNode;
+  FocusNode get _effectiveFocusNode => widget.focusNode ?? _internalFocusNode;
 
   @override
   void initState() {
@@ -88,6 +89,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
       enabled: widget.enabled,
       controller: _effectiveController,
       focusNode: _effectiveFocusNode,
@@ -101,7 +103,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
       onChanged: widget.onChanged,
       onFieldSubmitted: widget.onFieldSubmitted,
       // Prevents autocorrect from repositioning the cursor unexpectedly
-      autocorrect: widget.keyboardType != TextInputType.emailAddress &&
+      autocorrect:
+          widget.keyboardType != TextInputType.emailAddress &&
           widget.keyboardType != TextInputType.visiblePassword,
       enableSuggestions: !widget.obscureText,
       // Keeps text vertically centered so tap target aligns with cursor
@@ -115,8 +118,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
         suffixIcon: widget.suffixIcon,
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.04),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
@@ -127,13 +132,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide:
-              const BorderSide(color: AppColors.sceOnboardingGold, width: 1.5),
+          borderSide: const BorderSide(
+            color: AppColors.sceOnboardingGold,
+            width: 1.5,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide:
-              const BorderSide(color: AppColors.errorRed, width: 1.0),
+          borderSide: const BorderSide(color: AppColors.errorRed, width: 1.0),
         ),
       ),
     );

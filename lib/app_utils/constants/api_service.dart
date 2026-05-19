@@ -25,16 +25,23 @@ class ApiService {
       "$baseUrl/api/auth/reset-password/verify/"; // body: {"email": "", "code": ""}
   static String get resetPassword =>
       "$baseUrl/api/auth/reset-password/reset/"; // body: {"email": "", "new_password": "", "password_reset_token": ""}
+
+      // Security and Privacy
   static String get changePassword =>
       "$baseUrl/api/users/me/change-password/"; //POST body: { "current_password": "", "new_password": "" }
+  static String get enable2FA =>
+      "$baseUrl/api/users/me/two-factor/enable/" ;
+  static String get disable2FA =>
+      "$baseUrl/api/users/me/two-factor/disable/" ;
+  static String get verify2fa =>
+      "$baseUrl/api/auth/login/two-factor/verify/"; // body: {"email": "", "two_factor_token": "", "code": ""}
 
   // Delete Account
   static String get deleteAccount =>
       "$baseUrl/api/users/me/delete-account/"; // POST body: { "password": "string" }
 
   // 2FA
-  static String get verify2fa =>
-      "$baseUrl/api/auth/login/two-factor/verify/"; // body: {"email": "", "two_factor_token": "", "code": ""}
+ 
 
   // Presigned URL — append ?content_type=...&file_name=... dynamically
   static String get presignedUrl => "$baseUrl/api/auth/register/presigned-url/";
@@ -168,4 +175,7 @@ class ApiService {
       "$baseUrl/api/users/chat/messages/send/"; // POST // body: { "body": "Please find the updated document.", "attachments": [ { "object_key": "chat-attachmendsaasssts/12/2026/04/doc-2.pdf", "public_url": "https://cdn.example.com/chat-attacsdshments/12/2026/04/doc-2.pdf", "content_type": "application/pdf", "file_name": "doc-22.pdf", "size_bytes": 78421 } ] }
   static String get attachmentPreUrl =>
       "$baseUrl/api/users/chat/upload/presigned-url/"; // with Params content_type , file_name // response: { "presigned_url": "https://", "object_key": "chat-attachments/6/2026/05/d7dda647c8216d3.png", "public_url": "https://pub-25400/d3.png", "content_type": "image/png" }
+
+
+      
 }

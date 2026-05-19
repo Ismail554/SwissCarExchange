@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:rionydo/app_helper/secure_storage_helper.dart';
@@ -15,9 +16,9 @@ import 'package:rionydo/core/widgets/widget_snackbar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rionydo/controllers/auth/auth_provider.dart';
+import 'package:rionydo/controllers/profile_provider.dart';
 
 class PrivacySettingsView extends StatefulWidget {
-
   const PrivacySettingsView({super.key});
 
   @override
@@ -33,6 +34,45 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
   bool _obscureNew = true;
   bool _obscureConfirm = true;
 
+  bool _twoFactorEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitial2FAState();
+    });
+  }
+
+  void _loadInitial2FAState() {
+    final profileProvider = context.read<UserProfileProvider>();
+    if (profileProvider.userProfile != null) {
+      setState(() {
+        _twoFactorEnabled = profileProvider.userProfile!.isTwoFactorEnabled;
+      });
+    } else {
+      profileProvider.fetchProfile().then((_) {
+        if (mounted && profileProvider.userProfile != null) {
+          setState(() {
+            _twoFactorEnabled = profileProvider.userProfile!.isTwoFactorEnabled;
+          });
+        }
+      });
+    }
+  }
+
+  void _toggle2FA(bool value) async {
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.toggle2FA(context, enable: value);
+    if (success && mounted) {
+      setState(() {
+        _twoFactorEnabled = value;
+      });
+      // Optionally update the local profile so it stays in sync
+      context.read<UserProfileProvider>().fetchProfile();
+    }
+  }
+
   @override
   void dispose() {
     _currentPasswordController.dispose();
@@ -42,7 +82,6 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
   }
 
   void _showDeleteAccountDialog() {
-
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -67,62 +106,61 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text(
-            //   "SECURITY",
-            //   style: FontManager.labelMedium(color: AppColors.sceGreyA0),
-            // ),
-            // AppSpacing.h16,
-            // Container(
-            //   decoration: BoxDecoration(
-            //     color: AppColors.sceCardBg,
-            //     borderRadius: BorderRadius.circular(16.r),
-            //     border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-            //   ),
-            //   child: Column(
-            //     children: [
-            //       _SecurityOption(
-            //         icon: Icons.lock_outline,
-            //         title: "Change Password",
-            //         subtitle: "Last changed 30 days ago",
-            //         onTap: () {
-            //           // Logic to trigger password change flow/fields
-            //         },
-            //       ),
-            //       Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
-            //       Padding(
-            //         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            //         child: Row(
-            //           children: [
-            //             Icon(Icons.phone_android_outlined, color: AppColors.sceGreyA0, size: 24.sp),
-            //             AppSpacing.w16,
-            //             Expanded(
-            //               child: Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.start,
-            //                 children: [
-            //                   Text(
-            //                     "Two-Factor Authentication",
-            //                     style: FontManager.bodyMedium(color: AppColors.white)
-            //                         .copyWith(fontWeight: FontWeight.w600),
-            //                   ),
-            //                   Text(
-            //                     "Add an extra layer of security",
-            //                     style: FontManager.bodySmall(color: AppColors.sceGrey99),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //             CupertinoSwitch(
-            //               activeColor: AppColors.sceTeal,
-            //               value: _twoFactorEnabled,
-            //               onChanged: (val) => setState(() => _twoFactorEnabled = val),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // AppSpacing.h40,
+            Text(
+              "SECURITY",
+              style: FontManager.labelMedium(color: AppColors.sceGreyA0),
+            ),
+            AppSpacing.h16,
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.sceCardBg,
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              ),
+              child: Column(
+                children: [
+                  _SecurityOption(
+                    icon: Icons.lock_outline,
+                    title: "Change Password",
+                    onTap: () {
+                      // Logic to trigger password change flow/fields
+                    },
+                  ),
+                  Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    child: Row(
+                      children: [
+                        Icon(Icons.phone_android_outlined, color: AppColors.sceGreyA0, size: 24.sp),
+                        AppSpacing.w16,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Two-Factor Authentication",
+                                style: FontManager.bodyMedium(color: AppColors.white)
+                                    .copyWith(fontWeight: FontWeight.w600),
+                              ),
+                              Text(
+                                "Add an extra layer of security",
+                                style: FontManager.bodySmall(color: AppColors.sceGrey99),
+                              ),
+                            ],
+                          ),
+                        ),
+                        CupertinoSwitch(
+                          activeTrackColor: AppColors.sceTeal,
+                          value: _twoFactorEnabled,
+                          onChanged: _toggle2FA,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            AppSpacing.h40,
             // Change Password Form (Optional if user taps Change Password, showing it directly for convenience)
             Text(
               "CHANGE PASSWORD",
@@ -137,11 +175,17 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                     controller: _currentPasswordController,
                     hintText: "Enter Current Password",
                     obscureText: _obscureCurrent,
-                    prefixIcon: const Icon(Icons.lock_open, color: AppColors.sceGreyA0),
+                    prefixIcon: const Icon(
+                      Icons.lock_open,
+                      color: AppColors.sceGreyA0,
+                    ),
                     suffixIcon: GestureDetector(
-                      onTap: () => setState(() => _obscureCurrent = !_obscureCurrent),
+                      onTap: () =>
+                          setState(() => _obscureCurrent = !_obscureCurrent),
                       child: Icon(
-                        _obscureCurrent ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        _obscureCurrent
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
                         color: AppColors.sceGreyA0,
                         size: 20.sp,
                       ),
@@ -158,11 +202,16 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                     controller: _newPasswordController,
                     hintText: "Enter New Password",
                     obscureText: _obscureNew,
-                    prefixIcon: const Icon(Icons.lock_outline, color: AppColors.sceGreyA0),
+                    prefixIcon: const Icon(
+                      Icons.lock_outline,
+                      color: AppColors.sceGreyA0,
+                    ),
                     suffixIcon: GestureDetector(
                       onTap: () => setState(() => _obscureNew = !_obscureNew),
                       child: Icon(
-                        _obscureNew ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        _obscureNew
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
                         color: AppColors.sceGreyA0,
                         size: 20.sp,
                       ),
@@ -182,11 +231,17 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                     controller: _confirmPasswordController,
                     hintText: "Confirm New Password",
                     obscureText: _obscureConfirm,
-                    prefixIcon: const Icon(Icons.lock_person, color: AppColors.sceGreyA0),
+                    prefixIcon: const Icon(
+                      Icons.lock_person,
+                      color: AppColors.sceGreyA0,
+                    ),
                     suffixIcon: GestureDetector(
-                      onTap: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                      onTap: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
                       child: Icon(
-                        _obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        _obscureConfirm
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
                         color: AppColors.sceGreyA0,
                         size: 20.sp,
                       ),
@@ -211,11 +266,15 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                             ? () {}
                             : () async {
                                 if (_formKey.currentState!.validate()) {
-                                  final success = await authProvider.changePassword(
-                                    context,
-                                    currentPassword: _currentPasswordController.text.trim(),
-                                    newPassword: _newPasswordController.text.trim(),
-                                  );
+                                  final success = await authProvider
+                                      .changePassword(
+                                        context,
+                                        currentPassword:
+                                            _currentPasswordController.text
+                                                .trim(),
+                                        newPassword: _newPasswordController.text
+                                            .trim(),
+                                      );
                                   if (success) {
                                     _currentPasswordController.clear();
                                     _newPasswordController.clear();
@@ -230,7 +289,6 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
               ),
             ),
 
-
             AppSpacing.h48,
             Text(
               "DANGER ZONE",
@@ -241,7 +299,7 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
               onTap: _showDeleteAccountDialog,
               borderRadius: BorderRadius.circular(16.r),
               child: Container(
-                padding: EdgeInsets.all(20.w),
+                padding: EdgeInsets.all(14.w),
                 decoration: BoxDecoration(
                   color: AppColors.errorRed.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(16.r),
@@ -256,7 +314,7 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                       color: AppColors.errorRed,
                       size: 28.sp,
                     ),
-                    AppSpacing.w16,
+                    AppSpacing.w8,
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,11 +323,13 @@ class _PrivacySettingsViewState extends State<PrivacySettingsView> {
                             "Delete Account",
                             style: FontManager.bodyLarge(
                               color: AppColors.errorRed,
+                              fontSize: 16.sp,
                             ).copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(
                             "Permanently delete your account and data",
                             style: FontManager.bodySmall(
+                              fontSize: 13.sp,
                               color: AppColors.errorRed.withValues(alpha: 0.7),
                             ),
                           ),
@@ -340,8 +400,8 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
             _errorMessage = error.toString().contains('password')
                 ? 'Incorrect password. Please try again.'
                 : error.toString().isNotEmpty
-                    ? error.toString()
-                    : 'Failed to delete account. Please try again.';
+                ? error.toString()
+                : 'Failed to delete account. Please try again.';
           });
         },
         (data) async {
@@ -522,8 +582,9 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
                       borderRadius: BorderRadius.circular(14.r),
                     ),
                     elevation: 0,
-                    disabledBackgroundColor:
-                        AppColors.errorRed.withValues(alpha: 0.4),
+                    disabledBackgroundColor: AppColors.errorRed.withValues(
+                      alpha: 0.4,
+                    ),
                   ),
                   onPressed: _isDeleting ? null : _handleDeleteAccount,
                   child: _isDeleting
@@ -554,6 +615,42 @@ class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SecurityOption extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _SecurityOption({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.sceGreyA0, size: 24.sp),
+            AppSpacing.w16,
+            Expanded(
+              child: Text(
+                title,
+                style: FontManager.bodyMedium(color: AppColors.white)
+                    .copyWith(fontWeight: FontWeight.w600),
+              ),
+            ),
+            Icon(Icons.chevron_right, color: AppColors.sceGreyA0, size: 20.sp),
+          ],
         ),
       ),
     );
