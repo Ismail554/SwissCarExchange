@@ -44,6 +44,7 @@ class BankAccountProvider extends ChangeNotifier {
         url: ApiService.allBankDetails,
         method: Methods.get,
         skipAuth: false,
+        altCodes: [200, 201],
       );
 
       await response.fold(

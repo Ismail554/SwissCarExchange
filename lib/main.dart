@@ -26,7 +26,6 @@ import 'package:rionydo/controllers/rate_dealer_provider.dart';
 import 'package:rionydo/controllers/profile/my_shipping_provider.dart';
 
 Future<void> main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
   // Lock the orientation to portrait
   await SystemChrome.setPreferredOrientations([
@@ -36,7 +35,6 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   DioManager.init();
   // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   final globalState = GlobalState();
   await globalState.rehydrate();
   // debugRepaintRainbowEnabled = true;
