@@ -32,7 +32,6 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
   static const int _countdownStart = 60;
   int _secondsLeft = _countdownStart;
   bool _canResend = false;
-  bool _isResending = false;
   Timer? _timer;
 
   @override
@@ -73,10 +72,9 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
   }
 
   Future<void> _resendOtp() async {
-    if (!_canResend || _isResending) return;
-
-    setState(() => _isResending = true);
     final authProvider = context.read<AuthProvider>();
+    if (!_canResend || authProvider.isResendingOtp || authProvider.isVerifyingOtp) return;
+
     bool success = false;
     if (widget.isForgotPassword) {
       if (!context.mounted) return;
@@ -91,11 +89,8 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
         email: widget.email,
       );
     }
-    if (mounted) {
-      setState(() => _isResending = false);
-      if (success) {
-        _startTimer();
-      }
+    if (mounted && success) {
+      _startTimer();
     }
   }
 
@@ -253,12 +248,14 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                         ),
                         SizedBox(height: 8.h),
                         GestureDetector(
-                          onTap: (_canResend && !_isResending)
+                          onTap: (_canResend &&
+                                  !context.read<AuthProvider>().isResendingOtp &&
+                                  !context.read<AuthProvider>().isVerifyingOtp)
                               ? _resendOtp
                               : null,
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
-                            child: _isResending
+                            child: context.watch<AuthProvider>().isResendingOtp
                                 ? SizedBox(
                                     height: 16.h,
                                     width: 16.h,
@@ -296,8 +293,10 @@ class _OtpVerifyViewState extends State<OtpVerifyView> {
                     // Verify Code Button
                     CustomButton(
                       text: 'Verify Code',
-                      isActive: _isOtpValid,
-                      isLoading: context.watch<AuthProvider>().isLoading,
+                      isActive: _isOtpValid &&
+                          !context.watch<AuthProvider>().isResendingOtp &&
+                          !context.watch<AuthProvider>().isVerifyingOtp,
+                      isLoading: context.watch<AuthProvider>().isVerifyingOtp,
                       onPressed: () async {
                         if (widget.isForgotPassword) {
                           final token = await context

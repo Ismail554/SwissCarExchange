@@ -19,6 +19,12 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isResendingOtp = false;
+  bool get isResendingOtp => _isResendingOtp;
+
+  bool _isVerifyingOtp = false;
+  bool get isVerifyingOtp => _isVerifyingOtp;
+
   Future<void> login(
     BuildContext context, {
     required String email,
@@ -222,6 +228,7 @@ class AuthProvider extends ChangeNotifier {
   // RESEND OTP
   // ----------------------------------------------------------------
   Future<bool> resendOtp(BuildContext context, {required String email}) async {
+    _isResendingOtp = true;
     _isLoading = true;
     notifyListeners();
 
@@ -257,6 +264,7 @@ class AuthProvider extends ChangeNotifier {
       },
     );
 
+    _isResendingOtp = false;
     _isLoading = false;
     notifyListeners();
     return success;
@@ -270,6 +278,7 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String otp,
   }) async {
+    _isVerifyingOtp = true;
     _isLoading = true;
     notifyListeners();
 
@@ -283,6 +292,7 @@ class AuthProvider extends ChangeNotifier {
       skipAuth: true,
     );
 
+    _isVerifyingOtp = false;
     _isLoading = false;
     notifyListeners();
 
@@ -438,6 +448,7 @@ class AuthProvider extends ChangeNotifier {
     BuildContext context, {
     required String email,
   }) async {
+    _isResendingOtp = true;
     _isLoading = true;
     notifyListeners();
 
@@ -475,6 +486,7 @@ class AuthProvider extends ChangeNotifier {
       },
     );
 
+    _isResendingOtp = false;
     _isLoading = false;
     notifyListeners();
     return success;
@@ -488,6 +500,7 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String code,
   }) async {
+    _isVerifyingOtp = true;
     _isLoading = true;
     notifyListeners();
 
@@ -522,6 +535,7 @@ class AuthProvider extends ChangeNotifier {
       },
     );
 
+    _isVerifyingOtp = false;
     _isLoading = false;
     notifyListeners();
     return token;

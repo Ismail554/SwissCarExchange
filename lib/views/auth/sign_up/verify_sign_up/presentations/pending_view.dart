@@ -38,7 +38,9 @@ class _PendingViewState extends State<PendingView> {
     // Check every 30 seconds
     _timer = Timer.periodic(const Duration(seconds: 30), (timer) async {
       if (!mounted) return;
-      final shouldCancel = await context.read<AuthProvider>().checkApprovalStatus(context);
+      final shouldCancel = await context
+          .read<AuthProvider>()
+          .checkApprovalStatus(context);
       if (shouldCancel) {
         _timer?.cancel();
       }
@@ -89,10 +91,6 @@ class _PendingViewState extends State<PendingView> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  _buildDataRow("Company", "Weber Auto AG"),
-                                  _buildDivider(),
-                                  _buildDataRow("Submitted", "05 Mar 2026"),
-                                  _buildDivider(),
                                   _buildStatusRow("Status", "Under Review"),
                                 ],
                               ),
@@ -103,7 +101,10 @@ class _PendingViewState extends State<PendingView> {
                       const Spacer(),
 
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 16.w),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.h,
+                          vertical: 16.w,
+                        ),
                         child: const LogoutButton(),
                       ),
                     ],
@@ -171,7 +172,7 @@ class _PendingViewState extends State<PendingView> {
                 ],
               ),
             ),
-           SizedBox(width: 10.w),
+            SizedBox(width: 10.w),
             Text(
               status,
               style: FontManager.bodyMedium(color: AppColors.scePendingGreen),

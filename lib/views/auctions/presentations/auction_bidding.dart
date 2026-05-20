@@ -278,405 +278,391 @@ class _AuctionBiddingState extends State<AuctionBidding> {
                   ),
                 ],
               ),
-              child: SafeArea(
-                child: provider.isLoadingInitial
-                    ? const Center(child: CircularProgressIndicator())
-                    : provider.isOwner
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Owner badge
-                          Container(
-                            margin: EdgeInsets.only(bottom: 12.h),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 6.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.sceGold.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(20.r),
-                              border: Border.all(
-                                color: AppColors.sceGold.withValues(alpha: 0.4),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.workspace_premium_rounded,
-                                  color: AppColors.sceGold,
-                                  size: 14.sp,
-                                ),
-                                SizedBox(width: 6.w),
-                                Text(
-                                  "You are the auction owner",
-                                  style: FontManager.labelSmall(
-                                    color: AppColors.sceGold,
-                                  ).copyWith(fontWeight: FontWeight.w600),
-                                ),
-                              ],
+              child: provider.isLoadingInitial
+                  ? const Center(child: CircularProgressIndicator())
+                  : provider.isOwner
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Owner badge
+                        Container(
+                          margin: EdgeInsets.only(bottom: 12.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 6.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.sceGold.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(20.r),
+                            border: Border.all(
+                              color: AppColors.sceGold.withValues(alpha: 0.4),
                             ),
                           ),
-                          // Back to details button
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.symmetric(vertical: 16.h),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    AppColors.sceTeal.withValues(alpha: 0.2),
-                                    AppColors.sceTeal.withValues(alpha: 0.05),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(14.r),
-                                border: Border.all(
-                                  color: AppColors.sceTeal.withValues(
-                                    alpha: 0.5,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.workspace_premium_rounded,
+                                color: AppColors.sceGold,
+                                size: 14.sp,
+                              ),
+                              SizedBox(width: 6.w),
+                              Text(
+                                "You are the auction owner",
+                                style: FontManager.labelSmall(
+                                  color: AppColors.sceGold,
+                                ).copyWith(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Back to details button
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(vertical: 16.h),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.sceTeal.withValues(alpha: 0.2),
+                                  AppColors.sceTeal.withValues(alpha: 0.05),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(14.r),
+                              border: Border.all(
+                                color: AppColors.sceTeal.withValues(alpha: 0.5),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "BACK TO DETAILS",
+                                style:
+                                    FontManager.labelMedium(
+                                      color: AppColors.sceTeal,
+                                    ).copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.2,
+                                    ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Quick Increment Buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: QuickBidButton(
+                                label: "+CHF 1,000",
+                                onTap: () {
+                                  final fallbackTotalBidders =
+                                      provider
+                                          .detailProvider
+                                          .auctionDetail
+                                          ?.totalBidders ??
+                                      0;
+                                  final noBidsYet =
+                                      provider.bidHistory.isEmpty &&
+                                      fallbackTotalBidders == 0;
+                                  final minAllowed = noBidsYet
+                                      ? provider.currentBid
+                                      : provider.currentBid +
+                                            provider.minIncrement;
+                                  final base = provider.userBid < minAllowed
+                                      ? minAllowed
+                                      : provider.userBid;
+                                  provider.updateUserBid(base + 1000);
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: QuickBidButton(
+                                label: "+CHF 2,000",
+                                onTap: () {
+                                  final fallbackTotalBidders =
+                                      provider
+                                          .detailProvider
+                                          .auctionDetail
+                                          ?.totalBidders ??
+                                      0;
+                                  final noBidsYet =
+                                      provider.bidHistory.isEmpty &&
+                                      fallbackTotalBidders == 0;
+                                  final minAllowed = noBidsYet
+                                      ? provider.currentBid
+                                      : provider.currentBid +
+                                            provider.minIncrement;
+                                  final base = provider.userBid < minAllowed
+                                      ? minAllowed
+                                      : provider.userBid;
+                                  provider.updateUserBid(base + 2000);
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: QuickBidButton(
+                                label: "+CHF 5,000",
+                                onTap: () {
+                                  final fallbackTotalBidders =
+                                      provider
+                                          .detailProvider
+                                          .auctionDetail
+                                          ?.totalBidders ??
+                                      0;
+                                  final noBidsYet =
+                                      provider.bidHistory.isEmpty &&
+                                      fallbackTotalBidders == 0;
+                                  final minAllowed = noBidsYet
+                                      ? provider.currentBid
+                                      : provider.currentBid +
+                                            provider.minIncrement;
+                                  final base = provider.userBid < minAllowed
+                                      ? minAllowed
+                                      : provider.userBid;
+                                  provider.updateUserBid(base + 5000);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16.h),
+
+                        // Custom Amount Slider/Input
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 12.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  final fallbackTotalBidders =
+                                      provider
+                                          .detailProvider
+                                          .auctionDetail
+                                          ?.totalBidders ??
+                                      0;
+                                  final noBidsYet =
+                                      provider.bidHistory.isEmpty &&
+                                      fallbackTotalBidders == 0;
+                                  final minAllowed = noBidsYet
+                                      ? provider.currentBid
+                                      : provider.currentBid +
+                                            provider.minIncrement;
+                                  if (provider.userBid > minAllowed) {
+                                    provider.updateUserBid(
+                                      provider.userBid - provider.minIncrement,
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(8.w),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Icon(
+                                    Icons.remove,
+                                    color: Colors.white,
+                                    size: 20.sp,
                                   ),
                                 ),
                               ),
-                              child: Center(
-                                child: Text(
-                                  "BACK TO DETAILS",
-                                  style:
-                                      FontManager.labelMedium(
-                                        color: AppColors.sceTeal,
-                                      ).copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.2,
+                              Expanded(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "YOUR BID",
+                                      style: FontManager.labelSmall(
+                                        color: AppColors.textHint,
                                       ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      "CHF ${NumberFormat('#,###').format(provider.userBid)}",
+                                      style: FontManager.heading3(
+                                        color: Colors.white,
+                                      ).copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Quick Increment Buttons
-                          Row(
-                            children: [
-                              Expanded(
-                                child: QuickBidButton(
-                                  label: "+CHF 1,000",
-                                  onTap: () {
-                                    final fallbackTotalBidders =
-                                        provider
-                                            .detailProvider
-                                            .auctionDetail
-                                            ?.totalBidders ??
-                                        0;
-                                    final noBidsYet =
-                                        provider.bidHistory.isEmpty &&
-                                        fallbackTotalBidders == 0;
-                                    final minAllowed = noBidsYet
-                                        ? provider.currentBid
-                                        : provider.currentBid +
-                                              provider.minIncrement;
-                                    final base = provider.userBid < minAllowed
-                                        ? minAllowed
-                                        : provider.userBid;
-                                    provider.updateUserBid(base + 1000);
-                                  },
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Expanded(
-                                child: QuickBidButton(
-                                  label: "+CHF 2,000",
-                                  onTap: () {
-                                    final fallbackTotalBidders =
-                                        provider
-                                            .detailProvider
-                                            .auctionDetail
-                                            ?.totalBidders ??
-                                        0;
-                                    final noBidsYet =
-                                        provider.bidHistory.isEmpty &&
-                                        fallbackTotalBidders == 0;
-                                    final minAllowed = noBidsYet
-                                        ? provider.currentBid
-                                        : provider.currentBid +
-                                              provider.minIncrement;
-                                    final base = provider.userBid < minAllowed
-                                        ? minAllowed
-                                        : provider.userBid;
-                                    provider.updateUserBid(base + 2000);
-                                  },
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Expanded(
-                                child: QuickBidButton(
-                                  label: "+CHF 5,000",
-                                  onTap: () {
-                                    final fallbackTotalBidders =
-                                        provider
-                                            .detailProvider
-                                            .auctionDetail
-                                            ?.totalBidders ??
-                                        0;
-                                    final noBidsYet =
-                                        provider.bidHistory.isEmpty &&
-                                        fallbackTotalBidders == 0;
-                                    final minAllowed = noBidsYet
-                                        ? provider.currentBid
-                                        : provider.currentBid +
-                                              provider.minIncrement;
-                                    final base = provider.userBid < minAllowed
-                                        ? minAllowed
-                                        : provider.userBid;
-                                    provider.updateUserBid(base + 5000);
-                                  },
+                              GestureDetector(
+                                onTap: () {
+                                  final fallbackTotalBidders =
+                                      provider
+                                          .detailProvider
+                                          .auctionDetail
+                                          ?.totalBidders ??
+                                      0;
+                                  final noBidsYet =
+                                      provider.bidHistory.isEmpty &&
+                                      fallbackTotalBidders == 0;
+                                  final minAllowed = noBidsYet
+                                      ? provider.currentBid
+                                      : provider.currentBid +
+                                            provider.minIncrement;
+                                  final base = provider.userBid < minAllowed
+                                      ? minAllowed
+                                      : provider.userBid;
+                                  provider.updateUserBid(
+                                    base + provider.minIncrement,
+                                  );
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(8.w),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 20.sp,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 16.h),
+                        ),
+                        SizedBox(height: 16.h),
 
-                          // Custom Amount Slider/Input
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 12.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.05),
-                              borderRadius: BorderRadius.circular(12.r),
-                            ),
+                        // Place Bid Button
+                        CustomButton(
+                          text: "PLACE BID",
+                          isLoading: provider.isPlacingBid,
+                          onPressed: () => provider.placeBid(context),
+                        ),
+
+                        // Auto Bid Toggle & Section
+                        SizedBox(height: 16.h),
+                        GestureDetector(
+                          onTap: () => provider.toggleAutoBid(),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8.h),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    final fallbackTotalBidders =
-                                        provider
-                                            .detailProvider
-                                            .auctionDetail
-                                            ?.totalBidders ??
-                                        0;
-                                    final noBidsYet =
-                                        provider.bidHistory.isEmpty &&
-                                        fallbackTotalBidders == 0;
-                                    final minAllowed = noBidsYet
-                                        ? provider.currentBid
-                                        : provider.currentBid +
-                                              provider.minIncrement;
-                                    if (provider.userBid > minAllowed) {
-                                      provider.updateUserBid(
-                                        provider.userBid -
-                                            provider.minIncrement,
-                                      );
-                                    }
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(8.w),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.r),
+                                Container(
+                                  width: 20.w,
+                                  height: 20.w,
+                                  decoration: BoxDecoration(
+                                    color: provider.isAutoBidEnabled
+                                        ? AppColors.sceTeal
+                                        : Colors.transparent,
+                                    border: Border.all(
+                                      color: provider.isAutoBidEnabled
+                                          ? AppColors.sceTeal
+                                          : AppColors.textHint,
+                                      width: 1.5,
                                     ),
-                                    child: Icon(
-                                      Icons.remove,
-                                      color: Colors.white,
-                                      size: 20.sp,
-                                    ),
+                                    borderRadius: BorderRadius.circular(4.r),
                                   ),
+                                  child: provider.isAutoBidEnabled
+                                      ? Icon(
+                                          Icons.check,
+                                          size: 14.sp,
+                                          color: AppColors.sceDarkBg,
+                                        )
+                                      : null,
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        "YOUR BID",
-                                        style: FontManager.labelSmall(
-                                          color: AppColors.textHint,
-                                        ),
-                                      ),
-                                      SizedBox(height: 4.h),
-                                      Text(
-                                        "CHF ${NumberFormat('#,###').format(provider.userBid)}",
-                                        style: FontManager.heading3(
-                                          color: Colors.white,
-                                        ).copyWith(fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    final fallbackTotalBidders =
-                                        provider
-                                            .detailProvider
-                                            .auctionDetail
-                                            ?.totalBidders ??
-                                        0;
-                                    final noBidsYet =
-                                        provider.bidHistory.isEmpty &&
-                                        fallbackTotalBidders == 0;
-                                    final minAllowed = noBidsYet
-                                        ? provider.currentBid
-                                        : provider.currentBid +
-                                              provider.minIncrement;
-                                    final base = provider.userBid < minAllowed
-                                        ? minAllowed
-                                        : provider.userBid;
-                                    provider.updateUserBid(
-                                      base + provider.minIncrement,
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(8.w),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    child: Icon(
-                                      Icons.add,
-                                      color: Colors.white,
-                                      size: 20.sp,
-                                    ),
+                                SizedBox(width: 12.w),
+                                Text(
+                                  "Enable Auto Bidding",
+                                  style: FontManager.labelMedium(
+                                    color: provider.isAutoBidEnabled
+                                        ? AppColors.sceTeal
+                                        : AppColors.textHint,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(height: 16.h),
+                        ),
 
-                          // Place Bid Button
-                          CustomButton(
-                            text: "PLACE BID",
-                            isLoading: provider.isPlacingBid,
-                            onPressed: () => provider.placeBid(context),
-                          ),
-
-                          // Auto Bid Toggle & Section
-                          SizedBox(height: 16.h),
-                          GestureDetector(
-                            onTap: () => provider.toggleAutoBid(),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8.h),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 20.w,
-                                    height: 20.w,
-                                    decoration: BoxDecoration(
-                                      color: provider.isAutoBidEnabled
-                                          ? AppColors.sceTeal
-                                          : Colors.transparent,
-                                      border: Border.all(
-                                        color: provider.isAutoBidEnabled
-                                            ? AppColors.sceTeal
-                                            : AppColors.textHint,
-                                        width: 1.5,
-                                      ),
-                                      borderRadius: BorderRadius.circular(4.r),
-                                    ),
-                                    child: provider.isAutoBidEnabled
-                                        ? Icon(
-                                            Icons.check,
-                                            size: 14.sp,
-                                            color: AppColors.sceDarkBg,
-                                          )
-                                        : null,
-                                  ),
-                                  SizedBox(width: 12.w),
-                                  Text(
-                                    "Enable Auto Bidding",
-                                    style: FontManager.labelMedium(
-                                      color: provider.isAutoBidEnabled
-                                          ? AppColors.sceTeal
-                                          : AppColors.textHint,
-                                    ),
-                                  ),
-                                ],
+                        // Auto Bid Settings
+                        if (provider.isAutoBidEnabled) ...[
+                          SizedBox(height: 12.h),
+                          Container(
+                            padding: EdgeInsets.all(16.w),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(12.r),
+                              border: Border.all(
+                                color: AppColors.sceTeal.withValues(alpha: 0.3),
                               ),
                             ),
-                          ),
-
-                          // Auto Bid Settings
-                          if (provider.isAutoBidEnabled) ...[
-                            SizedBox(height: 12.h),
-                            Container(
-                              padding: EdgeInsets.all(16.w),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.05),
-                                borderRadius: BorderRadius.circular(12.r),
-                                border: Border.all(
-                                  color: AppColors.sceTeal.withValues(
-                                    alpha: 0.3,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "MAXIMUM AMOUNT",
+                                  style: FontManager.labelSmall(
+                                    color: AppColors.sceTeal,
                                   ),
                                 ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "MAXIMUM AMOUNT",
-                                    style: FontManager.labelSmall(
-                                      color: AppColors.sceTeal,
-                                    ),
+                                SizedBox(height: 12.h),
+                                TextField(
+                                  controller: provider.autoBidController,
+                                  keyboardType: TextInputType.number,
+                                  style: FontManager.bodyMedium(
+                                    color: Colors.white,
                                   ),
-                                  SizedBox(height: 12.h),
-                                  TextField(
-                                    controller: provider.autoBidController,
-                                    keyboardType: TextInputType.number,
-                                    style: FontManager.bodyMedium(
+                                  onChanged: (val) {
+                                    final amt = int.tryParse(
+                                      val.replaceAll(',', ''),
+                                    );
+                                    if (amt != null) {
+                                      provider.setMaxAutoBid(amt);
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        "e.g. ${NumberFormat('#,###').format(provider.currentBid + 5000)}",
+                                    hintStyle: FontManager.bodyMedium(
+                                      color: AppColors.textHint,
+                                    ),
+                                    filled: true,
+                                    fillColor: AppColors.sceCardBg,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8.r),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    prefixText: "CHF ",
+                                    prefixStyle: FontManager.bodyMedium(
                                       color: Colors.white,
                                     ),
-                                    onChanged: (val) {
-                                      final amt = int.tryParse(
-                                        val.replaceAll(',', ''),
-                                      );
-                                      if (amt != null) {
-                                        provider.setMaxAutoBid(amt);
-                                      }
-                                    },
-                                    decoration: InputDecoration(
-                                      hintText:
-                                          "e.g. ${NumberFormat('#,###').format(provider.currentBid + 5000)}",
-                                      hintStyle: FontManager.bodyMedium(
-                                        color: AppColors.textHint,
-                                      ),
-                                      filled: true,
-                                      fillColor: AppColors.sceCardBg,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          8.r,
-                                        ),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      prefixText: "CHF ",
-                                      prefixStyle: FontManager.bodyMedium(
-                                        color: Colors.white,
-                                      ),
-                                    ),
                                   ),
-                                  SizedBox(height: 12.h),
-                                  CustomButton(
-                                    text: "SET AUTO BID",
-                                    isPrimary: false,
-                                    isLoading: provider.isSettingAutoBid,
-                                    onPressed: () =>
-                                        provider.setAutoBid(context),
-                                  ),
-                                ],
-                              ),
+                                ),
+                                SizedBox(height: 12.h),
+                                CustomButton(
+                                  text: "SET AUTO BID",
+                                  isPrimary: false,
+                                  isLoading: provider.isSettingAutoBid,
+                                  onPressed: () => provider.setAutoBid(context),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ],
-                      ),
-              ),
+                      ],
+                    ),
             );
           },
         ),
