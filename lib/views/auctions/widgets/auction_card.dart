@@ -13,6 +13,8 @@ class AuctionCard extends StatelessWidget {
   final DateTime? startsAt;
   final String? imageUrl;
   final VoidCallback? onTap;
+  final int? totalBids;
+  final int? totalBidders;
   final Widget? topRightOverlay;
 
   const AuctionCard({
@@ -25,6 +27,8 @@ class AuctionCard extends StatelessWidget {
     this.endsAt,
     this.startsAt,
     this.imageUrl,
+    this.totalBids,
+    this.totalBidders,
     this.onTap,
     this.topRightOverlay,
   });
@@ -168,21 +172,68 @@ class AuctionCard extends StatelessWidget {
                         ),
                         SizedBox(height: 8.h),
 
+                        // Dynamic header
                         Text(
-                          "Current Bid",
+                          _getBidLabel(endsAt, startsAt, totalBidders),
                           style: FontManager.bodySmall(
                             color: AppColors.textHint,
                           ).copyWith(fontSize: 10.sp),
                         ),
                         SizedBox(height: 2.h),
 
-                        Text(
-                          "CHF ${currentHighestBid ?? reservePrice}",
-                          style: FontManager.bodyMedium(
-                            color: AppColors.sceTeal,
-                          ).copyWith(fontWeight: FontWeight.bold),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            if (_isEnded(endsAt, startsAt))
+                              Text(
+                                "Bids completed",
+                                style:
+                                    FontManager.labelMedium(
+                                      color: AppColors.textHint,
+                                    ).copyWith(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            else if (totalBidders == 0)
+                              Text(
+                                "Bid not started yet.",
+                                style:
+                                    FontManager.labelMedium(
+                                      color: AppColors.scePremiumGlow,
+                                    ).copyWith(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            else ...[
+                              Text(
+                                "CHF ",
+                                style: FontManager.heading2(
+                                  color: Colors.white,
+                                ).copyWith(fontSize: 16.sp),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  currentHighestBid ?? "0.00",
+                                  style:
+                                      FontManager.heading2(
+                                        color: AppColors.sceTeal,
+                                      ).copyWith(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
 
                         SizedBox(height: 6.h),
@@ -251,6 +302,20 @@ class AuctionCard extends StatelessWidget {
               ),
       ),
     );
+  }
+
+  bool _isEnded(DateTime? endsAt, DateTime? startsAt) {
+    final now = DateTime.now();
+    // Still scheduled — not ended
+    if (startsAt != null && startsAt.isAfter(now)) return false;
+    // No end date set, or end date has passed
+    return endsAt == null || endsAt.isBefore(now);
+  }
+
+  String _getBidLabel(DateTime? endsAt, DateTime? startsAt, int? totalBidders) {
+    if (_isEnded(endsAt, startsAt)) return "Final Bid";
+    if ((totalBidders ?? 0) == 0) return "Starting Bid";
+    return "Current Bid";
   }
 
   String _getTimeRemaining(DateTime? endsAt, DateTime? startsAt) {

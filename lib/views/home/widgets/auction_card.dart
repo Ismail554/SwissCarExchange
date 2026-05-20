@@ -39,6 +39,13 @@ class AuctionCard extends StatelessWidget {
         color: AppColors.sceCardBg,
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(color: Colors.white12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 12.r,
+            offset: Offset(0, 4.h),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,11 +55,32 @@ class AuctionCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-                child: Image.network(
-                  imageUrl,
-                  height: 180.h,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+                child: Stack(
+                  children: [
+                    FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/placeholder.png',
+                      image: imageUrl,
+                      height: 180.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      fadeInDuration: Duration(milliseconds: 300),
+                    ),
+                    // Gradient overlay for better text readability
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.35),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Positioned(
@@ -258,7 +286,7 @@ class _TimerBlock extends StatelessWidget {
       width: 70.w,
       padding: EdgeInsets.symmetric(vertical: 8.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+        color: Colors.white.withOpacity(0.04),
         borderRadius: BorderRadius.circular(10.r),
       ),
       child: Column(

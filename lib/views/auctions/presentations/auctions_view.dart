@@ -260,6 +260,8 @@ class _AuctionsViewState extends State<AuctionsView> {
                                       status: auction.status,
                                       endsAt: auction.endsAt,
                                       startsAt: auction.startsAt,
+                                      totalBidders: auction.totalBidders,
+                                      totalBids: auction.totalBids,
                                       imageUrl: auction.images.isNotEmpty
                                           ? auction.images.first.url
                                           : null,

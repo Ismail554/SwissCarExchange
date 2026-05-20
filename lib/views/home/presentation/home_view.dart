@@ -377,7 +377,9 @@ class _HomeViewState extends State<HomeView> {
 
   // ── Build a single auction card from AuctionItem data ─────────────────
   Widget _buildAuctionCard(AuctionItem auction, {required bool isLive}) {
-    final displayBid = auction.currentHighestBid ?? auction.reservePrice;
+    final displayBid = auction.totalBids == 0
+        ? ''
+        : '${auction.currentHighestBid}';
     final imageUrl = auction.images.isNotEmpty ? auction.images.first.url : '';
 
     return GestureDetector(
@@ -562,10 +564,26 @@ class _HomeViewState extends State<HomeView> {
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           textBaseline: TextBaseline.alphabetic,
                           children: [
-                            Text(
-                              "CHF ",
-                              style: FontManager.heading2(color: Colors.white),
-                            ),
+                            if (auction.totalBidders == 0)
+                              Text(
+                                "Bid not started yet.",
+                                style:
+                                    FontManager.labelMedium(
+                                      color: AppColors.scePremiumGlow,
+                                    ).copyWith(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            else
+                              Text(
+                                "CHF ",
+                                style: FontManager.heading2(
+                                  color: Colors.white,
+                                ),
+                              ),
                             Expanded(
                               child: Text(
                                 displayBid,

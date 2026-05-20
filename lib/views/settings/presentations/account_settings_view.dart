@@ -115,7 +115,6 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
     super.dispose();
   }
 
-
   // ─── Photo Picker ──────────────────────────────────────────────────────────
 
   Future<void> _showPhotoPicker() async {
