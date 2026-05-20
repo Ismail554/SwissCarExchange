@@ -13,6 +13,13 @@ UserType {
   PRIVATE = 'private',
 }
 
+UID Formats
+- Switzerland (CHE): CHE-123.456.789 
+- Germany (DE): DE123456789
+- France (FR): FRXX123456789
+- Italy (IT): IT12345678901
+- Austria (AT): ATU12345678
+
 UserApprovalStatus {
   PENDING = 'pending',
   APPROVED = 'approved',

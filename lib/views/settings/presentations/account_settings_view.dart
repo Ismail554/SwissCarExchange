@@ -15,6 +15,7 @@ import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/core/widgets/photo_picker_field.dart';
 import 'package:rionydo/core/widgets/widget_snackbar.dart';
+import 'package:rionydo/core/widgets/uid_country_picker.dart';
 
 class AccountSettingsView extends StatefulWidget {
   const AccountSettingsView({super.key});
@@ -27,8 +28,8 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
   final _formKey = GlobalKey<FormState>();
 
   // Shared
-  final _emailCtrl   = TextEditingController();
-  final _phoneCtrl   = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
 
   // Private only
@@ -36,12 +37,16 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
 
   // Company only
   final _companyCtrl = TextEditingController();
-  final _uidCtrl     = TextEditingController();
+  final _uidCtrl = TextEditingController();
+  final _suffixCtrl = TextEditingController();
   final _websiteCtrl = TextEditingController();
+
+  UidCountry _selectedCountry = uidCountries.first;
 
   @override
   void initState() {
     super.initState();
+    _suffixCtrl.addListener(_onSuffixChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<UserProfileProvider>();
 
@@ -55,6 +60,21 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
     });
   }
 
+  void _onSuffixChanged() {
+    final suffix = _suffixCtrl.text.trim();
+    final fullText = '${_selectedCountry.prefix}$suffix';
+    if (_uidCtrl.text != fullText) {
+      _uidCtrl.text = fullText;
+    }
+  }
+
+  void _onCountryChanged(UidCountry country) {
+    setState(() {
+      _selectedCountry = country;
+    });
+    _onSuffixChanged();
+  }
+
   void _onProfileUpdate() {
     final profile = context.read<UserProfileProvider>().userProfile;
     if (profile != null && _emailCtrl.text.isEmpty) {
@@ -63,31 +83,38 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
   }
 
   void _populateFields(UserProfileResponse profile) {
-    _emailCtrl.text   = profile.email;
-    _phoneCtrl.text   = profile.phone;
+    _emailCtrl.text = profile.email;
+    _phoneCtrl.text = profile.phone;
     _addressCtrl.text = profile.address;
 
     if (profile is PrivateUserProfile) {
       _fullNameCtrl.text = profile.fullName;
     } else if (profile is CompanyUserProfile) {
-      _companyCtrl.text  = profile.company;
-      _uidCtrl.text      = profile.uid;
-      _websiteCtrl.text  = profile.website;
+      _companyCtrl.text = profile.company;
+      _uidCtrl.text = profile.uid;
+      _websiteCtrl.text = profile.website;
+
+      final parsed = parseUid(profile.uid);
+      _selectedCountry = parsed.country;
+      _suffixCtrl.text = parsed.suffix;
     }
   }
 
   @override
   void dispose() {
     context.read<UserProfileProvider>().removeListener(_onProfileUpdate);
+    _suffixCtrl.removeListener(_onSuffixChanged);
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
     _addressCtrl.dispose();
     _fullNameCtrl.dispose();
     _companyCtrl.dispose();
     _uidCtrl.dispose();
+    _suffixCtrl.dispose();
     _websiteCtrl.dispose();
     super.dispose();
   }
+
 
   // ─── Photo Picker ──────────────────────────────────────────────────────────
 
@@ -96,16 +123,25 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
       context: context,
       onPickFromSource: (source) async {
         Navigator.pop(context);
-        final picked = await ImagePicker().pickImage(source: source, imageQuality: 85);
+        final picked = await ImagePicker().pickImage(
+          source: source,
+          imageQuality: 85,
+        );
         if (picked != null && mounted) {
-          context.read<UserProfileProvider>().setPhotoFile(File(picked.path), picked.name);
+          context.read<UserProfileProvider>().setPhotoFile(
+            File(picked.path),
+            picked.name,
+          );
         }
       },
       onPickFromFiles: () async {
         Navigator.pop(context);
         final picked = await pickPhotoFromFiles();
         if (picked != null && mounted) {
-          context.read<UserProfileProvider>().setPhotoFile(picked.file, picked.name);
+          context.read<UserProfileProvider>().setPhotoFile(
+            picked.file,
+            picked.name,
+          );
         }
       },
     );
@@ -116,8 +152,8 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
   Future<void> _saveChanges() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    final provider   = context.read<UserProfileProvider>();
-    final isCompany  = context.read<GlobalState>().userType == UserType.company;
+    final provider = context.read<UserProfileProvider>();
+    final isCompany = context.read<GlobalState>().userType == UserType.company;
 
     bool success;
 
@@ -125,8 +161,8 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
       // Company: website accepted, no photo_url
       success = await provider.updateProfile({
         'company': _companyCtrl.text.trim(),
-        'uid':     _uidCtrl.text.trim(),
-        'phone':   _phoneCtrl.text.trim(),
+        'uid': _uidCtrl.text.trim(),
+        'phone': _phoneCtrl.text.trim(),
         'address': _addressCtrl.text.trim(),
         'website': _websiteCtrl.text.trim(),
       });
@@ -134,12 +170,15 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
       // Private: photo_url, no website
       final baseBody = {
         'full_name': _fullNameCtrl.text.trim(),
-        'phone':     _phoneCtrl.text.trim(),
-        'address':   _addressCtrl.text.trim(),
+        'phone': _phoneCtrl.text.trim(),
+        'address': _addressCtrl.text.trim(),
       };
 
       if (provider.pendingPhotoFile != null) {
-        success = await provider.uploadPhotoAndUpdate(provider.pendingPhotoFile!, baseBody);
+        success = await provider.uploadPhotoAndUpdate(
+          provider.pendingPhotoFile!,
+          baseBody,
+        );
       } else {
         success = await provider.updateProfile(baseBody);
       }
@@ -161,12 +200,15 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
   @override
   Widget build(BuildContext context) {
     final isCompany = context.watch<GlobalState>().userType == UserType.company;
-    final isSaving  = context.watch<UserProfileProvider>().isSaving;
+    final isSaving = context.watch<UserProfileProvider>().isSaving;
 
     return CommonBackground(
       appBar: AppBar(
         leading: const CustomBackButton(),
-        title: Text('Account Settings', style: FontManager.titleText(color: AppColors.white)),
+        title: Text(
+          'Account Settings',
+          style: FontManager.titleText(color: AppColors.white),
+        ),
       ),
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
@@ -175,7 +217,6 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               // ── Private Fields ──────────────────────────────────────────────
               if (!isCompany) ...[
                 _FieldLabel('Full Name'),
@@ -183,7 +224,11 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                 CustomTextField(
                   controller: _fullNameCtrl,
                   hintText: 'Enter your full name',
-                  prefixIcon: Icon(Icons.person_outline, color: AppColors.sceGreyA0, size: 20.sp),
+                  prefixIcon: Icon(
+                    Icons.person_outline,
+                    color: AppColors.sceGreyA0,
+                    size: 20.sp,
+                  ),
                 ),
                 AppSpacing.h18,
 
@@ -191,7 +236,8 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                 AppSpacing.h8,
                 Consumer<UserProfileProvider>(
                   builder: (_, provider, _) {
-                    final existingUrl = (provider.userProfile is PrivateUserProfile)
+                    final existingUrl =
+                        (provider.userProfile is PrivateUserProfile)
                         ? (provider.userProfile as PrivateUserProfile).photoUrl
                         : null;
                     return PhotoPickerField(
@@ -213,16 +259,37 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                 CustomTextField(
                   controller: _companyCtrl,
                   hintText: 'Enter company name',
-                  prefixIcon: Icon(Icons.business_outlined, color: AppColors.sceGreyA0, size: 20.sp),
+                  prefixIcon: Icon(
+                    Icons.business_outlined,
+                    color: AppColors.sceGreyA0,
+                    size: 20.sp,
+                  ),
                 ),
                 AppSpacing.h18,
 
                 _FieldLabel('UID Number'),
                 AppSpacing.h8,
                 CustomTextField(
-                  controller: _uidCtrl,
-                  hintText: 'CHE-XXX.XXX.XXX',
-                  prefixIcon: Icon(Icons.badge_outlined, color: AppColors.sceGreyA0, size: 20.sp),
+                  textInputAction: TextInputAction.next,
+                  controller: _suffixCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(),
+                  hintText: _selectedCountry.hintText,
+                  prefixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(width: 8.w),
+                      UidCountrySelector(
+                        selectedCountry: _selectedCountry,
+                        onSelected: _onCountryChanged,
+                      ),
+                      Container(
+                        width: 1,
+                        height: 20.h,
+                        color: Colors.white.withValues(alpha: 0.12),
+                        margin: EdgeInsets.only(left: 4.w, right: 12.w),
+                      ),
+                    ],
+                  ),
                 ),
                 AppSpacing.h18,
               ],
@@ -235,7 +302,11 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                 enabled: false,
                 hintText: 'info@example.ch',
                 keyboardType: TextInputType.emailAddress,
-                prefixIcon: Icon(Icons.email_outlined, color: AppColors.sceGreyA0, size: 20.sp),
+                prefixIcon: Icon(
+                  Icons.email_outlined,
+                  color: AppColors.sceGreyA0,
+                  size: 20.sp,
+                ),
               ),
               AppSpacing.h18,
 
@@ -245,7 +316,11 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                 controller: _phoneCtrl,
                 hintText: '+41 XX XXX XX XX',
                 keyboardType: TextInputType.phone,
-                prefixIcon: Icon(Icons.phone_outlined, color: AppColors.sceGreyA0, size: 20.sp),
+                prefixIcon: Icon(
+                  Icons.phone_outlined,
+                  color: AppColors.sceGreyA0,
+                  size: 20.sp,
+                ),
               ),
               AppSpacing.h18,
 
@@ -254,7 +329,11 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
               CustomTextField(
                 controller: _addressCtrl,
                 hintText: 'Street, Number, ZIP City',
-                prefixIcon: Icon(Icons.location_on_outlined, color: AppColors.sceGreyA0, size: 20.sp),
+                prefixIcon: Icon(
+                  Icons.location_on_outlined,
+                  color: AppColors.sceGreyA0,
+                  size: 20.sp,
+                ),
               ),
               AppSpacing.h18,
 
@@ -266,7 +345,11 @@ class _AccountSettingsViewState extends State<AccountSettingsView> {
                   controller: _websiteCtrl,
                   hintText: 'www.example.ch',
                   keyboardType: TextInputType.url,
-                  prefixIcon: Icon(Icons.language_outlined, color: AppColors.sceGreyA0, size: 20.sp),
+                  prefixIcon: Icon(
+                    Icons.language_outlined,
+                    color: AppColors.sceGreyA0,
+                    size: 20.sp,
+                  ),
                 ),
                 AppSpacing.h18,
               ],
@@ -298,7 +381,9 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: FontManager.bodyMedium(color: AppColors.sceGreyA0).copyWith(fontSize: 14.sp),
+      style: FontManager.bodyMedium(
+        color: AppColors.sceGreyA0,
+      ).copyWith(fontSize: 14.sp),
     );
   }
 }

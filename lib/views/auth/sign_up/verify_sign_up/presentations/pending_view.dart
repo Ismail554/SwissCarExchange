@@ -118,35 +118,6 @@ class _PendingViewState extends State<PendingView> {
     );
   }
 
-  // --- Helper Methods ---
-
-  Widget _buildDataRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildStatusRow(String label, String status) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,13 +151,6 @@ class _PendingViewState extends State<PendingView> {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildDivider() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Divider(color: Colors.white.withValues(alpha: 0.05), thickness: 1),
     );
   }
 }

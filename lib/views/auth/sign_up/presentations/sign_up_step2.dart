@@ -11,6 +11,7 @@ import 'package:rionydo/core/widgets/common_background.dart';
 import 'package:rionydo/core/widgets/custom_button.dart';
 import 'package:rionydo/core/widgets/custom_text_field.dart';
 import 'package:rionydo/core/widgets/custom_back_button.dart';
+import 'package:rionydo/core/widgets/uid_country_picker.dart';
 
 enum UserRole { individual, company }
 
@@ -522,7 +523,7 @@ class _IndividualForm extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _LabeledField(
-          textInputAction: .next,
+          textInputAction: TextInputAction.next,
           label: 'Full Name',
           controller: nameController,
           hintText: 'Enter your Full Name',
@@ -542,7 +543,7 @@ class _IndividualForm extends StatelessWidget {
         SizedBox(height: 20.h),
 
         _LabeledField(
-          textInputAction: .done,
+          textInputAction: TextInputAction.done,
           label: 'Address',
           controller: addressController,
           hintText: 'Street, ZIP, City',
@@ -556,7 +557,9 @@ class _IndividualForm extends StatelessWidget {
 // ─────────────────────────────────────────────────────────
 // Company Form
 // ─────────────────────────────────────────────────────────
-class _CompanyForm extends StatelessWidget {
+
+
+class _CompanyForm extends StatefulWidget {
   final TextEditingController companyController;
   final TextEditingController uidController;
   final TextEditingController addressController;
@@ -568,31 +571,104 @@ class _CompanyForm extends StatelessWidget {
   });
 
   @override
+  State<_CompanyForm> createState() => _CompanyFormState();
+}
+
+class _CompanyFormState extends State<_CompanyForm> {
+  late final TextEditingController _suffixController;
+  UidCountry _selectedCountry = uidCountries.first;
+
+  @override
+  void initState() {
+    super.initState();
+    _suffixController = TextEditingController();
+    _initializeFromParent();
+    _suffixController.addListener(_onSuffixChanged);
+  }
+
+  void _initializeFromParent() {
+    final parentText = widget.uidController.text.trim().toUpperCase();
+    final parsed = parseUid(parentText);
+    _selectedCountry = parsed.country;
+    _suffixController.text = parsed.suffix;
+  }
+
+  @override
+  void didUpdateWidget(covariant _CompanyForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final fullText =
+        '${_selectedCountry.prefix}${_suffixController.text.trim()}';
+    if (widget.uidController.text.trim() !=
+            oldWidget.uidController.text.trim() &&
+        widget.uidController.text.trim() != fullText) {
+      _initializeFromParent();
+    }
+  }
+
+  @override
+  void dispose() {
+    _suffixController.removeListener(_onSuffixChanged);
+    _suffixController.dispose();
+    super.dispose();
+  }
+
+  void _onSuffixChanged() {
+    final suffix = _suffixController.text.trim();
+    final fullText = '${_selectedCountry.prefix}$suffix';
+    if (widget.uidController.text != fullText) {
+      widget.uidController.text = fullText;
+    }
+  }
+
+  void _onCountryChanged(UidCountry country) {
+    setState(() {
+      _selectedCountry = country;
+    });
+    _onSuffixChanged();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _LabeledField(
           label: 'Company Name',
-          controller: companyController,
+          controller: widget.companyController,
           hintText: 'Premium Auto Group AG',
           icon: Icons.business_outlined,
         ),
         SizedBox(height: 20.h),
 
-        _LabeledField(
-          label: 'UID Number',
-          controller: uidController,
-          textCapitalization: TextCapitalization.characters,
-          hintText: 'CHE-123.456.789',
-
-          icon: Icons.business_center_outlined,
+        _FieldLabel('UID Number'),
+        SizedBox(height: 8.h),
+        CustomTextField(
+          textInputAction: TextInputAction.next,
+          controller: _suffixController,
+          keyboardType: const TextInputType.numberWithOptions(),
+          hintText: _selectedCountry.hintText,
+          prefixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(width: 8.w),
+              UidCountrySelector(
+                selectedCountry: _selectedCountry,
+                onSelected: _onCountryChanged,
+              ),
+              Container(
+                width: 1,
+                height: 20.h,
+                color: Colors.white.withValues(alpha: 0.12),
+                margin: EdgeInsets.only(left: 4.w, right: 12.w),
+              ),
+            ],
+          ),
         ),
         SizedBox(height: 20.h),
 
         _LabeledField(
           label: 'Address',
-          controller: addressController,
+          controller: widget.addressController,
           hintText: 'Street, ZIP, City',
           icon: Icons.location_on_outlined,
         ),
@@ -609,7 +685,6 @@ class _LabeledField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final IconData icon;
-  final TextCapitalization? textCapitalization;
   final TextInputAction textInputAction;
 
   const _LabeledField({
@@ -617,7 +692,6 @@ class _LabeledField extends StatelessWidget {
     required this.controller,
     required this.hintText,
     required this.icon,
-    this.textCapitalization,
     this.textInputAction = TextInputAction.next,
   });
 
@@ -631,7 +705,6 @@ class _LabeledField extends StatelessWidget {
         CustomTextField(
           textInputAction: textInputAction,
           controller: controller,
-          textCapitalization: textCapitalization,
           hintText: hintText,
           prefixIcon: Icon(icon, color: AppColors.sceGreyA0, size: 20.sp),
         ),
